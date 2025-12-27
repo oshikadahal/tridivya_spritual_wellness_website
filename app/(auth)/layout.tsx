@@ -22,15 +22,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     fill
                     priority
                     className="object-cover object-center"
+
+
+
                 />
                 <div className="absolute inset-0 bg-black/40" />
             </div>
+
 
             <div className="h-full w-full flex items-center justify-center px-4 md:px-10">
                 <div className={containerClass}>
                     {children}
                 </div>
             </div>
+
+            
         </section>
     );
 }
