@@ -1,8 +1,10 @@
 export default function DashboardPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
-      <p className="text-gray-400 mt-2">Welcome to your dashboard.</p>
-    </div>
+    <main className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-center px-6 py-24">
+        <h1 className="text-4xl md:text-5xl font-bold text-slate-900">Welcome to Dashboard</h1>
+        <p className="mt-4 text-lg text-slate-600">This is your dashboard.</p>
+      </div>
+    </main>
   );
 }
