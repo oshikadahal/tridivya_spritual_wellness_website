@@ -51,7 +51,7 @@ export default function Header() {
                         ))}
                     </div> 
 
-                    {/* Right: Auth + Search + Mobile Toggle */}
+                 
                     <div className="flex items-center gap-2 md:justify-self-end">
                         <div className="hidden md:block mr-4">
                             <div className="relative">
@@ -79,10 +79,10 @@ export default function Header() {
                             </Link>
                         </div>
 
-                        {/* Theme toggle */}
+                    
                         <ThemeToggle />
 
-                        {/* Mobile hamburger */}
+                   
                         <button
                             type="button"
                             onClick={() => setOpen((v) => !v)}

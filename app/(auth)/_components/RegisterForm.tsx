@@ -8,6 +8,9 @@ import { RegisterData, registerSchema } from "../schema";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+
+
+
 export default function RegisterForm() {
     const router = useRouter();
     const {

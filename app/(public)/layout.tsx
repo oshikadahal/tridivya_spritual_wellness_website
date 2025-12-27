@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <section>
             <Header />
             {isFullWhite ? (
-                // Full-width white background for home and dashboard
+             
                 <main className="min-h-screen w-full bg-white">
                     {children}
                 </main>
