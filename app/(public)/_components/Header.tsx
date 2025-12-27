@@ -7,10 +7,10 @@ import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
     { href: "/", label: "Home" },
-    { href: "/yoga", label: "Yoga" },
+    { href: "/yoga", label: "Yoga  " },
     { href: "/meditation", label: "Meditation" },
-    { href: "/mantra", label: "Mantra" },
-    { href: "/about", label: "About" },
+    { href: "/mantra", label: "Mantras" },
+    { href: "/about", label: "About Us " },
 ];
 
 export default function Header() {
@@ -104,6 +104,7 @@ export default function Header() {
                         </button>
                     </div>
                 </div>
+
 
                 {/* Mobile panel */}
                 <div className={"md:hidden overflow-hidden transition-[max-height] duration-300 " + (open ? "max-h-96" : "max-h-0")}>
