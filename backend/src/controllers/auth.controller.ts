@@ -17,7 +17,8 @@ export class AuthController {
       const parsed = CreateUserDTO.safeParse(req.body);
       if (!parsed.success) {
         console.error('Zod register issues:', parsed.error.issues);
-        return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
+        // temporary: return full issues array to diagnose validation failure
+        return res.status(400).json({ success: false, issues: parsed.error.issues });
       }
       const userData: CreateUserDTO = parsed.data;
       const newUser = await userService.createUser(userData);
