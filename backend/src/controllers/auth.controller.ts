@@ -5,12 +5,17 @@ import z from 'zod';
 
 const userService = new UserService();
 
+function prettifyZodError(error: z.ZodError) {
+  // Return a concise message joining all issue messages
+  return error.issues.map((i) => i.message).join('; ');
+}
+
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
       const parsed = CreateUserDTO.safeParse(req.body);
       if (!parsed.success) {
-        return res.status(400).json({ success: false, message: z.prettifyError(parsed.error) });
+        return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
       }
       const userData: CreateUserDTO = parsed.data;
       const newUser = await userService.createUser(userData);
@@ -24,7 +29,7 @@ export class AuthController {
     try {
       const parsed = LoginUserDTO.safeParse(req.body);
       if (!parsed.success) {
-        return res.status(400).json({ success: false, message: z.prettifyError(parsed.error) });
+        return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
       }
       const loginData: LoginUserDTO = parsed.data;
       const { token, user } = await userService.loginUser(loginData);
