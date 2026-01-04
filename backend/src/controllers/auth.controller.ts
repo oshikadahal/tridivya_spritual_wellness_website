@@ -13,6 +13,7 @@ function prettifyZodError(error: z.ZodError) {
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
+      console.log('Register body:', req.body);
       const parsed = CreateUserDTO.safeParse(req.body);
       if (!parsed.success) {
         console.error('Zod register issues:', parsed.error.issues);
