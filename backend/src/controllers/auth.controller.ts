@@ -6,8 +6,8 @@ import z from 'zod';
 const userService = new UserService();
 
 function prettifyZodError(error: z.ZodError) {
-  // Return a concise message joining all issue messages
-  return error.issues.map((i) => i.message).join('; ');
+  // Return a concise message joining all issue messages with their paths
+  return error.issues.map((i) => `${i.path.join('.') || '<root>'}: ${i.message}`).join('; ');
 }
 
 export class AuthController {
