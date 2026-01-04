@@ -9,17 +9,26 @@ const userRepository = new UserRepository();
 
 export class UserService {
   async createUser(data: CreateUserDTO) {
-    const existing = await userRepository.getUserByEmail(data.email);
-    if (existing) {
+    // business logic checks
+    const emailCheck = await userRepository.getUserByEmail(data.email);
+    if (emailCheck) {
       throw new HttpError(403, 'Email already in use');
     }
+    const usernameCheck = await userRepository.getUserByUsername(data.username);
+    if (usernameCheck) {
+      throw new HttpError(403, 'Username already in use');
+    }
 
+    // hash password
     const hashed = await bcryptjs.hash(data.password, 10);
     const toCreate: Partial<any> = {
-      name: data.name,
+      username: data.username,
       email: data.email,
       password: hashed,
+      firstName: data.firstName,
+      lastName: data.lastName,
     };
+
     const newUser = await userRepository.createUser(toCreate as any);
     return newUser;
   }
@@ -38,7 +47,9 @@ export class UserService {
     const payload = {
       id: user._id,
       email: user.email,
-      name: (user as any).name,
+      username: (user as any).username,
+      firstName: (user as any).firstName,
+      lastName: (user as any).lastName,
       role: (user as any).role,
     };
 
