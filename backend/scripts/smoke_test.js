@@ -1,4 +1,5 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+// Use global fetch available in modern Node.js runtimes
+const fetch = global.fetch || (() => { throw new Error('No fetch available in this Node runtime'); });
 
 async function run() {
   try {
