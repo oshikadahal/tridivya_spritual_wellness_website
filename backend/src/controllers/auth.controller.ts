@@ -15,6 +15,7 @@ export class AuthController {
     try {
       const parsed = CreateUserDTO.safeParse(req.body);
       if (!parsed.success) {
+        console.error('Zod register issues:', parsed.error.issues);
         return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
       }
       const userData: CreateUserDTO = parsed.data;
@@ -29,6 +30,7 @@ export class AuthController {
     try {
       const parsed = LoginUserDTO.safeParse(req.body);
       if (!parsed.success) {
+        console.error('Zod login issues:', parsed.error.issues);
         return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
       }
       const loginData: LoginUserDTO = parsed.data;
