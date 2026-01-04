@@ -9,6 +9,7 @@ const userRepository = new UserRepository();
 
 export class UserService {
   async createUser(data: CreateUserDTO) {
+    console.log('UserService.createUser input:', data);
     // business logic checks
     const emailCheck = await userRepository.getUserByEmail(data.email);
     if (emailCheck) {
@@ -29,8 +30,14 @@ export class UserService {
       lastName: data.lastName,
     };
 
-    const newUser = await userRepository.createUser(toCreate as any);
-    return newUser;
+    try {
+      const newUser = await userRepository.createUser(toCreate as any);
+      console.log('UserService.createUser result:', newUser);
+      return newUser;
+    } catch (err: any) {
+      console.error('UserService.createUser error:', err);
+      throw err;
+    }
   }
 
   async loginUser(data: LoginUserDTO) {
