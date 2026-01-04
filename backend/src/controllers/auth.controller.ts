@@ -6,6 +6,7 @@ import z from 'zod';
 const userService = new UserService();
 
 function prettifyZodError(error: z.ZodError) {
+
   // Return a concise message joining all issue messages with their paths
   return error.issues.map((i) => `${i.path.join('.') || '<root>'}: ${i.message}`).join('; ');
 }
@@ -13,14 +14,11 @@ function prettifyZodError(error: z.ZodError) {
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
-      console.log('Register body:', req.body);
-      const parsed = CreateUserDTO.safeParse(req.body);
-      if (!parsed.success) {
-        console.error('Zod register issues:', parsed.error.issues);
-        // temporary: return full issues array to diagnose validation failure
-        return res.status(400).json({ success: false, issues: parsed.error.issues });
+      const parsedData = CreateUserDTO.safeParse(req.body);
+      if (!parsedData.success) {
+        return res.status(400).json({ success: false, message: prettifyZodError(parsedData.error) });
       }
-      const userData: CreateUserDTO = parsed.data;
+      const userData: CreateUserDTO = parsedData.data;
       const newUser = await userService.createUser(userData);
       return res.status(201).json({ success: true, message: 'User Created', data: newUser });
     } catch (error: any) {
