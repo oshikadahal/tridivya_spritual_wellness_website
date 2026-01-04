@@ -1,0 +1,34 @@
+{
+  "info": {
+    "name": "Tridivya Backend",
+    "_postman_id": "abcdefg-12345",
+    "description": "Simple collection for register/login",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"test@example.com\",\n  \"username\": \"testuser\",\n  \"password\": \"passpass\",\n  \"confirmPassword\": \"passpass\"\n}"
+        },
+        "url": { "raw": "http://localhost:5050/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "5050", "path": ["api", "auth", "register"] }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"passpass\"\n}"
+        },
+        "url": { "raw": "http://localhost:5050/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "5050", "path": ["api", "auth", "login"] }
+      }
+    }
+  ]
+}
