@@ -5,14 +5,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { RegisterData, registerSchema } from "../schema";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { handleRegister } from "@/lib/actions/auth-action";
 
 
 
 
 export default function RegisterForm() {
     const router = useRouter();
+    const [error, setError] = useState("");
     const {
         register,
         handleSubmit,
@@ -25,15 +27,27 @@ export default function RegisterForm() {
     const [pending, setTransition] = useTransition()
 
     const submit = async (values: RegisterData) => {
-        setTransition( async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            router.push("/login");
-        })
-        console.log("register", values);
+        setError("");
+        try {
+            const result = await handleRegister(values);
+            if (!result.success) {
+                throw new Error(result.message || "Registration failed");
+            }
+            setTransition(() => {
+                router.push("/login");
+            });
+        } catch (err: Error | any) {
+            setError(err.message || "Registration failed");
+        }
     };
 
     return (
         <form onSubmit={handleSubmit(submit)} className="space-y-3">
+            {error && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
+                    {error}
+                </div>
+            )}
             <div className="space-y-1">
                 <label className="text-sm font-semibold">Full Name</label>
                 <div className="relative">

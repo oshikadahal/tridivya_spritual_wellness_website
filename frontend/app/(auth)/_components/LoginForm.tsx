@@ -4,9 +4,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { startTransition, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LoginData, loginSchema } from "../schema";
+import { loginUser } from "@/lib/api/auth";
+import { handleLogin } from "@/lib/actions/auth-action";
+
 export default function LoginForm() {
     const router = useRouter();
     const {
@@ -18,18 +21,64 @@ export default function LoginForm() {
         mode: "onSubmit",
     });
     const [pending, setTransition] = useTransition()
+    const [error, setError] = useState<string | null>(null);
 
-    const submit = async (values: LoginData) => {
+    // const submit = async (values: LoginData) => {
+    //     setError("");
+    //     try {
+    //         const result = await loginUser(values);
+            
+    //         if (!result.success) {
+    //             throw new Error(result.message || "Login failed");
+    //         }
+
+    //         // Store the token in localStorage
+    //         if (result.token) {
+    //             localStorage.setItem("authToken", result.token);
+    //         }
+
+    //         // Redirect to dashboard/home
+    //         setTransition(() => {
+    //             router.push("/dashboard");
+    //         });
+    //     } catch (err: Error | any) {
+    //         setError(err.message || "Login failed");
+    //     }
+    // };
+
+        const submit = async (values: LoginData) => {
+        setError(null);
+
         // GOTO
         setTransition( async () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
             // router.push("/");
+        setTransition(async () => {
+            try {
+                const response = await handleLogin(values);
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                if (response.success) {
+                    router.push("/dashboard");
+                } else {
+                    setError('Login failed');
+                }
+            } catch (err: Error | any) {
+                setError(err.message || 'Login failed');
+            }
         })
         console.log("login", values);
-    };
-
+    });
+    }
+    
     return (
         <form onSubmit={handleSubmit(submit)} className="space-y-5">
+            {error && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
+                    {error}
+                </div>
+            )}
             <div className="space-y-1">
                 <label className="text-sm font-semibold">Email</label>
                 <div className="relative">
