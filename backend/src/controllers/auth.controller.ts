@@ -1,5 +1,5 @@
 ﻿import { UserService } from '../services/user.service';
-import { CreateUserDTO, LoginUserDTO } from '../dtos/user.dto';
+import { CreateUserDTO, LoginUserDTO , UpdateUserDto} from '../dtos/user.dto';
 import { Request, Response } from 'express';
 import z from 'zod';
 
@@ -40,4 +40,53 @@ export class AuthController {
       return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
     }
   }
+   async getProfile(req: Request, res: Response) {
+    try {
+      const userId = req.user ?._id;
+      if (!userId) {
+        return res.status (400) .json (
+          { success: false, message: 'User ID not found in request' }
+        );
+      }
+
+      const user = await userService .getUserById (userId);
+      return res.status(200).json (
+        { success: true, message: 'User profile fetched successfully', data: user }
+      )
+
+    } catch (error : Error | any ){
+      return res.status(error.statusCode ?? 500).json(
+        { success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
+
+  async updateProfile(req: Request, res: Response) {
+        try{
+            const userId = req.user?._id;
+            if(!userId){
+                return res.status(400).json(
+                    { success: false, message: "User Id Not found" }
+                );
+            }
+            const parsedData = UpdateUserDto.safeParse(req.body);
+            if (!parsedData.success) {
+                return res.status(400).json(
+                    { success: false, message: prettifyZodError(parsedData.error) }
+                );
+            }
+            if(req.file){
+                parsedData.data.imageUrl = `/uploads/${req.file.filename}`;
+            }
+            const updatedUser = await userService.updateUser(userId, parsedData.data);
+            return res.status(200).json(
+                { success: true, data: updatedUser, message: "User profile updated successfully" }
+            );
+        }catch(error: Error | any){
+            return res.status(error.statusCode || 500).json(
+                { success: false, message: error.message || "Internal Server Error" }
+            );
+        }
+    }
+
 }

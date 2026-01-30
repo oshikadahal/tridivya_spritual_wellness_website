@@ -3,6 +3,7 @@ import { PORT } from './config';
 import { connectDatabase } from './database/mongodb';
 import authRoutes from './routes/auth.route';
 import cors from 'cors';
+import path from 'path';
 
 const app = express();
 
@@ -14,6 +15,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+
+app.use('/uploads',express.static(path.join(__dirname,'../uploads'))); // serve static files from uploads folder
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
