@@ -7,14 +7,23 @@ const authController = new AuthController();
 const router = Router();
 
 router.post('/register', authController.register);
+router.post('/login', authController.login);
 
-router.put("/whoiam", authorizedMiddleware, uploads.single("image"), authController.updateProfile);
+// Get current user profile
+router.get('/profile', authorizedMiddleware, authController.getProfile);
+router.get('/whoami', authorizedMiddleware, authController.getProfile);
+
+// Upload profile picture
+router.put('/profile', authorizedMiddleware, uploads.single('profilePicture'), authController.uploadProfilePicture);
+router.put("/whoiam", authorizedMiddleware, uploads.single("profilePicture"), authController.uploadProfilePicture);
 router.put(
     "/update-profile",
     authorizedMiddleware,
-    uploads.single("image"),
-    authController.updateProfile
+    uploads.single("profilePicture"),
+    authController.uploadProfilePicture
 )
-router.post('/login', authController.login);
-router.get('/whoami', authorizedMiddleware, authController.getProfile);
+
+// PUT /api/auth/:id - Update user profile by ID with Multer
+router.put('/:id', authorizedMiddleware, uploads.single('imageUrl'), authController.updateProfile);
+
 export default router;

@@ -90,4 +90,18 @@ export class UserService {
         const updatedUser = await userRepository.updateUser(userId, data);
         return updatedUser;
     }
+
+  async getAllUsers() {
+    const users = await userRepository.getAllUsers();
+    return users;
+  }
+
+  async deleteUser(userId: string) {
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+    const deleted = await userRepository.deleteUser(userId);
+    return deleted;
+  }
 }

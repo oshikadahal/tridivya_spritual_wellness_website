@@ -1,13 +1,14 @@
 import multer from "multer";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import path from "path";
 import fs from "fs";
 
 // Ensure the uploads directory exists
-// __dirname is the directory of the current module
-const uploadDir = path.join(__dirname, "..", "..", "..", "uploads");
+const uploadDir = path.join(__dirname, '..', '..', 'uploads');
+console.log('Upload directory:', uploadDir);
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('Created uploads directory:', uploadDir);
 } 
 
 const storage = multer.diskStorage({
@@ -15,7 +16,7 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = uuidv4();
+        const uniqueSuffix = randomUUID();
         const extension = path.extname(file.originalname);
         cb(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
     }

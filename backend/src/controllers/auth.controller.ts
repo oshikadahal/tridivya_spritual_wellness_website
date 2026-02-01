@@ -89,4 +89,57 @@ export class AuthController {
         }
     }
 
+  async uploadProfilePicture(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.status(400).json(
+          { success: false, message: "User ID not found" }
+        );
+      }
+
+      // Check if file exists
+      if (!req.file) {
+        return res.status(400).json(
+          { success: false, message: "No file uploaded" }
+        );
+      }
+
+      // Validate file type
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedMimeTypes.includes(req.file.mimetype)) {
+        return res.status(400).json(
+          { success: false, message: "Only JPG, JPEG, and PNG files are allowed" }
+        );
+      }
+
+      // Validate file size (max 5MB)
+      const maxFileSize = 5 * 1024 * 1024; // 5MB
+      if (req.file.size > maxFileSize) {
+        return res.status(400).json(
+          { success: false, message: "File size must be less than 5MB" }
+        );
+      }
+
+      // Update user with new profile picture
+      const profilePictureUrl = `/uploads/${req.file.filename}`;
+      const updatedUser = await userService.updateUser(userId, {
+        imageUrl: profilePictureUrl
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile picture uploaded successfully",
+        data: {
+          ...updatedUser,
+          profilePictureUrl: profilePictureUrl
+        }
+      });
+    } catch (error: Error | any) {
+      return res.status(error.statusCode || 500).json(
+        { success: false, message: error.message || "Internal Server Error" }
+      );
+    }
+  }
+
 }
