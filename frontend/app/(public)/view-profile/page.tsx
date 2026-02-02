@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getUserData, getAuthToken } from "@/lib/cookie";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import axiosInstance from "@/lib/api/axios";
 
 interface UserData {
   _id: string;
@@ -15,24 +16,38 @@ interface UserData {
 }
 
 export default function ProfilePage() {
-  const { user: authUser, isAuthenticated } = useAuth();
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        if (isAuthenticated && authUser) {
-          setUser(authUser as any);
+        const token = await getAuthToken();
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await axiosInstance.get("/api/auth/whoami", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success) {
+          setUser(response.data.data);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        // Fallback to cookie data if API fails
+        const userData = await getUserData();
+        setUser(userData);
       } finally {
         setLoading(false);
       }
     };
     loadUserData();
-  }, [isAuthenticated, authUser]);
+  }, []);
 
   if (loading) {
     return (
@@ -106,8 +121,31 @@ export default function ProfilePage() {
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file || !user) return;
-                  // File upload functionality disabled in public profile
-                  alert("Please login to update your profile picture");
+
+                  try {
+                    const token = await getAuthToken();
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    const response = await axiosInstance.put(
+                      "/api/auth/update-profile",
+                      formData,
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "multipart/form-data",
+                        },
+                      }
+                    );
+
+                    if (response.data.success) {
+                      setUser(response.data.data);
+                      alert("Profile picture updated successfully!");
+                    }
+                  } catch (error: any) {
+                    console.error("Error uploading image:", error);
+                    alert(error.response?.data?.message || "Failed to upload image");
+                  }
                 }}
               />
             </label>

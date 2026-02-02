@@ -16,8 +16,8 @@ export default function Sidebar() {
     };
 
     return (
-        <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-gray-900 text-white border-r border-gray-800">
-            <div className="flex h-16 items-center gap-3 border-b border-gray-800 px-6">
+        <aside className="flex-shrink-0 w-64 bg-gray-900 text-white border-r border-gray-800 overflow-y-auto">
+            <div className="flex h-16 items-center gap-3 border-b border-gray-800 px-6 flex-shrink-0">
                 <span className="text-lg font-bold">Tridivya Admin</span>
             </div>
             <nav className="space-y-2 p-6">

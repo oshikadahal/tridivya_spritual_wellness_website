@@ -9,6 +9,13 @@ export const getAllUsers = async () => {
         const response = await axios.get(API.ADMIN.USERS);
         return response.data;
     } catch (err: Error | any) {
+        console.error("getAllUsers error details:", {
+            message: err.message,
+            response: err.response?.data,
+            status: err.response?.status,
+            url: err.config?.url,
+            baseURL: err.config?.baseURL
+        });
         throw new Error(
             err.response?.data?.message
             || err.message

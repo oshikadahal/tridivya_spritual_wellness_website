@@ -20,57 +20,27 @@ export default function LoginForm() {
         resolver: zodResolver(loginSchema),
         mode: "onSubmit",
     });
-    const [pending, setTransition] = useTransition()
     const [error, setError] = useState<string | null>(null);
 
-    // const submit = async (values: LoginData) => {
-    //     setError("");
-    //     try {
-    //         const result = await loginUser(values);
-            
-    //         if (!result.success) {
-    //             throw new Error(result.message || "Login failed");
-    //         }
-
-    //         // Store the token in localStorage
-    //         if (result.token) {
-    //             localStorage.setItem("authToken", result.token);
-    //         }
-
-    //         // Redirect to dashboard/home
-    //         setTransition(() => {
-    //             router.push("/dashboard");
-    //         });
-    //     } catch (err: Error | any) {
-    //         setError(err.message || "Login failed");
-    //     }
-    // };
-
-        const submit = async (values: LoginData) => {
+    const submit = async (values: LoginData) => {
         setError(null);
-
-        // GOTO
-        setTransition( async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            // router.push("/");
-        setTransition(async () => {
-            try {
-                const response = await handleLogin(values);
-                if (!response.success) {
-                    throw new Error(response.message);
-                }
-                if (response.success) {
-                    router.push("/dashboard");
-                } else {
-                    setError('Login failed');
-                }
-            } catch (err: Error | any) {
-                setError(err.message || 'Login failed');
+        try {
+            const response = await handleLogin(values);
+            if (!response.success) {
+                setError(response.message || 'Login failed');
+                return;
             }
-        })
-        console.log("login", values);
-    });
-    }
+            
+            // Redirect based on user role
+            const redirectUrl = response.data?.role === 'admin' 
+                ? '/admin/dashboard' 
+                : '/dashboard';
+            
+            window.location.href = redirectUrl;
+        } catch (err: Error | any) {
+            setError(err.message || 'Login failed');
+        }
+    };
     
     return (
         <form onSubmit={handleSubmit(submit)} className="space-y-5">
@@ -125,10 +95,10 @@ export default function LoginForm() {
 
             <button
                 type="submit"
-                disabled={isSubmitting || pending}
+                disabled={isSubmitting}
                 className="h-11 w-full rounded-full bg-linear-to-r from-cyan-400 to-blue-500 text-black text-sm font-semibold shadow-md disabled:opacity-60"
             >
-                { isSubmitting || pending ? "Logging in..." : "Log In"}
+                {isSubmitting ? "Logging in..." : "Log In"}
             </button>
 
             <div className="flex items-center gap-4">

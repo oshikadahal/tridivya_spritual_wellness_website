@@ -14,8 +14,8 @@ export default function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-50 backdrop-blur supports-backdrop-filter:bg-background/80 border-b border-black/10">
-            <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Global">
+        <header className="flex-shrink-0 bg-white border-b border-gray-200 shadow-sm">
+            <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                     {/* Left: Logo & Title */}
                     <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ export default function Header() {
                         </button>
                     </div>
                 </div>
-            </nav>
+            </div>
         </header>
     );
 }
