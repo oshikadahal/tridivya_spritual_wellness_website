@@ -1,47 +1,60 @@
 //backend api call only
 
-import axios from "./axios"; // important axios instanceeeeeeeeeeeeeeee
-import {API} from "./endpoints";
+import axios from "./axios";
+import { API } from "./endpoints";
+import { getAuthToken } from "../cookie";
 
-export const registerUser = async (registerDate: any) => {
-    try{
-        const response = await axios.post (
-            API.AUTH.REGISTER, // backend route path
-            registerDate   // data to send to bakend 
+export const registerUser = async (registerData: any) => {
+    try {
+        const response = await axios.post(
+            API.AUTH.REGISTER,
+            registerData
         );
-
-        return response.data; // response ko body
-        //what is returned from backend -controller
-
+        return response.data;
     } catch (err: Error | any) {
-        //if 4xx or 5xx counts as  error
-        throw new Error 
-        (
-            err.response ?.data?.message // from backend
-            || err.message // general error message 
+        throw new Error(
+            err.response?.data?.message
+            || err.message
             || "Registration failed"
         );
-
     }
 }
 
 export const loginUser = async (loginData: any) => {
     try {
         const response = await axios.post(
-            API.AUTH.LOGIN, // backend route path
-            loginData   // data to send to backend 
+            API.AUTH.LOGIN,
+            loginData
         );
-
-        return response.data; // response from backend
-        //includes success, message, data (user), and token
-
+        return response.data;
     } catch (err: Error | any) {
-        //if 4xx or 5xx counts as error
         throw new Error(
-            err.response?.data?.message // from backend
-            || err.message // general error message 
+            err.response?.data?.message
+            || err.message
             || "Login failed"
         );
     }
 }
 
+export const updateProfile = async (profileData: FormData) => {
+    try {
+        const token = await getAuthToken();
+        const response = await axios.put(
+            '/api/auth/update-profile',
+            profileData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data;
+    } catch (error: Error | any) {
+        throw new Error(
+            error.response?.data?.message
+            || error.message
+            || 'Update profile failed'
+        );
+    }
+}

@@ -69,7 +69,7 @@ export default function ProfilePage() {
   const profileImage = user.imageUrl ? `http://localhost:5050${user.imageUrl}` : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -96,7 +96,7 @@ export default function ProfilePage() {
                 className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-gray-200"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-200 to-blue-300 mb-4 flex items-center justify-center border-4 border-gray-200">
+              <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-200 to-blue-300 mb-4 flex items-center justify-center border-4 border-gray-200">
                 <span className="text-3xl font-bold text-blue-600">
                   {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                 </span>
@@ -204,9 +204,9 @@ export default function ProfilePage() {
         <div className="bg-white rounded-xl shadow-sm p-8">
           <h3 className="text-lg font-bold mb-4">Saved Sessions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-teal-200 to-teal-300 rounded-lg h-32"></div>
-            <div className="bg-gradient-to-br from-blue-200 to-blue-300 rounded-lg h-32"></div>
-            <div className="bg-gradient-to-br from-orange-200 to-orange-300 rounded-lg h-32"></div>
+            <div className="bg-linear-to-br from-teal-200 to-teal-300 rounded-lg h-32"></div>
+            <div className="bg-linear-to-br from-blue-200 to-blue-300 rounded-lg h-32"></div>
+            <div className="bg-linear-to-br from-orange-200 to-orange-300 rounded-lg h-32"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2 text-sm text-gray-600">
             <p>Morning Yoga Flow</p>
