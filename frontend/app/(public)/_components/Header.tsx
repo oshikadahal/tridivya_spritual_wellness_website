@@ -20,16 +20,16 @@ export default function Header() {
     const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname?.startsWith(href));
 
     return (
-        <header className="sticky top-0 z-50 bg-black text-white shadow-md">
+        <header className="sticky top-0 z-50 bg-white text-slate-900 shadow-md">
             <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Global">
                 <div className="flex h-16 items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] w-full">
                     {/* Left: Logo */}
                     <div className="flex items-center gap-3">
                         <Link href="/" className="flex items-center gap-3 group">
-                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-white/6 text-white font-semibold">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5 text-cyan-400" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M12 3s-4 3-6 6c2 1 6 2 6 6 0-4 4-5 6-6-2-3-6-6-6-6z" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-indigo-100 text-indigo-600 font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M12 3s-4 3-6 6c2 1 6 2 6 6 0-4 4-5 6-6-2-3-6-6-6-6z" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             </span>
-                            <span className="text-base font-semibold tracking-tight group-hover:opacity-90 transition-opacity">
+                            <span className="text-base font-semibold tracking-tight group-hover:opacity-80 transition-opacity text-slate-900">
                                 Tridivya Wellness
                             </span>
                         </Link>
@@ -42,8 +42,8 @@ export default function Header() {
                                 key={link.href}
                                 href={link.href}
                                 className={
-                                    "text-sm font-medium transition-colors hover:opacity-90 " +
-                                    (isActive(link.href) ? "text-white font-semibold" : "text-white/70")
+                                    "text-sm font-medium transition-colors hover:opacity-80 " +
+                                    (isActive(link.href) ? "text-slate-900 font-semibold" : "text-slate-600")
                                 }
                             >
                                 {link.label}
@@ -55,11 +55,11 @@ export default function Header() {
                     <div className="flex items-center gap-2 md:justify-self-end">
                         <div className="hidden md:block mr-4">
                             <div className="relative">
-                                <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 <input
                                     type="search"
                                     placeholder="Search sessions..."
-                                    className="h-9 w-56 rounded-full bg-white/6 border border-white/8 px-10 text-sm placeholder-white/60 text-white outline-none focus:ring-2 focus:ring-cyan-500"
+                                    className="h-9 w-56 rounded-full bg-slate-100 border border-slate-200 px-10 text-sm placeholder-slate-500 text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
                         </div> 
@@ -67,13 +67,13 @@ export default function Header() {
                         <div className="hidden sm:flex items-center gap-2">
                             <Link
                                 href="/login"
-                                className="h-9 px-3 inline-flex items-center justify-center rounded-md border border-white/12 text-sm font-medium hover:bg-white/6 transition-colors"
+                                className="h-9 px-3 inline-flex items-center justify-center rounded-md border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-100 transition-colors"
                             >
                                 Log in
                             </Link>
                             <Link
                                 href="/register"
-                                className="h-9 px-3 inline-flex items-center justify-center rounded-md bg-cyan-400 text-black text-sm font-semibold hover:opacity-90 transition-opacity"
+                                className="h-9 px-3 inline-flex items-center justify-center rounded-md bg-indigo-500 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
                             >
                                 Sign up
                             </Link>

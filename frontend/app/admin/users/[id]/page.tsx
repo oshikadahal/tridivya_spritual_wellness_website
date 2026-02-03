@@ -45,7 +45,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
         <div className="mb-4 text-red-600">{error}</div>
         <Link
           href="/admin/users"
-          className="inline-flex items-center gap-2 text-cyan-700 hover:underline"
+          className="inline-flex items-center gap-2 text-indigo-600 hover:underline"
         >
           <ArrowLeft size={16} /> Back to Users
         </Link>
@@ -57,30 +57,30 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
     <div className="space-y-6">
       <Link
         href="/admin/users"
-        className="inline-flex items-center gap-2 text-cyan-700 hover:underline"
+        className="inline-flex items-center gap-2 text-indigo-600 hover:underline"
       >
         <ArrowLeft size={16} /> Back to Users
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="flex items-center gap-5">
             <img
               src={resolveImageUrl(user?.imageUrl)}
               alt={`${user?.firstName || ""} ${user?.lastName || ""}`}
-              className="w-24 h-24 rounded-full object-cover border-2 border-cyan-600"
+              className="w-24 h-24 rounded-full object-cover border-2 border-indigo-500"
             />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-slate-900">
                 {user?.firstName} {user?.lastName}
               </h1>
-              <p className="text-sm text-gray-500">User ID: {user?._id}</p>
+              <p className="text-sm text-slate-500">User ID: {user?._id}</p>
             </div>
           </div>
 
           <Link
             href={`/admin/users/${resolvedParams.id}/edit`}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
           >
             <Pencil size={16} /> Edit User
           </Link>
@@ -88,29 +88,29 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <div className="flex items-center gap-3">
-            <UserIcon className="text-gray-400" size={20} />
+            <UserIcon className="text-indigo-400" size={20} />
             <div>
-              <p className="text-sm text-gray-500">Username</p>
-              <p className="text-gray-900 font-medium">{user?.username || "-"}</p>
+              <p className="text-sm text-slate-500">Username</p>
+              <p className="text-slate-900 font-medium">{user?.username || "-"}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Mail className="text-gray-400" size={20} />
+            <Mail className="text-indigo-400" size={20} />
             <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="text-gray-900 font-medium">{user?.email}</p>
+              <p className="text-sm text-slate-500">Email</p>
+              <p className="text-slate-900 font-medium">{user?.email}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Shield className="text-gray-400" size={20} />
+            <Shield className="text-indigo-400" size={20} />
             <div>
-              <p className="text-sm text-gray-500">Role</p>
+              <p className="text-sm text-slate-500">Role</p>
               <span
                 className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
                   user?.role === "admin"
-                    ? "bg-purple-100 text-purple-800"
+                    ? "bg-indigo-100 text-indigo-800"
                     : "bg-green-100 text-green-800"
                 }`}
               >

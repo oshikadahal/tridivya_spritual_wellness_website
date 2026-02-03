@@ -106,16 +106,16 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     <div className="space-y-6">
       <Link
         href="/admin/users"
-        className="inline-flex items-center gap-2 text-cyan-700 hover:underline"
+        className="inline-flex items-center gap-2 text-indigo-600 hover:underline"
       >
         <ArrowLeft size={16} /> Back to Users
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit User</h1>
-            <p className="text-sm text-gray-500">ID: {resolvedParams.id}</p>
+            <h1 className="text-2xl font-bold text-slate-900">Edit User</h1>
+            <p className="text-sm text-slate-500">ID: {resolvedParams.id}</p>
           </div>
         </div>
 
@@ -136,9 +136,9 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             <img
               src={imagePreview || "/default-profile.png"}
               alt="Profile"
-              className="w-20 h-20 rounded-full object-cover border border-gray-200"
+              className="w-20 h-20 rounded-full object-cover border border-slate-200"
             />
-            <label className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50">
               <Upload size={16} /> Upload New Photo
               <input
                 type="file"
@@ -151,59 +151,59 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
               <input
                 type="text"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
               <input
                 type="text"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Username *</label>
               <input
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Role *</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
@@ -213,7 +213,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 New Password (leave empty to keep current)
               </label>
               <input
@@ -221,18 +221,18 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
               <input
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-lg"
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -241,13 +241,13 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-60"
+              className="px-6 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-60"
             >
               {loading ? "Updating..." : "Update User"}
             </button>
             <Link
               href="/admin/users"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
             >
               Cancel
             </Link>

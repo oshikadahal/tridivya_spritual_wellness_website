@@ -16,9 +16,10 @@ export default function Sidebar() {
     };
 
     return (
-        <aside className="flex-shrink-0 w-64 bg-gray-900 text-white border-r border-gray-800 overflow-y-auto">
-            <div className="flex h-16 items-center gap-3 border-b border-gray-800 px-6 flex-shrink-0">
-                <span className="text-lg font-bold">Tridivya Admin</span>
+        <aside className="flex-shrink-0 w-64 bg-slate-50 text-slate-900 border-r border-slate-200 overflow-y-auto">
+            <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-6 flex-shrink-0">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-indigo-100 text-indigo-600 font-bold text-sm">A</span>
+                <span className="text-lg font-bold text-slate-900">Admin</span>
             </div>
             <nav className="space-y-2 p-6">
                 {ADMIN_LINKS.map((link) => (
@@ -27,8 +28,8 @@ export default function Sidebar() {
                         href={link.href}
                         className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
                             isActive(link.href)
-                                ? "bg-cyan-600 text-white"
-                                : "text-gray-300 hover:bg-gray-800"
+                                ? "bg-indigo-500 text-white shadow-md"
+                                : "text-slate-700 hover:bg-slate-100"
                         }`}
                     >
                         <span>{link.icon}</span>
