@@ -4,7 +4,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { handleUpdateProfile } from "@/lib/actions/auth-action";
+import { deleteUserProfilePicture } from "@/lib/api/auth";
 import { toast } from "react-toastify";
+import { Trash2, Camera } from "lucide-react";
 
 export default function UserProfile() {
     const { user, isAuthenticated, loading, setUser } = useAuth();
@@ -58,6 +60,26 @@ export default function UserProfile() {
                 setImagePreview(reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleDeleteProfilePicture = async () => {
+        if (!confirm("Are you sure you want to delete your profile picture?")) return;
+
+        try {
+            setSaving(true);
+            const result = await deleteUserProfilePicture();
+            if (result.success) {
+                setImagePreview(null);
+                setUser(result.data);
+                toast.success("Profile picture deleted successfully");
+            } else {
+                toast.error(result.message || "Failed to delete profile picture");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Failed to delete profile picture");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -140,58 +162,76 @@ export default function UserProfile() {
                     // View Mode
                     <div className="space-y-6">
                         {/* Profile Picture */}
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-start gap-6">
                             <div className="relative">
                                 {imagePreview ? (
-                                    <img
-                                        src={imagePreview}
-                                        alt={user.firstName}
-                                        className="w-24 h-24 rounded-full object-cover border-2 border-cyan-500"
-                                    />
+                                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden border-4 border-slate-200">
+                                        <img
+                                            src={imagePreview}
+                                            alt={user.firstName}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 ) : (
-                                    <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 border-2 border-gray-300">
-                                        👤
+                                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-slate-200">
+                                        {user.firstName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
                                     </div>
                                 )}
                             </div>
-                            <div>
-                                <p className="text-lg font-semibold text-gray-900">
+                            <div className="flex-1">
+                                <p className="text-2xl font-bold text-slate-900">
                                     {user.firstName} {user.lastName}
                                 </p>
-                                <p className="text-sm text-gray-600">{user.email}</p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Role: <span className="font-semibold">{user.role === "admin" ? "🛡️ Admin" : "👤 User"}</span>
-                                </p>
+                                <p className="text-slate-600">@{user.username}</p>
+                                <p className="text-slate-500 text-sm mt-2">{user.email}</p>
+                                <div className="mt-4 flex items-center gap-2">
+                                    <span className="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                        {user.role === "admin" ? "🛡️ Admin" : "👤 User"}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         {/* User Info Grid */}
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <label className="text-xs font-semibold text-gray-600 uppercase">First Name</label>
-                                <p className="text-lg text-gray-900 font-medium mt-1">{user.firstName}</p>
+                            <div className="bg-slate-50 rounded-lg p-4">
+                                <label className="text-xs font-semibold text-slate-600 uppercase">First Name</label>
+                                <p className="text-lg text-slate-900 font-medium mt-1">{user.firstName || "-"}</p>
                             </div>
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <label className="text-xs font-semibold text-gray-600 uppercase">Last Name</label>
-                                <p className="text-lg text-gray-900 font-medium mt-1">{user.lastName}</p>
+                            <div className="bg-slate-50 rounded-lg p-4">
+                                <label className="text-xs font-semibold text-slate-600 uppercase">Last Name</label>
+                                <p className="text-lg text-slate-900 font-medium mt-1">{user.lastName || "-"}</p>
                             </div>
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <label className="text-xs font-semibold text-gray-600 uppercase">Email</label>
-                                <p className="text-lg text-gray-900 font-medium mt-1">{user.email}</p>
+                            <div className="bg-slate-50 rounded-lg p-4">
+                                <label className="text-xs font-semibold text-slate-600 uppercase">Email</label>
+                                <p className="text-lg text-slate-900 font-medium mt-1">{user.email}</p>
                             </div>
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <label className="text-xs font-semibold text-gray-600 uppercase">Username</label>
-                                <p className="text-lg text-gray-900 font-medium mt-1">{user.username}</p>
+                            <div className="bg-slate-50 rounded-lg p-4">
+                                <label className="text-xs font-semibold text-slate-600 uppercase">Username</label>
+                                <p className="text-lg text-slate-900 font-medium mt-1">{user.username}</p>
                             </div>
                         </div>
 
-                        {/* Edit Button */}
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="w-full px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium"
-                        >
-                            ✏️ Edit Profile
-                        </button>
+                        {/* Edit and Delete Buttons */}
+                        <div className="flex gap-3 pt-4">
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2"
+                            >
+                                <Camera size={20} />
+                                Edit Profile
+                            </button>
+                            {imagePreview && (
+                                <button
+                                    onClick={handleDeleteProfilePicture}
+                                    disabled={saving}
+                                    className="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    <Trash2 size={20} />
+                                    Delete Photo
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ) : (
                     // Edit Mode

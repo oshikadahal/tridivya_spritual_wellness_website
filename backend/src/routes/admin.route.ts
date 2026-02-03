@@ -26,4 +26,14 @@ router.put('/users/:id', uploads.single('imageUrl'), adminUserController.updateU
 // DELETE /api/admin/users/:id - Delete user
 router.delete('/users/:id', adminUserController.deleteUser);
 
+// Profile Routes - Admin Profile Management
+// GET /api/admin/profile - Get current admin profile
+router.get('/profile', adminUserController.getAdminProfile);
+
+// PUT /api/admin/profile - Update admin profile with image upload
+router.put('/profile', uploads.single('imageUrl'), adminUserController.updateAdminProfile);
+
+// DELETE /api/admin/profile/picture - Delete admin profile picture
+router.delete('/profile/picture', adminUserController.deleteAdminProfilePicture);
+
 export default router;

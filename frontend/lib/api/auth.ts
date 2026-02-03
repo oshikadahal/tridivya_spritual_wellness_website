@@ -58,3 +58,71 @@ export const updateProfile = async (profileData: FormData) => {
         );
     }
 }
+
+// GET user profile
+export const getUserProfile = async () => {
+    try {
+        const token = await getAuthToken();
+        const response = await axios.get(
+            API.AUTH.GET_PROFILE,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data;
+    } catch (error: Error | any) {
+        throw new Error(
+            error.response?.data?.message
+            || error.message
+            || 'Failed to fetch profile'
+        );
+    }
+}
+
+// UPDATE user profile with image
+export const updateUserProfile = async (profileData: FormData) => {
+    try {
+        const token = await getAuthToken();
+        const response = await axios.put(
+            API.AUTH.UPDATE_PROFILE_PICTURE,
+            profileData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data;
+    } catch (error: Error | any) {
+        throw new Error(
+            error.response?.data?.message
+            || error.message
+            || 'Failed to update profile'
+        );
+    }
+}
+
+// DELETE user profile picture
+export const deleteUserProfilePicture = async () => {
+    try {
+        const token = await getAuthToken();
+        const response = await axios.delete(
+            API.AUTH.DELETE_PROFILE_PICTURE,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data;
+    } catch (error: Error | any) {
+        throw new Error(
+            error.response?.data?.message
+            || error.message
+            || 'Failed to delete profile picture'
+        );
+    }
+}

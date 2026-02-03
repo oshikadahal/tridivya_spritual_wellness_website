@@ -142,4 +142,30 @@ export class AuthController {
     }
   }
 
+  async deleteProfilePicture(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.status(400).json(
+          { success: false, message: "User ID not found" }
+        );
+      }
+
+      // Update user with empty image URL
+      const updatedUser = await userService.updateUser(userId, {
+        imageUrl: ""
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile picture deleted successfully",
+        data: updatedUser
+      });
+    } catch (error: Error | any) {
+      return res.status(error.statusCode || 500).json(
+        { success: false, message: error.message || "Internal Server Error" }
+      );
+    }
+  }
+
 }

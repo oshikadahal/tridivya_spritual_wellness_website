@@ -26,4 +26,7 @@ router.put(
 // PUT /api/auth/:id - Update user profile by ID with Multer
 router.put('/:id', authorizedMiddleware, uploads.single('imageUrl'), authController.updateProfile);
 
+// DELETE /api/auth/profile/picture - Delete user profile picture
+router.delete('/profile/picture', authorizedMiddleware, authController.deleteProfilePicture);
+
 export default router;

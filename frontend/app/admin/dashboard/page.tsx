@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getAllUsers } from "@/lib/api/admin";
 import { useAuth } from "@/context/AuthContext";
 import { Users, TrendingUp, Activity, BarChart3, UserPlus } from "lucide-react";
+import AdminProfile from "@/app/admin/_components/AdminProfile";
 
 interface DashboardStats {
     totalUsers: number;
@@ -50,6 +51,9 @@ export default function AdminDashboard() {
                 <h1 className="text-4xl font-bold text-slate-900">Admin Overview</h1>
                 <p className="text-slate-600 mt-2">Welcome back! Here's your wellness platform overview.</p>
             </div>
+
+            {/* Admin Profile Section */}
+            <AdminProfile />
 
             {/* Stats Grid - 4 Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -103,7 +103,7 @@ export default function Home() {
   return (
     <main className={`min-h-screen ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
       {/* Hero Section */}
-      <section className={`px-4 sm:px-6 lg:px-8 pt-16 pb-10 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
+      <section className={`px-4 sm:px-6 lg:px-8 pt-16 pb-12 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
         <div className="max-w-6xl mx-auto text-center">
           <h1 className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
             Your Journey to <span className="text-amber-500">Inner Peace</span>
@@ -126,7 +126,7 @@ export default function Home() {
       </section>
 
       {/* Trending Meditations */}
-      <section className={`px-4 sm:px-6 lg:px-8 py-10 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
+      <section className={`px-4 sm:px-6 lg:px-8 py-12 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
@@ -169,7 +169,7 @@ export default function Home() {
       </section>
 
       {/* Yoga for Every Level */}
-      <section className={`px-4 sm:px-6 lg:px-8 pb-14 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
+      <section className={`px-4 sm:px-6 lg:px-8 pb-16 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
@@ -232,19 +232,55 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Guided Mantras */}
+      <section className={`px-4 sm:px-6 lg:px-8 pb-16 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl sm:text-2xl font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                Guided Mantras
+              </h2>
+              <p className={`text-xs mt-1 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                Chant along to calm your thoughts and center your energy
+              </p>
+            </div>
+            <Link href="/mantra" className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">
+              Explore →
+            </Link>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+            {["Om Harmony", "So Hum Flow", "Shanti Peace"].map((title) => (
+              <div
+                key={title}
+                className={`rounded-2xl border p-5 shadow-sm ${isDark ? "bg-slate-800 border-slate-700" : "bg-white/90 border-white"}`}
+              >
+                <div className={`h-32 rounded-xl ${isDark ? "bg-slate-700" : "bg-[#E3E8FF]"}`} />
+                <h3 className={`mt-4 text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                  {title}
+                </h3>
+                <p className={`mt-1 text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                  8 min · Calming breath · Guided chant
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className={`px-4 sm:px-6 lg:px-8 pb-10 ${isDark ? "bg-slate-900" : "bg-[#CAD3FF]"}`}>
-        <div className="max-w-6xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs">
-          <div className={`${isDark ? "text-slate-400" : "text-slate-600"}`}>
+      <footer className="px-4 sm:px-6 lg:px-8 pb-10 bg-white border-t border-slate-200">
+        <div className="max-w-6xl mx-auto flex flex-col items-center text-center gap-4 text-xs">
+          <div className="text-black">
             Tridivya
           </div>
-          <div className={`flex items-center gap-5 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+          <div className="flex flex-wrap justify-center items-center gap-5 text-slate-700">
             <Link href="/about" className="hover:text-indigo-600">About Us</Link>
             <Link href="/yoga" className="hover:text-indigo-600">Yoga</Link>
             <Link href="/meditation" className="hover:text-indigo-600">Meditation</Link>
             <Link href="/mantra" className="hover:text-indigo-600">Mantras</Link>
           </div>
-          <div className={`${isDark ? "text-slate-500" : "text-slate-500"}`}>
+          <div className="text-slate-600">
             © 2026 Tridivya Wellness
           </div>
         </div>

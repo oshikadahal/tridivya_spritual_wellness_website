@@ -87,4 +87,58 @@ export class AdminUserController {
       return res.status(error.statusCode || 500).json({ success: false, message: error.message || "Internal Server Error" });
     }
   }
+
+  // GET /api/admin/profile - Get current admin profile
+  async getAdminProfile(req: Request, res: Response) {
+    try {
+      const userId = (req as any).userId; // Set by authorization middleware
+      if (!userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+      const user = await userService.getUserById(userId);
+      return res.status(200).json({ success: true, message: 'Profile fetched successfully', data: user });
+    } catch (error: any) {
+      return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
+  // PUT /api/admin/profile - Update admin profile
+  async updateAdminProfile(req: Request, res: Response) {
+    try {
+      const userId = (req as any).userId; // Set by authorization middleware
+      if (!userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const parsedData = UpdateUserDto.safeParse(req.body);
+      if (!parsedData.success) {
+        return res.status(400).json({ success: false, message: prettifyZodError(parsedData.error) });
+      }
+
+      // Add image if uploaded
+      if (req.file) {
+        parsedData.data.imageUrl = `/uploads/${req.file.filename}`;
+      }
+
+      const updatedUser = await userService.updateUser(userId, parsedData.data);
+      return res.status(200).json({ success: true, data: updatedUser, message: 'Profile updated successfully' });
+    } catch (error: any) {
+      return res.status(error.statusCode || 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
+  // DELETE /api/admin/profile/picture - Delete admin profile picture
+  async deleteAdminProfilePicture(req: Request, res: Response) {
+    try {
+      const userId = (req as any).userId; // Set by authorization middleware
+      if (!userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const updatedUser = await userService.updateUser(userId, { imageUrl: "" });
+      return res.status(200).json({ success: true, data: updatedUser, message: 'Profile picture deleted successfully' });
+    } catch (error: any) {
+      return res.status(error.statusCode || 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
 }

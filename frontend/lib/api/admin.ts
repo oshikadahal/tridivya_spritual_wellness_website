@@ -141,3 +141,62 @@ export const updateProfile = async (id: string, userData: FormData) => {
         );
     }
 }
+
+// GET admin profile
+export const getAdminProfile = async () => {
+    try {
+        const response = await axios.get(API.ADMIN.GET_PROFILE, {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to fetch admin profile"
+        );
+    }
+}
+
+// UPDATE admin profile with image
+export const updateAdminProfile = async (profileData: FormData) => {
+    try {
+        const response = await axios.put(
+            API.ADMIN.UPDATE_PROFILE,
+            profileData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    ...getAuthHeaders(),
+                }
+            }
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to update admin profile"
+        );
+    }
+}
+
+// DELETE admin profile picture
+export const deleteAdminProfilePicture = async () => {
+    try {
+        const response = await axios.delete(API.ADMIN.DELETE_PROFILE_PICTURE, {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to delete profile picture"
+        );
+    }
+}
