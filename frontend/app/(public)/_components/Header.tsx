@@ -80,14 +80,14 @@ export default function Header() {
                                     )}
                                     <Link
                                         href="/my-profile"
-                                        className="h-10 px-4 inline-flex items-center justify-center rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors flex gap-2"
+                                        className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors"
                                     >
                                         <User size={16} />
                                         Profile
                                     </Link>
                                     <button
                                         onClick={logout}
-                                        className="h-10 px-4 inline-flex items-center justify-center rounded-md bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors flex gap-2"
+                                        className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors"
                                     >
                                         <LogOut size={16} />
                                         Logout
@@ -170,7 +170,7 @@ export default function Header() {
                                         )}
                                         <Link
                                             href="/my-profile"
-                                            className="h-10 px-4 inline-flex items-center justify-center rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors flex gap-2 justify-center"
+                                            className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors"
                                             onClick={() => setOpen(false)}
                                         >
                                             <User size={16} />
@@ -181,7 +181,7 @@ export default function Header() {
                                                 logout();
                                                 setOpen(false);
                                             }}
-                                            className="h-10 px-4 w-full inline-flex items-center justify-center rounded-md bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors flex gap-2"
+                                            className="h-10 px-4 w-full inline-flex items-center justify-center gap-2 rounded-md bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors"
                                         >
                                             <LogOut size={16} />
                                             Logout

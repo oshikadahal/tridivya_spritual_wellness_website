@@ -13,14 +13,14 @@ router.post('/login', authController.login);
 router.get('/profile', authorizedMiddleware, authController.getProfile);
 router.get('/whoami', authorizedMiddleware, authController.getProfile);
 
-// Upload profile picture
-router.put('/profile', authorizedMiddleware, uploads.single('profilePicture'), authController.uploadProfilePicture);
-router.put("/whoiam", authorizedMiddleware, uploads.single("profilePicture"), authController.uploadProfilePicture);
+// Upload profile picture - accepts imageUrl field from frontend
+router.put('/profile', authorizedMiddleware, uploads.single('imageUrl'), authController.updateProfile);
+router.put("/whoiam", authorizedMiddleware, uploads.single("imageUrl"), authController.updateProfile);
 router.put(
     "/update-profile",
     authorizedMiddleware,
-    uploads.single("profilePicture"),
-    authController.uploadProfilePicture
+    uploads.single("imageUrl"),
+    authController.updateProfile
 )
 
 // PUT /api/auth/:id - Update user profile by ID with Multer
