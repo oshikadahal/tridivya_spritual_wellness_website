@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, User } from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 
 const NAV_LINKS = [
     { href: "/", label: "Home" },
@@ -18,6 +18,7 @@ const NAV_LINKS = [
 export default function Header() {
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
     const { user, isAuthenticated, logout } = useAuth();
 
     const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname?.startsWith(href));
@@ -67,9 +68,9 @@ export default function Header() {
                             </div>
                         </div> 
 
-                        <div className="hidden sm:flex items-center gap-2">
+                        <div className="hidden sm:flex items-center gap-3">
                             {isAuthenticated && user ? (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                     {user.role === "admin" && (
                                         <Link
                                             href="/admin/dashboard"
@@ -78,20 +79,50 @@ export default function Header() {
                                             Admin Panel
                                         </Link>
                                     )}
-                                    <Link
-                                        href="/my-profile"
-                                        className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors"
-                                    >
-                                        <User size={16} />
-                                        Profile
-                                    </Link>
-                                    <button
-                                        onClick={logout}
-                                        className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors"
-                                    >
-                                        <LogOut size={16} />
-                                        Logout
-                                    </button>
+                                    {/* Profile Dropdown */}
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setProfileOpen(!profileOpen)}
+                                            className="h-10 px-3 inline-flex items-center gap-2 rounded-lg border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors"
+                                        >
+                                            <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden text-white text-xs font-bold">
+                                                {user.imageUrl ? (
+                                                    <img
+                                                        src={user.imageUrl}
+                                                        alt={user.firstName}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    user.firstName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"
+                                                )}
+                                            </div>
+                                            <span>{user.firstName || user.username}</span>
+                                            <ChevronDown size={16} className={`transition-transform ${profileOpen ? "rotate-180" : ""}`} />
+                                        </button>
+
+                                        {/* Dropdown Menu */}
+                                        {profileOpen && (
+                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-50">
+                                                <Link
+                                                    href="/my-profile"
+                                                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                                    onClick={() => setProfileOpen(false)}
+                                                >
+                                                    👤 View Profile
+                                                </Link>
+                                                <button
+                                                    onClick={() => {
+                                                        logout();
+                                                        setProfileOpen(false);
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                                >
+                                                    <LogOut size={16} />
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="flex gap-2">
@@ -170,11 +201,21 @@ export default function Header() {
                                         )}
                                         <Link
                                             href="/my-profile"
-                                            className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors"
+                                            className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 text-black text-sm font-medium hover:bg-slate-100 transition-colors w-full"
                                             onClick={() => setOpen(false)}
                                         >
-                                            <User size={16} />
-                                            Profile
+                                            <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                                                {user.imageUrl ? (
+                                                    <img
+                                                        src={user.imageUrl}
+                                                        alt={user.firstName}
+                                                        className="w-full h-full object-cover rounded-full"
+                                                    />
+                                                ) : (
+                                                    user.firstName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"
+                                                )}
+                                            </div>
+                                            <span>{user.firstName || user.username}</span>
                                         </Link>
                                         <button
                                             onClick={() => {

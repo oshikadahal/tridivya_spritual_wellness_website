@@ -137,10 +137,10 @@ export default function UserProfile() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-[#CAD3FF]">
             {/* Header with Back Button */}
             <div className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-4">
+                <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-4">
                     <button
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors p-2 hover:bg-slate-100 rounded-lg"
@@ -157,7 +157,7 @@ export default function UserProfile() {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Error & Success Messages */}
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">

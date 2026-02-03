@@ -3,7 +3,8 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Navbar from "@/app/_components/Navbar";
+import Header from "@/app/(public)/_components/Header";
+import Footer from "@/app/(public)/_components/Footer";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, loading } = useAuth();
@@ -24,11 +25,12 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     }
 
     return (
-        <section>
-            <Navbar />
-            <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        <>
+            <Header />
+            <main className="w-full">
                 {children}
             </main>
-        </section>
+            <Footer />
+        </>
     );
 }
