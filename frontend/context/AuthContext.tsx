@@ -59,6 +59,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await clearAuthCookies();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("auth_token");
+    }
     setUser(null);
     setIsAuthenticated(false);
   };

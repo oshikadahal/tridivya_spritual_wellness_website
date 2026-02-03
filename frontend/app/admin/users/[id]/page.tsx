@@ -4,12 +4,20 @@ import { useState, useEffect } from "react";
 import { getUserById } from "@/lib/api/admin";
 import Link from "next/link";
 import { use } from "react";
+import { ArrowLeft, Mail, Calendar, Shield, User as UserIcon, Pencil } from "lucide-react";
 
 export default function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+  const resolveImageUrl = (imageUrl?: string) => {
+    if (!imageUrl) return "/default-profile.png";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    return `${API_BASE_URL}${imageUrl}`;
+  };
 
   useEffect(() => {
     fetchUser();
@@ -32,66 +40,105 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   if (error) {
-    return <div className="p-8 text-red-600">{error}</div>;
+    return (
+      <div className="p-8">
+        <div className="mb-4 text-red-600">{error}</div>
+        <Link
+          href="/admin/users"
+          className="inline-flex items-center gap-2 text-cyan-700 hover:underline"
+        >
+          <ArrowLeft size={16} /> Back to Users
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">User Details</h1>
-        <div className="space-x-2">
-          <Link
-            href={`/admin/users/${resolvedParams.id}/edit`}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            Edit User
-          </Link>
-          <Link
-            href="/admin/users"
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          >
-            Back to List
-          </Link>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <Link
+        href="/admin/users"
+        className="inline-flex items-center gap-2 text-cyan-700 hover:underline"
+      >
+        <ArrowLeft size={16} /> Back to Users
+      </Link>
 
-      <div className="bg-white p-6 rounded shadow">
-        <div className="text-2xl font-semibold mb-4">ID: {resolvedParams.id}</div>
-        
-        {user && (
-          <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <img
+              src={resolveImageUrl(user?.imageUrl)}
+              alt={`${user?.firstName || ""} ${user?.lastName || ""}`}
+              className="w-24 h-24 rounded-full object-cover border-2 border-cyan-600"
+            />
             <div>
-              <span className="font-semibold">Username:</span> {user.username}
-            </div>
-            <div>
-              <span className="font-semibold">Email:</span> {user.email}
-            </div>
-            <div>
-              <span className="font-semibold">First Name:</span> {user.firstName || 'N/A'}
-            </div>
-            <div>
-              <span className="font-semibold">Last Name:</span> {user.lastName || 'N/A'}
-            </div>
-            <div>
-              <span className="font-semibold">Role:</span>{' '}
-              <span className={`px-2 py-1 rounded text-sm ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
-                {user.role}
-              </span>
-            </div>
-            {user.imageUrl && (
-              <div>
-                <span className="font-semibold">Profile Image:</span>
-                <img src={user.imageUrl} alt="Profile" className="mt-2 w-32 h-32 object-cover rounded" />
-              </div>
-            )}
-            <div>
-              <span className="font-semibold">Created At:</span> {new Date(user.createdAt).toLocaleString()}
-            </div>
-            <div>
-              <span className="font-semibold">Updated At:</span> {new Date(user.updatedAt).toLocaleString()}
+              <h1 className="text-2xl font-bold text-gray-900">
+                {user?.firstName} {user?.lastName}
+              </h1>
+              <p className="text-sm text-gray-500">User ID: {user?._id}</p>
             </div>
           </div>
-        )}
+
+          <Link
+            href={`/admin/users/${resolvedParams.id}/edit`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition"
+          >
+            <Pencil size={16} /> Edit User
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          <div className="flex items-center gap-3">
+            <UserIcon className="text-gray-400" size={20} />
+            <div>
+              <p className="text-sm text-gray-500">Username</p>
+              <p className="text-gray-900 font-medium">{user?.username || "-"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Mail className="text-gray-400" size={20} />
+            <div>
+              <p className="text-sm text-gray-500">Email</p>
+              <p className="text-gray-900 font-medium">{user?.email}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Shield className="text-gray-400" size={20} />
+            <div>
+              <p className="text-sm text-gray-500">Role</p>
+              <span
+                className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
+                  user?.role === "admin"
+                    ? "bg-purple-100 text-purple-800"
+                    : "bg-green-100 text-green-800"
+                }`}
+              >
+                {user?.role}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Calendar className="text-gray-400" size={20} />
+            <div>
+              <p className="text-sm text-gray-500">Created At</p>
+              <p className="text-gray-900 font-medium">
+                {user?.createdAt ? new Date(user.createdAt).toLocaleString() : "-"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Calendar className="text-gray-400" size={20} />
+            <div>
+              <p className="text-sm text-gray-500">Updated At</p>
+              <p className="text-gray-900 font-medium">
+                {user?.updatedAt ? new Date(user.updatedAt).toLocaleString() : "-"}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

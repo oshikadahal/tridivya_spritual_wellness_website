@@ -1,12 +1,26 @@
 //backend api call for admin operations
 
 import axios from "./axios";
-import {API} from "./endpoints";
+import { API } from "./endpoints";
+
+const getClientAuthToken = () => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("auth_token");
+};
+
+const getAuthHeaders = () => {
+    const token = getClientAuthToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // GET all users
 export const getAllUsers = async () => {
     try {
-        const response = await axios.get(API.ADMIN.USERS);
+        const response = await axios.get(API.ADMIN.USERS, {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
         return response.data;
     } catch (err: Error | any) {
         console.error("getAllUsers error details:", {
@@ -27,7 +41,11 @@ export const getAllUsers = async () => {
 // GET user by ID
 export const getUserById = async (id: string) => {
     try {
-        const response = await axios.get(API.ADMIN.USER_BY_ID(id));
+        const response = await axios.get(API.ADMIN.USER_BY_ID(id), {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
         return response.data;
     } catch (err: Error | any) {
         throw new Error(
@@ -47,6 +65,7 @@ export const createUser = async (userData: FormData) => {
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    ...getAuthHeaders(),
                 }
             }
         );
@@ -69,6 +88,7 @@ export const updateUser = async (id: string, userData: FormData) => {
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    ...getAuthHeaders(),
                 }
             }
         );
@@ -85,7 +105,11 @@ export const updateUser = async (id: string, userData: FormData) => {
 // DELETE user
 export const deleteUser = async (id: string) => {
     try {
-        const response = await axios.delete(API.ADMIN.DELETE_USER(id));
+        const response = await axios.delete(API.ADMIN.DELETE_USER(id), {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
         return response.data;
     } catch (err: Error | any) {
         throw new Error(

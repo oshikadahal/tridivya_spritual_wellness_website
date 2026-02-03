@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAllUsers, deleteUser } from "@/lib/api/admin";
 import { toast } from "react-toastify";
+import { Eye, Pencil, Trash2, Plus, Shield, User as UserIcon } from "lucide-react";
 
 interface User {
     _id: string;
@@ -19,6 +20,13 @@ interface User {
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+    const resolveImageUrl = (imageUrl?: string) => {
+        if (!imageUrl) return "/default-profile.png";
+        if (imageUrl.startsWith("http")) return imageUrl;
+        return `${API_BASE_URL}${imageUrl}`;
+    };
 
     useEffect(() => {
         fetchUsers();
@@ -58,14 +66,14 @@ export default function UsersPage() {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Users</h1>
-                    <p className="text-gray-600 mt-1">Manage all registered users on your platform</p>
+                    <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+                    <p className="text-gray-600 mt-1">View, edit, and manage all registered users</p>
                 </div>
                 <Link
                     href="/admin/users/create"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
                 >
-                    ➕ Create User
+                    <Plus size={18} /> Create User
                 </Link>
             </div>
 
@@ -79,7 +87,7 @@ export default function UsersPage() {
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Username</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
@@ -92,17 +100,16 @@ export default function UsersPage() {
                                 <tr key={user._id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-3">
-                                            {user.imageUrl && (
-                                                <img
-                                                    src={user.imageUrl}
-                                                    alt={user.firstName}
-                                                    className="w-10 h-10 rounded-full object-cover"
-                                                />
-                                            )}
+                                            <img
+                                                src={resolveImageUrl(user.imageUrl)}
+                                                alt={`${user.firstName} ${user.lastName}`}
+                                                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                            />
                                             <div>
                                                 <p className="font-medium text-gray-900">
                                                     {user.firstName} {user.lastName}
                                                 </p>
+                                                <p className="text-xs text-gray-500">ID: {user._id.slice(-6)}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -114,31 +121,40 @@ export default function UsersPage() {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                                 user.role === "admin"
                                                     ? "bg-purple-100 text-purple-800"
                                                     : "bg-green-100 text-green-800"
                                             }`}
                                         >
-                                            {user.role === "admin" ? "🛡️ Admin" : "👤 User"}
+                                            {user.role === "admin" ? <Shield size={12} /> : <UserIcon size={12} />}
+                                            {user.role === "admin" ? "Admin" : "User"}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                         {new Date(user.createdAt).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
-                                        <Link
-                                            href={`/admin/users/${user._id}/edit`}
-                                            className="inline-flex items-center px-3 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
-                                        >
-                                            ✏️ Edit
-                                        </Link>
-                                        <button
-                                            onClick={() => handleDelete(user._id)}
-                                            className="inline-flex items-center px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition"
-                                        >
-                                            🗑️ Delete
-                                        </button>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                        <div className="inline-flex items-center gap-2">
+                                            <Link
+                                                href={`/admin/users/${user._id}`}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+                                            >
+                                                <Eye size={14} /> View
+                                            </Link>
+                                            <Link
+                                                href={`/admin/users/${user._id}/edit`}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+                                            >
+                                                <Pencil size={14} /> Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(user._id)}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition"
+                                            >
+                                                <Trash2 size={14} /> Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

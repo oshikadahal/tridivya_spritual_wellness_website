@@ -5,10 +5,12 @@ import { getUserById, updateUser } from "@/lib/api/admin";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { use } from "react";
+import { ArrowLeft, Upload } from "lucide-react";
 
 export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -19,6 +21,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     confirmPassword: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -39,6 +42,13 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         password: "",
         confirmPassword: "",
       });
+      if (user.imageUrl) {
+        setImagePreview(
+          user.imageUrl.startsWith("http") ? user.imageUrl : `${API_BASE_URL}${user.imageUrl}`
+        );
+      } else {
+        setImagePreview("/default-profile.png");
+      }
     } catch (error: any) {
       setMessage(error.message || "Failed to fetch user");
     }
@@ -51,6 +61,8 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImageFile(e.target.files[0]);
+      const previewUrl = URL.createObjectURL(e.target.files[0]);
+      setImagePreview(previewUrl);
     }
   };
 
@@ -91,124 +103,157 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Edit User - ID: {resolvedParams.id}</h1>
-        <Link
-          href="/admin/users"
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-        >
-          Back to List
-        </Link>
-      </div>
+    <div className="space-y-6">
+      <Link
+        href="/admin/users"
+        className="inline-flex items-center gap-2 text-cyan-700 hover:underline"
+      >
+        <ArrowLeft size={16} /> Back to Users
+      </Link>
 
-      {message && (
-        <div className={`p-4 mb-4 rounded ${message.includes("success") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-          {message}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="max-w-md space-y-4 bg-white p-6 rounded shadow">
-        <div>
-          <label className="block mb-2 font-semibold">First Name</label>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Edit User</h1>
+            <p className="text-sm text-gray-500">ID: {resolvedParams.id}</p>
+          </div>
         </div>
 
-        <div>
-          <label className="block mb-2 font-semibold">Last Name</label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2 font-semibold">Email *</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2 font-semibold">Username *</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2 font-semibold">Role *</label>
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
+        {message && (
+          <div
+            className={`p-4 mb-4 rounded ${
+              message.toLowerCase().includes("success")
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
           >
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
+            {message}
+          </div>
+        )}
 
-        <div>
-          <label className="block mb-2 font-semibold">New Password (leave empty to keep current)</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex items-center gap-6">
+            <img
+              src={imagePreview || "/default-profile.png"}
+              alt="Profile"
+              className="w-20 h-20 rounded-full object-cover border border-gray-200"
+            />
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+              <Upload size={16} /> Upload New Photo
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                hidden
+              />
+            </label>
+          </div>
 
-        <div>
-          <label className="block mb-2 font-semibold">Confirm Password</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
 
-        <div>
-          <label className="block mb-2 font-semibold">Profile Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {loading ? "Updating..." : "Update User"}
-        </button>
-      </form>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username *</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border rounded-lg"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                New Password (leave empty to keep current)
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-60"
+            >
+              {loading ? "Updating..." : "Update User"}
+            </button>
+            <Link
+              href="/admin/users"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -30,6 +30,10 @@ export default function LoginForm() {
                 setError(response.message || 'Login failed');
                 return;
             }
+
+            if (response.token) {
+                localStorage.setItem("auth_token", response.token);
+            }
             
             // Redirect based on user role
             const redirectUrl = response.data?.role === 'admin' 
