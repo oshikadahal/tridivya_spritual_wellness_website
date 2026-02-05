@@ -8,6 +8,14 @@ import { deleteUserProfilePicture } from "@/lib/api/auth";
 import { toast } from "react-toastify";
 import { Trash2, Camera, ArrowLeft, Loader } from "lucide-react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
+
+const getImageUrl = (imageUrl: string | null | undefined) => {
+    if (!imageUrl) return null;
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `${API_BASE_URL}${imageUrl}`;
+};
+
 export default function UserProfile() {
     const { user, isAuthenticated, loading, setUser } = useAuth();
     const router = useRouter();
@@ -45,7 +53,7 @@ export default function UserProfile() {
             });
 
             if (user.imageUrl) {
-                setImagePreview(user.imageUrl);
+                setImagePreview(getImageUrl(user.imageUrl));
             }
         }
     }, [user]);

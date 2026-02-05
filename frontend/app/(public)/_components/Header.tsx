@@ -7,6 +7,14 @@ import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, ChevronDown } from "lucide-react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
+
+const getImageUrl = (imageUrl: string | null | undefined) => {
+    if (!imageUrl) return null;
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `${API_BASE_URL}${imageUrl}`;
+};
+
 const NAV_LINKS = [
     { href: "/", label: "Home" },
     { href: "/yoga", label: "Yoga  " },
@@ -88,7 +96,7 @@ export default function Header() {
                                             <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden text-white text-xs font-bold">
                                                 {user.imageUrl ? (
                                                     <img
-                                                        src={user.imageUrl}
+                                                        src={getImageUrl(user.imageUrl) || ''}
                                                         alt={user.firstName}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -207,7 +215,7 @@ export default function Header() {
                                             <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                                                 {user.imageUrl ? (
                                                     <img
-                                                        src={user.imageUrl}
+                                                        src={getImageUrl(user.imageUrl) || ''}
                                                         alt={user.firstName}
                                                         className="w-full h-full object-cover rounded-full"
                                                     />
