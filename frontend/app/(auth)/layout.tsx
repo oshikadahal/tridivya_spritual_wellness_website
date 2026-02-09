@@ -6,9 +6,22 @@ import { usePathname } from "next/navigation";
 export default function Layout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isRegister = pathname?.includes("/register");
-    const title = isRegister ? "Join Tridivya" : "Welcome Back";
+    const isForgot = pathname?.includes("/forgot-password");
+    const isReset = pathname?.includes("/reset-password");
+
+    const title = isRegister
+        ? "Join Tridivya"
+        : isForgot
+        ? "Recover Access"
+        : isReset
+        ? "Set a New Password"
+        : "Welcome Back";
     const subtitle = isRegister
         ? "Enter your details to begin your practice."
+        : isForgot
+        ? "We will send a reset link to your email."
+        : isReset
+        ? "Choose a strong password you will remember."
         : "Enter your details to continue your practice.";
     const imageSrc = isRegister ? "/images/register.png" : "/images/login.png";
 
