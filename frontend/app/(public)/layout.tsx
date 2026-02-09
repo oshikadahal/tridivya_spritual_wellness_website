@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const isFullWhite = pathname === "/" || pathname?.startsWith("/explore") || pathname?.startsWith("/yoga") || pathname?.startsWith("/meditation");
+    const isFullWhite = pathname === "/" || pathname?.startsWith("/explore") || pathname?.startsWith("/yoga") || pathname?.startsWith("/meditation") || pathname?.startsWith("/mantra");
 
     return (
         <section>
