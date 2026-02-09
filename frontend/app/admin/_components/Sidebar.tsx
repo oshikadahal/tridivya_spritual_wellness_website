@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const ADMIN_LINKS = [
     { href: "/admin", label: "Dashboard", icon: "📊" },
     { href: "/admin/users", label: "Users", icon: "👥" },
+    { href: "/admin/announcements", label: "Announcements", icon: "📣" },
 ];
 
 export default function Sidebar() {
