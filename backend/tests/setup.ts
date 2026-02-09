@@ -4,6 +4,15 @@ import { connectDatabase, disconnectDatabase } from '../src/database/mongodb';
 
 let mongo: MongoMemoryServer | null = null;
 
+beforeAll(() => {
+  if (process.env.NODE_ENV !== 'test') {
+    process.env.NODE_ENV = 'test';
+  }
+  jest.spyOn(console, 'log').mockImplementation(() => undefined);
+  jest.spyOn(console, 'error').mockImplementation(() => undefined);
+  jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+});
+
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
