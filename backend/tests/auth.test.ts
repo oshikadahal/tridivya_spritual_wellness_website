@@ -48,4 +48,40 @@ describe('Auth integration', () => {
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);
   });
+
+  it('rejects register request without email', async () => {
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({ ...testUser, email: '' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+  });
+
+  it('rejects register request with mismatched passwords', async () => {
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({ ...testUser, username: 'mismatch', confirmPassword: 'different123' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+  });
+
+  it('rejects login for unknown email', async () => {
+    const response = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'unknown@example.com', password: 'password123' });
+
+    expect(response.status).toBe(404);
+    expect(response.body.success).toBe(false);
+  });
+
+  it('rejects login request without password', async () => {
+    const response = await request(app)
+      .post('/api/auth/login')
+      .send({ email: testUser.email });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+  });
 });
