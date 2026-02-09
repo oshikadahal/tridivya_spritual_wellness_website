@@ -1,12 +1,13 @@
 import nodemailer from 'nodemailer';
 import { SMTP_HOST, SMTP_PASS, SMTP_PORT, SMTP_USER, SMTP_FROM } from '../config';
 
-function createTransporter() {
+export async function sendPasswordResetEmail(to: string, resetLink: string) {
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    throw new Error('SMTP configuration is missing. Set SMTP_HOST, SMTP_USER, SMTP_PASS.');
+    console.warn('SMTP not configured. Reset link:', resetLink);
+    return;
   }
 
-  return nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,
@@ -15,10 +16,6 @@ function createTransporter() {
       pass: SMTP_PASS,
     },
   });
-}
-
-export async function sendPasswordResetEmail(to: string, resetLink: string) {
-  const transporter = createTransporter();
 
   await transporter.sendMail({
     from: SMTP_FROM,
