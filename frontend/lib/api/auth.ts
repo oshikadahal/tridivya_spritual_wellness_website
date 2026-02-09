@@ -36,6 +36,38 @@ export const loginUser = async (loginData: any) => {
     }
 }
 
+export const forgotPassword = async (payload: { email: string }) => {
+    try {
+        const response = await axios.post(
+            API.AUTH.FORGOT_PASSWORD,
+            payload
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Request failed"
+        );
+    }
+}
+
+export const resetPassword = async (payload: { token: string; password: string; confirmPassword: string }) => {
+    try {
+        const response = await axios.post(
+            API.AUTH.RESET_PASSWORD,
+            payload
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Reset failed"
+        );
+    }
+}
+
 export const updateProfile = async (profileData: FormData) => {
     try {
         const token = await getAuthToken();

@@ -1,5 +1,5 @@
 ﻿import { UserService } from '../services/user.service';
-import { CreateUserDTO, LoginUserDTO , UpdateUserDto} from '../dtos/user.dto';
+import { CreateUserDTO, LoginUserDTO, UpdateUserDto, ForgotPasswordDTO, ResetPasswordDTO } from '../dtos/user.dto';
 import { Request, Response } from 'express';
 import z from 'zod';
 
@@ -36,6 +36,37 @@ export class AuthController {
       const loginData: LoginUserDTO = parsed.data;
       const { token, user } = await userService.loginUser(loginData);
       return res.status(200).json({ success: true, message: 'Login successful', data: user, token });
+    } catch (error: any) {
+      return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const parsed = ForgotPasswordDTO.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
+      }
+
+      await userService.requestPasswordReset(parsed.data.email);
+      return res.status(200).json({
+        success: true,
+        message: 'If an account exists, a reset link has been sent.',
+      });
+    } catch (error: any) {
+      return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const parsed = ResetPasswordDTO.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
+      }
+
+      await userService.resetPassword(parsed.data.token, parsed.data.password);
+      return res.status(200).json({ success: true, message: 'Password reset successful' });
     } catch (error: any) {
       return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
     }

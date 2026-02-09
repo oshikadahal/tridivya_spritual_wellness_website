@@ -35,8 +35,15 @@ export class AdminUserController {
   // GET /api/admin/users - Get all users
   async getAllUsers(req: Request, res: Response) {
     try {
-      const users = await userService.getAllUsers();
-      return res.status(200).json({ success: true, message: 'Users fetched successfully', data: users });
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const result = await userService.getAllUsers(page, limit);
+      return res.status(200).json({
+        success: true,
+        message: 'Users fetched successfully',
+        data: result.users,
+        pagination: result.pagination,
+      });
     } catch (error: any) {
       return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
     }

@@ -1,9 +1,12 @@
-﻿import { CreateUserDTO, LoginUserDTO ,UpdateUserDto} from '../dtos/user.dto';
+﻿import { CreateUserDTO, LoginUserDTO, UpdateUserDto } from '../dtos/user.dto';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config';
 import { UserRepository } from '../repositories/user.repository';
 import { HttpError } from '../errors/http-error';
+import crypto from 'crypto';
+import { sendPasswordResetEmail } from '../utils/email';
+import { FRONTEND_URL } from '../config';
 
 const userRepository = new UserRepository();
 
@@ -91,9 +94,19 @@ export class UserService {
         return updatedUser;
     }
 
-  async getAllUsers() {
-    const users = await userRepository.getAllUsers();
-    return users;
+  async getAllUsers(page = 1, limit = 10) {
+    const safePage = Math.max(page, 1);
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    const { users, total } = await userRepository.getUsersPaginated(safePage, safeLimit);
+    return {
+      users,
+      pagination: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        totalPages: Math.ceil(total / safeLimit),
+      },
+    };
   }
 
   async deleteUser(userId: string) {
@@ -103,5 +116,36 @@ export class UserService {
     }
     const deleted = await userRepository.deleteUser(userId);
     return deleted;
+  }
+
+  async requestPasswordReset(email: string) {
+    const user = await userRepository.getUserByEmail(email);
+    if (!user) {
+      return { sent: false };
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    await userRepository.setResetToken(user.id, tokenHash, expiresAt);
+
+    const resetLink = `${FRONTEND_URL}/reset-password?token=${token}`;
+    await sendPasswordResetEmail(user.email, resetLink);
+
+    return { sent: true };
+  }
+
+  async resetPassword(token: string, password: string) {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await userRepository.getUserByResetToken(tokenHash);
+    if (!user) {
+      throw new HttpError(400, 'Invalid or expired reset token');
+    }
+
+    const hashedPassword = await bcryptjs.hash(password, 10);
+    await userRepository.updateUser(user.id, { password: hashedPassword });
+    await userRepository.clearResetToken(user.id);
+    return { success: true };
   }
 }

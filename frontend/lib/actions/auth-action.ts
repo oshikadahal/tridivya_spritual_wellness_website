@@ -1,6 +1,6 @@
 // server side processing 
 "use server"
-import { registerUser, loginUser, updateProfile } from "../api/auth";
+import { registerUser, loginUser, updateProfile, forgotPassword, resetPassword } from "../api/auth";
 import { setAuthToken, setUserData, clearAuthCookies } from "../cookie";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -68,6 +68,30 @@ export const handleLogin = async (formData: any) => {
             success: false,
             message: err.message || "Login failed"
         }
+    }
+}
+
+export const handleForgotPassword = async (email: string) => {
+    try {
+        const result = await forgotPassword({ email });
+        if (result.success) {
+            return { success: true, message: result.message || "Reset link sent" };
+        }
+        return { success: false, message: result.message || "Request failed" };
+    } catch (err: Error | any) {
+        return { success: false, message: err.message || "Request failed" };
+    }
+}
+
+export const handleResetPassword = async (payload: { token: string; password: string; confirmPassword: string }) => {
+    try {
+        const result = await resetPassword(payload);
+        if (result.success) {
+            return { success: true, message: result.message || "Password reset successful" };
+        }
+        return { success: false, message: result.message || "Reset failed" };
+    } catch (err: Error | any) {
+        return { success: false, message: err.message || "Reset failed" };
     }
 }
 

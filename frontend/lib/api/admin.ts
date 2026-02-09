@@ -14,9 +14,10 @@ const getAuthHeaders = () => {
 };
 
 // GET all users
-export const getAllUsers = async () => {
+export const getAllUsers = async (page = 1, limit = 10) => {
     try {
         const response = await axios.get(API.ADMIN.USERS, {
+            params: { page, limit },
             headers: {
                 ...getAuthHeaders(),
             },

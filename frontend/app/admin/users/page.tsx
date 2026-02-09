@@ -20,6 +20,14 @@ interface User {
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [limit] = useState(10);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
 
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
     const resolveImageUrl = (imageUrl?: string) => {
@@ -30,14 +38,20 @@ export default function UsersPage() {
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [page]);
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const response = await getAllUsers();
+            const response = await getAllUsers(page, limit);
             if (response.success) {
                 setUsers(response.data);
+                setPagination(response.pagination || {
+                    page,
+                    limit,
+                    total: response.data?.length || 0,
+                    totalPages: 1,
+                });
             }
         } catch (err) {
             console.error("Failed to fetch users:", err);
@@ -53,7 +67,7 @@ export default function UsersPage() {
         try {
             const response = await deleteUser(id);
             if (response.success) {
-                setUsers(users.filter(u => u._id !== id));
+                await fetchUsers();
                 toast.success("User deleted successfully");
             }
         } catch (err: any) {
@@ -161,6 +175,29 @@ export default function UsersPage() {
                         </tbody>
                     </table>
                 )}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-600">
+                    Showing page {pagination.page} of {pagination.totalPages} ({pagination.total} users)
+                </p>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={page <= 1}
+                        className="px-3 py-1 rounded border border-slate-200 text-slate-700 disabled:opacity-50"
+                    >
+                        Previous
+                    </button>
+                    <button
+                        onClick={() => setPage((prev) => Math.min(prev + 1, pagination.totalPages))}
+                        disabled={page >= pagination.totalPages}
+                        className="px-3 py-1 rounded border border-slate-200 text-slate-700 disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     );

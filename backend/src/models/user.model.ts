@@ -13,7 +13,9 @@ const UserSchema: Schema = new Schema<UserType>(
       enum: ['user', 'admin'],
       default: 'user',
     },
-    imageUrl: { type: String, required: false }
+    imageUrl: { type: String, required: false },
+    resetPasswordToken: { type: String, required: false },
+    resetPasswordExpires: { type: Date, required: false }
   },
   { timestamps: true }
 );

@@ -28,7 +28,7 @@ export default function AdminDashboard() {
 
     const fetchStats = async () => {
         try {
-            const response = await getAllUsers();
+            const response = await getAllUsers(1, 1000);
             if (response.success) {
                 const users = response.data;
                 setStats({
