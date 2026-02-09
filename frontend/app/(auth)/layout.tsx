@@ -37,6 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                     src={imageSrc}
                                     alt={isRegister ? "Register" : "Login"}
                                     fill
+                                    sizes="(min-width: 1024px) 50vw, 0px"
                                     className="object-contain"
                                     priority
                                 />
