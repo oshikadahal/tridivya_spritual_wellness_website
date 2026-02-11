@@ -16,8 +16,8 @@ import { useRouter } from "next/navigation";
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-    { icon: Play, label: "Meditation Videos", href: "/meditation" },
-    { icon: Dumbbell, label: "Yoga Programs", href: "/yoga" },
+    { icon: Play, label: "Meditation Videos", href: "/meditationvideos" },
+    { icon: Dumbbell, label: "Yoga Programs", href: "/yogaprograms" },
     { icon: BookOpen, label: "Mantra Library", href: "/mantra" },
     { icon: Bookmark, label: "Saved Sessions", href: "/dashboard/saved" },
 ];
