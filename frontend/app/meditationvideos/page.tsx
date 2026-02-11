@@ -1,7 +1,7 @@
 
 'use client';
 
-import UserRightSidebar from "../_components/UserRightSidebar";
+import UserRightSidebar from "../(user)/_components/UserRightSidebar";
 import { useState } from "react";
 
 const meditationVideos = [
