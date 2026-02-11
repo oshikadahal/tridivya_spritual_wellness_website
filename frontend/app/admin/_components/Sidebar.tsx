@@ -17,8 +17,8 @@ export default function Sidebar() {
     };
 
     return (
-        <aside className="flex-shrink-0 w-64 bg-slate-50 text-slate-900 border-r border-slate-200 overflow-y-auto">
-            <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-6 flex-shrink-0">
+        <aside className="shrink-0 w-64 bg-slate-50 text-slate-900 border-r border-slate-200 overflow-y-auto">
+            <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-6 shrink-0">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-indigo-100 text-indigo-600 font-bold text-sm">A</span>
                 <span className="text-lg font-bold text-slate-900">Admin</span>
             </div>

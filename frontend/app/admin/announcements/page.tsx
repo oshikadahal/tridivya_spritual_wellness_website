@@ -29,7 +29,7 @@ const ANNOUNCEMENTS = [
 export default function AnnouncementsPage() {
     return (
         <div className={`${body.className} space-y-10`}>
-            <section className="rounded-[28px] border border-slate-200 bg-gradient-to-br from-amber-50 via-white to-sky-100 p-8 shadow-sm">
+            <section className="rounded-[28px] border border-slate-200 bg-linear-to-br from-amber-50 via-white to-sky-100 p-8 shadow-sm">
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">

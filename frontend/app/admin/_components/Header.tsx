@@ -14,7 +14,7 @@ export default function Header() {
     };
 
     return (
-        <header className="flex-shrink-0 bg-white border-b border-slate-200 shadow-sm">
+        <header className="shrink-0 bg-white border-b border-slate-200 shadow-sm">
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                     {/* Left: Logo & Title */}

@@ -3,8 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Header from "@/app/(public)/_components/Header";
-import Footer from "@/app/(public)/_components/Footer";
+import Sidebar from "./_components/Sidebar";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, loading } = useAuth();
@@ -25,12 +24,16 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     }
 
     return (
-        <>
-            <Header />
-            <main className="w-full">
+        <div className="flex min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto">
+                {/* Top Navbar */}
+                <div className="sticky top-0 z-20 bg-gradient-to-br from-purple-50 to-blue-50">
+                  {/** @ts-ignore */}
+                  {require('./_components/UserHeader').default()}
+                </div>
                 {children}
             </main>
-            <Footer />
-        </>
+        </div>
     );
 }

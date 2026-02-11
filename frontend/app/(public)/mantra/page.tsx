@@ -301,7 +301,7 @@ export default function MantraPage() {
             </section>
 
             {/* Stats Section */}
-            <section className="px-6 md:px-12 py-16 bg-gradient-to-r from-indigo-500 to-purple-600">
+            <section className="px-6 md:px-12 py-16 bg-linear-to-r from-indigo-500 to-purple-600">
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">
                         Join Our Global Mantra Community
@@ -402,7 +402,7 @@ export default function MantraPage() {
 
             {/* CTA Section */}
             <section className="px-6 md:px-12 py-16">
-                <div className="max-w-4xl mx-auto bg-gradient-to-r from-purple-100 to-indigo-100 rounded-3xl p-12 text-center shadow-lg">
+                <div className="max-w-4xl mx-auto bg-linear-to-r from-purple-100 to-indigo-100 rounded-3xl p-12 text-center shadow-lg">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                         Ready to Awaken Your Inner Potential?
                     </h2>
