@@ -20,8 +20,8 @@ const mantras = [
     subtitle: "Healing & Protection",
     color: "border-green-400",
     icon: "🟢",
-    text: "...",
-    translation: "...",
+    text: `ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्।\nउर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय माऽमृतात्॥`,
+    translation: `Om Tryambakam Yajamahe Sugandhim Pushtivardhanam\nUrvarukamiva Bandhanan Mrityor Mukshiya Maamritat`,
     audio: "#",
     duration: "9:30",
   },
@@ -30,8 +30,8 @@ const mantras = [
     subtitle: "Inner Peace & Harmony",
     color: "border-yellow-400",
     icon: "🟡",
-    text: "...",
-    translation: "...",
+    text: `ॐ शान्तिः शान्तिः शान्तिः`,
+    translation: `Om Peace Peace Peace`,
     audio: "#",
     duration: "7:45",
   },
@@ -40,8 +40,8 @@ const mantras = [
     subtitle: "Compassion & Clarity",
     color: "border-blue-400",
     icon: "🔵",
-    text: "...",
-    translation: "...",
+    text: `ॐ मणि पद्मे हूँ`,
+    translation: `Om the jewel in the lotus, hum`,
     audio: "#",
     duration: "8:20",
   },
@@ -50,20 +50,65 @@ const mantras = [
     subtitle: "Universal Well-being",
     color: "border-red-400",
     icon: "🔴",
-    text: "...",
-    translation: "...",
+    text: `लोकाः समस्ताः सुखिनो भवन्तु`,
+    translation: `May all beings everywhere be happy and free`,
     audio: "#",
     duration: "6:30",
+  },
+  {
+    name: "Hanuman Chalisa",
+    subtitle: "Strength & Devotion",
+    color: "border-orange-400",
+    icon: "🟠",
+    text: `श्रीगुरु चरन सरोज रज...`,
+    translation: `Forty verses in praise of Lord Hanuman`,
+    audio: "#",
+    duration: "20:00",
+  },
+  {
+    name: "Saraswati Vandana",
+    subtitle: "Knowledge & Wisdom",
+    color: "border-purple-400",
+    icon: "🟣",
+    text: `या कुन्देन्दुतुषारहारधवला...`,
+    translation: `Salutation to Goddess Saraswati`,
+    audio: "#",
+    duration: "5:30",
+  },
+  {
+    name: "Dhanvantri Mantra",
+    subtitle: "Health & Healing",
+    color: "border-teal-400",
+    icon: "🟢",
+    text: `ॐ शं नो देवीरभिष्टय...`,
+    translation: `Prayer for health and healing`,
+    audio: "#",
+    duration: "4:45",
   },
 ];
 
 const filters = ["All", "Peace", "Health", "Abundance"];
 
+
 export default function MantraProgramPage() {
   const [selected, setSelected] = useState(0);
   const [filter, setFilter] = useState("All");
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [ambient, setAmbient] = useState(false);
+  const [downloaded, setDownloaded] = useState<number[]>([]);
 
   const mantra = mantras[selected];
+
+  const toggleFavorite = () => {
+    setFavorites((prev) =>
+      prev.includes(selected) ? prev.filter((i) => i !== selected) : [...prev, selected]
+    );
+  };
+  const toggleDownload = () => {
+    setDownloaded((prev) =>
+      prev.includes(selected) ? prev.filter((i) => i !== selected) : [...prev, selected]
+    );
+  };
 
   return (
     <div className="flex min-h-screen bg-linear-to-br from-purple-100 via-purple-50 to-blue-100">
@@ -100,6 +145,8 @@ export default function MantraProgramPage() {
                 <span className="text-2xl mb-2">{m.icon}</span>
                 <span className="font-bold text-[#3B4A6B] text-lg">{m.name}</span>
                 <span className="text-xs text-[#6B7280]">{m.subtitle}</span>
+                {favorites.includes(i) && <span className="text-xs text-[#5B6EF8] mt-1">★ Favorite</span>}
+                {downloaded.includes(i) && <span className="text-xs text-green-600 mt-1">⬇ Downloaded</span>}
               </button>
             ))}
           </div>
@@ -109,10 +156,16 @@ export default function MantraProgramPage() {
               <div className="flex items-center justify-between mb-4">
                 <span className="uppercase text-xs tracking-widest opacity-80">Now Playing</span>
                 <div className="flex items-center gap-6">
-                  <button className="text-white/80 hover:text-white text-sm">Add to Favorites</button>
-                  <button className="text-white/80 hover:text-white text-sm">Download for Offline</button>
+                  <button className={`text-white/80 hover:text-white text-sm ${favorites.includes(selected) ? 'font-bold underline' : ''}`} onClick={toggleFavorite}>
+                    {favorites.includes(selected) ? 'Favorited' : 'Add to Favorites'}
+                  </button>
+                  <button className={`text-white/80 hover:text-white text-sm ${downloaded.includes(selected) ? 'font-bold underline' : ''}`} onClick={toggleDownload}>
+                    {downloaded.includes(selected) ? 'Downloaded' : 'Download for Offline'}
+                  </button>
                   <span className="ml-4 text-xs opacity-80">Ambient Sound</span>
-                  <button className="ml-2 bg-white/20 rounded-full px-2 py-1">🎵 + 🌿</button>
+                  <button className={`ml-2 bg-white/20 rounded-full px-2 py-1 ${ambient ? 'ring-2 ring-white' : ''}`} onClick={() => setAmbient((a) => !a)}>
+                    {ambient ? '🎵 + 🌿 On' : '🎵 + 🌿 Off'}
+                  </button>
                 </div>
               </div>
               <div className="flex flex-col items-center">

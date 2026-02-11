@@ -7,7 +7,7 @@ import {
     Play, 
     Dumbbell, 
     BookOpen, 
-    Bookmark, 
+    Heart, 
     Settings, 
     LogOut 
 } from "lucide-react";
@@ -18,8 +18,8 @@ const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
     { icon: Play, label: "Meditation Videos", href: "/meditationvideos" },
     { icon: Dumbbell, label: "Yoga Programs", href: "/yogaprograms" },
-    { icon: BookOpen, label: "Mantra Library", href: "/mantra" },
-    { icon: Bookmark, label: "Saved Sessions", href: "/dashboard/saved" },
+    { icon: BookOpen, label: "Mantra Library", href: "/mantraprogram" },
+    { icon: Heart, label: "Saved Sessions", href: "/dashboard/saved" },
 ];
 
 export default function Sidebar() {
