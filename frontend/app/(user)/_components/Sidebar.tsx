@@ -19,7 +19,7 @@ const menuItems = [
     { icon: Play, label: "Meditation Videos", href: "/meditationvideos" },
     { icon: Dumbbell, label: "Yoga Programs", href: "/yogaprograms" },
     { icon: BookOpen, label: "Mantra Library", href: "/mantraprogram" },
-    { icon: Heart, label: "Saved Sessions", href: "/dashboard/saved" },
+    { icon: Heart, label: "Saved Sessions", href: "/saved" },
 ];
 
 export default function Sidebar() {

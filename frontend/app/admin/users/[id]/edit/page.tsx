@@ -10,7 +10,7 @@ import { ArrowLeft, Upload } from "lucide-react";
 export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5051";
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

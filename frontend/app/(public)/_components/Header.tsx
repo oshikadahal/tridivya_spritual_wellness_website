@@ -7,7 +7,7 @@ import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, ChevronDown } from "lucide-react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5051';
 
 const getImageUrl = (imageUrl: string | null | undefined) => {
     if (!imageUrl) return null;
@@ -17,10 +17,6 @@ const getImageUrl = (imageUrl: string | null | undefined) => {
 
 const NAV_LINKS = [
     { href: "/", label: "Home" },
-    { href: "/yoga", label: "Yoga  " },
-    { href: "/meditation", label: "Meditation" },
-    { href: "/mantra", label: "Mantras" },
-    { href: "/about", label: "About Us " },
 ];
 
 export default function Header() {

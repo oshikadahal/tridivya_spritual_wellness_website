@@ -12,7 +12,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5051";
   const resolveImageUrl = (imageUrl?: string) => {
     if (!imageUrl) return "/default-profile.png";
     if (imageUrl.startsWith("http")) return imageUrl;
