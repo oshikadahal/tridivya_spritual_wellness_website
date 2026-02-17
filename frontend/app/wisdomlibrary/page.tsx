@@ -40,6 +40,42 @@ const books = [
     description: "A yogi's guide to joy and wellbeing through ...",
     image: "/images/inner-engineering.jpg",
   },
+  {
+    title: "The Bhagavad Gita",
+    author: "Vyasa",
+    description: "A classic scripture of yoga and spiritual wisdom ...",
+    image: "/images/bhagavad-gita.jpg",
+  },
+  {
+    title: "Light on Yoga",
+    author: "B.K.S. Iyengar",
+    description: "Comprehensive guide to yoga postures and philosophy ...",
+    image: "/images/light-on-yoga.jpg",
+  },
+  {
+    title: "The Four Agreements",
+    author: "Don Miguel Ruiz",
+    description: "A practical guide to personal freedom ...",
+    image: "/images/four-agreements.jpg",
+  },
+  {
+    title: "The Untethered Soul",
+    author: "Michael A. Singer",
+    description: "Journey beyond yourself to inner peace ...",
+    image: "/images/untethered-soul.jpg",
+  },
+  {
+    title: "Waking Up",
+    author: "Sam Harris",
+    description: "A guide to spirituality without religion ...",
+    image: "/images/waking-up.jpg",
+  },
+  {
+    title: "The Miracle of Mindfulness",
+    author: "Thich Nhat Hanh",
+    description: "An introduction to mindfulness practice ...",
+    image: "/images/miracle-of-mindfulness.jpg",
+  },
 ];
 
 export default function WisdomLibraryPage() {
