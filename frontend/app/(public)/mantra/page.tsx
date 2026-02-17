@@ -1,24 +1,84 @@
 "use client";
 
 import Link from "next/link";
-import { Play } from "lucide-react";
-import Footer from "../_components/Footer";
+import { Play, Search, Bell, Filter } from "lucide-react";
+import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
-const powerOfMantras = [
+// Dummy data for mantras and recommendations
+const RECOMMENDED_MANTRAS = [
     {
-        icon: "🔊",
-        title: "Vibrational Harmony",
-        description: "Sound frequencies that align your body's energy centers and promote healing through resonance."
+        title: "Om Chanting",
+        level: "Beginner",
+        duration: "9.2 min",
+        image: "/images/landing.png",
+        stats: "Beginner",
+        rating: "9.2 min",
+        likes: 0,
+        stars: 0,
     },
     {
-        icon: "🧠",
-        title: "Mental Clarity",
-        description: "Focus your mind, eliminate negative thoughts, and achieve unshakeable inner peace."
+        title: "Gayatri Mantra",
+        level: "Intermediate",
+        duration: "-",
+        image: "/images/landing.png",
+        stats: "Intermediate",
+        rating: "5,509",
+        likes: 0,
+        stars: 0,
     },
     {
-        icon: "✨",
-        title: "Spiritual Connection",
-        description: "Connect with the divine essence and awaken your higher consciousness through sacred words."
+        title: "मौन मंत्र",
+        level: "Intermediate",
+        duration: "9.2.64",
+        image: "/images/landing.png",
+        stats: "Intermediate",
+        rating: "3,627",
+        likes: 0,
+        stars: 0,
+    },
+];
+
+const POPULAR_MANTRAS = [
+    {
+      title: "Lokah Samastah Sukhino_Bhavantu",
+      level: "Beginner",
+      duration: "30:12",
+      image: "/images/landing.png",
+      completed: 3098,
+      sun: 5996,
+      likes: 1200,
+      hearts: 3089,
+      stars: 272,
+    },
+    {
+      title: "Maha Mrityunjaya Mantra",
+      level: "Intermediate",
+      duration: "30:29",
+      image: "/images/landing.png",
+      completed: 2358,
+      sun: 5306,
+      likes: 4671,
+      hearts: 3527,
+      stars: 0,
+    },
+  ];
+
+  const powerOfMantras = [
+    {
+      icon: "🔊",
+      title: "Vibrational Harmony",
+      description: "Sound frequencies that align your body's energy centers and promote healing through resonance."
+    },
+    {
+      icon: "🧠",
+      title: "Mental Clarity",
+      description: "Focus your mind, eliminate negative thoughts, and achieve unshakeable inner peace."
+    },
+    {
+      icon: "✨",
+      title: "Spiritual Connection",
+      description: "Connect with the divine essence and awaken your higher consciousness through sacred words."
     }
 ];
 
@@ -150,278 +210,141 @@ const recommendedBook = {
 };
 
 export default function MantraPage() {
-    return (
-        <div className="bg-[#CAD3FF] min-h-screen">
-            {/* Hero Section */}
-            <section className="px-6 md:px-12 py-16 md:py-24 relative overflow-hidden">
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-8">
-                        <div className="flex justify-center text-6xl mb-6">✨</div>
-                        <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
-                            Sacred Mantras & Chants
-                        </h1>
-                        <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
-                            Experience the divine resonance of ancient vibrations to awaken your inner consciousness and align with the cosmic harmony.
-                        </p>
-                        <div className="flex gap-4 justify-center flex-wrap">
-                            <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold px-6 py-3 rounded-full transition-colors">
-                                Begin Chanting
-                            </button>
-                            <button className="bg-white hover:bg-gray-100 text-gray-800 font-bold px-6 py-3 rounded-full border-2 border-gray-800 transition-colors">
-                                Listen Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  const { user } = useAuth?.() || {};
+  return (
+    <div className="flex min-h-screen" style={{ background: 'linear-gradient(135deg, #ece6ff 0%, #e6e2ff 100%)' }}>
+      {/* Left Sidebar (reuse dashboard sidebar if any, else placeholder) */}
+      <aside className="hidden lg:flex flex-col w-64 bg-white/80 border-r border-[#e0d6f7] p-6 min-h-screen">
+        <div className="font-bold text-[#7c5fe6] text-xl mb-8">Tridivya</div>
+        <nav className="flex flex-col gap-4">
+          <Link href="/dashboard" className="text-[#4b2676] font-semibold hover:text-[#7c5fe6]">Dashboard</Link>
+          <Link href="/mantra" className="text-[#7c5fe6] font-bold">Mantra Library</Link>
+          <Link href="/yoga" className="text-[#4b2676] font-semibold hover:text-[#7c5fe6]">Yoga</Link>
+          <Link href="/meditation" className="text-[#4b2676] font-semibold hover:text-[#7c5fe6]">Meditation</Link>
+        </nav>
+      </aside>
 
-            {/* The Power of Mantras Section */}
-            <section className="px-6 md:px-12 py-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center">
-                    The Power of Mantras
-                </h2>
-                <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">
-                    Mantras are sacred sounds, syllables, or groups of words that act as vehicles for the mind. Utilizing vibrational healing, they shift your energy and bring profound mental clarity, connecting the individual soul with the universal spirit.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {powerOfMantras.map((item, index) => (
-                        <div key={index} className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center">
-                            <div className="text-5xl mb-4">{item.icon}</div>
-                            <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
-                            <p className="text-sm text-gray-600">{item.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Benefits of Chanting Section */}
-            <section className="px-6 md:px-12 py-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center">
-                    Benefits of Chanting
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {benefitsOfChanting.map((benefit, index) => (
-                        <div key={index} className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                            <div className="h-40 bg-gray-300 flex items-center justify-center text-5xl">
-                                {index === 0 && "🌊"}
-                                {index === 1 && "🧘"}
-                                {index === 2 && "❤️"}
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-lg font-bold text-gray-800 mb-2">{benefit.title}</h3>
-                                <p className="text-sm text-gray-600">{benefit.description}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Explore Mantras Section */}
-            <section className="px-6 md:px-12 py-16">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex justify-between items-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-                            Explore Mantras
-                        </h2>
-                        <Link href="#" className="text-orange-400 font-semibold text-sm hover:underline">
-                            View All →
-                        </Link>
-                    </div>
-                    <p className="text-gray-700 mb-8">
-                        Listen and chant the meanings of ancient sacred chants.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {mantras.map((mantra, index) => (
-                            <div key={index} className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                                {/* Image Section */}
-                                <div className={`${mantra.bgColor} h-40 flex items-center justify-center text-5xl relative group cursor-pointer`}>
-                                    {mantra.image}
-                                    <button className="absolute bg-yellow-400 hover:bg-yellow-500 text-gray-800 rounded-full p-3 transition-colors opacity-0 group-hover:opacity-100">
-                                        <Play size={20} fill="currentColor" />
-                                    </button>
-                                </div>
-
-                                {/* Content Section */}
-                                <div className="p-6">
-                                    <h3 className="text-lg font-bold text-gray-800 mb-2">{mantra.title}</h3>
-                                    <p className="text-sm text-gray-600 mb-4">{mantra.description}</p>
-
-                                    {/* Level & Duration */}
-                                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                                        <div className="flex gap-2">
-                                            <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-semibold">
-                                                {mantra.level}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-600 font-semibold">
-                                            {mantra.duration}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Recommended Reading Section */}
-            <section className="px-6 md:px-12 py-16">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center">
-                        Recommended Reading
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        {/* Book Image */}
-                        <div className="flex justify-center">
-                            <div className="bg-white rounded-3xl p-8 shadow-lg w-full max-w-xs">
-                                <div className="bg-yellow-400 h-32 flex items-center justify-center text-6xl rounded-2xl mb-6">
-                                    {recommendedBook.image}
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-800 text-center mb-2">{recommendedBook.title}</h3>
-                                <p className="text-sm text-gray-600 text-center">{recommendedBook.author}</p>
-                            </div>
-                        </div>
-
-                        {/* Book Description */}
-                        <div>
-                            <p className="text-gray-700 mb-8 text-lg leading-relaxed">
-                                {recommendedBook.description}
-                            </p>
-                            <div className="flex gap-4">
-                                <button className="bg-gray-800 hover:bg-gray-900 text-white font-bold px-6 py-3 rounded-full transition-colors">
-                                    View on Store
-                                </button>
-                                <button className="bg-white hover:bg-gray-100 text-gray-800 font-bold px-6 py-3 rounded-full border-2 border-gray-800 transition-colors">
-                                    More Resources
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Stats Section */}
-            <section className="px-6 md:px-12 py-16 bg-linear-to-r from-indigo-500 to-purple-600">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">
-                        Join Our Global Mantra Community
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {stats.map((stat, index) => (
-                            <div key={index} className="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
-                                <div className="text-4xl font-bold text-white mb-2">{stat.number}</div>
-                                <div className="text-white text-sm">{stat.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* How to Chant Section */}
-            <section className="px-6 md:px-12 py-16">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 text-center">
-                        How to Chant Mantras
-                    </h2>
-                    <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">
-                        Follow these simple steps to begin your sacred chanting journey and unlock the transformative power within.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        {howToChant.map((item, index) => (
-                            <div key={index} className="relative">
-                                <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow h-full">
-                                    <div className="bg-indigo-600 text-white text-3xl font-bold rounded-full w-16 h-16 flex items-center justify-center mb-4">
-                                        {item.step}
-                                    </div>
-                                    <h3 className="text-lg font-bold text-gray-800 mb-3">{item.title}</h3>
-                                    <p className="text-sm text-gray-600">{item.description}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Transformation Stories Section */}
-            <section className="px-6 md:px-12 py-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center">
-                    Transformation Stories
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {transformationStories.map((story, index) => (
-                        <div key={index} className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                            <div className="flex items-center mb-4">
-                                <span className="text-4xl mr-3">{story.image}</span>
-                                <div>
-                                    <h3 className="font-bold text-gray-800">{story.name}</h3>
-                                    <p className="text-sm text-gray-600">{story.role}</p>
-                                </div>
-                            </div>
-                            <div className="flex mb-3">
-                                {[...Array(story.rating)].map((_, i) => (
-                                    <span key={i} className="text-yellow-400">★</span>
-                                ))}
-                            </div>
-                            <p className="text-gray-600 italic">"{story.feedback}"</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Daily Mantra Tips Section */}
-            <section className="px-6 md:px-12 py-16 bg-yellow-50">
-                <div className="max-w-6xl mx-auto text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
-                        ✨ Daily Mantra Tips ✨
-                    </h2>
-                    <p className="text-lg text-gray-700 mb-8 max-w-3xl mx-auto">
-                        Chant your chosen mantra 108 times daily for 40 days to experience profound transformation. This ancient practice unlocks the deepest layers of your consciousness and aligns you with universal energy.
-                    </p>
-                    <div className="bg-white rounded-3xl p-8 shadow-lg max-w-2xl mx-auto mb-8">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-6">Power of 108</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-2">108</div>
-                                <p className="text-sm text-gray-700">Sacred number in all traditions</p>
-                            </div>
-                            <div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-2">40</div>
-                                <p className="text-sm text-gray-700">Days for transformation</p>
-                            </div>
-                            <div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-2">∞</div>
-                                <p className="text-sm text-gray-700">Infinite possibilities</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold px-8 py-4 rounded-full transition-colors text-lg">
-                        Start Your 40-Day Journey
-                    </button>
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="px-6 md:px-12 py-16">
-                <div className="max-w-4xl mx-auto bg-linear-to-r from-purple-100 to-indigo-100 rounded-3xl p-12 text-center shadow-lg">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                        Ready to Awaken Your Inner Potential?
-                    </h2>
-                    <p className="text-gray-700 mb-8 text-lg">
-                        Join thousands of practitioners experiencing the life-changing power of sacred mantras. Begin your transformation today.
-                    </p>
-                    <div className="flex gap-4 justify-center flex-wrap">
-                        <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-full transition-colors">
-                            Start Free Trial
-                        </button>
-                        <button className="bg-white hover:bg-gray-100 text-indigo-600 font-bold px-8 py-3 rounded-full border-2 border-indigo-600 transition-colors">
-                            Schedule Session
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <Footer />
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col gap-6 p-8">
+        {/* Navbar (reuse dashboard navbar style) */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="font-bold text-2xl text-[#7c5fe6]">Tridivya</div>
+            <div className="relative">
+              <input type="text" placeholder="Search sessions..." className="bg-white/80 border border-[#e0d6f7] rounded-full px-6 py-2 pl-10 text-[#4b2676] focus:outline-none focus:ring-2 focus:ring-[#7c5fe6] w-72" />
+              <Search className="absolute left-3 top-2.5 w-5 h-5 text-[#7c5fe6]" />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Bell className="w-6 h-6 text-[#7c5fe6]" />
+            <div className="flex items-center gap-2 bg-white/80 px-3 py-1 rounded-full">
+              <Image src="/images/landing.png" alt="Profile" width={32} height={32} className="rounded-full object-cover" />
+              <span className="font-semibold text-[#4b2676] text-sm">{user?.firstName || "User"}</span>
+            </div>
+          </div>
         </div>
-    );
+
+        {/* Hero Section */}
+        <section className="relative rounded-3xl bg-gradient-to-br from-[#e7e0ff] to-[#c7bfff] p-8 flex flex-col md:flex-row items-center gap-8 mb-6 overflow-hidden">
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold text-[#4b2676] mb-2">Mantra Videos</h1>
+            <p className="text-lg text-[#6c4bb6] mb-4">Experience ancient chants for spiritual healing<br />healing and emotional well-being.</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Healing', 'Peace', 'Focus', 'Sleep', 'Energy'].map((cat) => (
+                <span key={cat} className="bg-white/80 text-[#7c5fe6] font-semibold px-4 py-1 rounded-full text-sm cursor-pointer hover:bg-[#e7e0ff]">{cat}</span>
+              ))}
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <Image src="/images/landing.png" alt="Hero" width={220} height={320} className="rounded-3xl object-cover" />
+          </div>
+        </section>
+
+        {/* Featured Mantra */}
+        <section className="rounded-3xl bg-white/80 p-6 flex flex-col md:flex-row items-center gap-6 mb-6 shadow border border-[#e0d6f7]">
+          <div className="flex-1">
+            <div className="text-[#7c5fe6] font-semibold mb-1">Lokah Samastah Sukhino_Bhavantu</div>
+            <div className="text-[#bca7f7] text-xs mb-2">AI For healing and positivity</div>
+            <button className="bg-white hover:bg-[#f3eaff] text-[#7c5fe6] font-semibold px-6 py-3 rounded-full shadow transition flex items-center gap-2 mb-2">
+              <Play className="w-5 h-5" /> Listen Now
+            </button>
+            <div className="flex items-center gap-4 text-[#6c4bb6] text-sm">
+              <span>4.8</span>
+              <span>30:12</span>
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <Image src="/images/landing.png" alt="Featured Mantra" width={180} height={120} className="rounded-2xl object-cover" />
+          </div>
+        </section>
+
+        {/* Recommended for Mood */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-bold text-[#4b2676]">Recommended for Your Current Mood</h3>
+            <button className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full border border-[#e0d6f7] text-[#7c5fe6] font-semibold"><Filter className="w-4 h-4" /> Advanced Filters</button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {RECOMMENDED_MANTRAS.map((m, i) => (
+              <div key={i} className="bg-white/90 rounded-2xl shadow border border-[#e0d6f7] p-4 flex flex-col">
+                <Image src={m.image} alt={m.title} width={320} height={120} className="rounded-xl object-cover mb-3" />
+                <div className="font-bold text-[#4b2676] mb-1">{m.title}</div>
+                <div className="flex items-center gap-2 text-xs mb-2">
+                  <span className="bg-[#e7e0ff] text-[#7c5fe6] px-2 py-1 rounded">{m.level}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs mb-2">
+                  <span className="text-[#7c5fe6]">{m.stats}</span>
+                  <span className="text-[#7c5fe6]">{m.rating}</span>
+                </div>
+                <button className="bg-[#7c5fe6] hover:bg-[#6b4fd6] text-white font-semibold px-4 py-2 rounded-xl mt-auto">Start</button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Popular Mantras */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-bold text-[#4b2676]">Popular Mantras</h3>
+            <div className="flex gap-2">
+              <button className="bg-white/80 px-4 py-2 rounded-full border border-[#e0d6f7] text-[#7c5fe6] font-semibold">Most Popular</button>
+              <button className="bg-white/80 px-4 py-2 rounded-full border border-[#e0d6f7] text-[#7c5fe6] font-semibold">All Durations</button>
+              <button className="bg-white/80 px-4 py-2 rounded-full border border-[#e0d6f7] text-[#7c5fe6] font-semibold">All Purposes</button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-6">
+            {POPULAR_MANTRAS.map((m, i) => (
+              <div key={i} className="bg-white/90 rounded-2xl shadow border border-[#e0d6f7] p-6 flex flex-col md:flex-row items-center gap-6">
+                <Image src={m.image} alt={m.title} width={180} height={120} className="rounded-xl object-cover" />
+                <div className="flex-1">
+                  <div className="font-bold text-[#4b2676] mb-1">{m.title}</div>
+                  <div className="flex items-center gap-2 text-xs mb-2">
+                    <span className="bg-[#e7e0ff] text-[#7c5fe6] px-2 py-1 rounded">{m.level}</span>
+                    <span className="text-[#7c5fe6]">{m.duration}</span>
+                  </div>
+                  <button className="bg-[#f3eaff] hover:bg-[#e7e0ff] text-[#7c5fe6] font-semibold px-6 py-2 rounded-full shadow transition flex items-center gap-2 mb-2">
+                    <Play className="w-5 h-5" /> Listen Now
+                  </button>
+                  <div className="flex items-center gap-4 text-[#6c4bb6] text-sm">
+                    <span>Completed: {m.completed}</span>
+                    <span>Sun: {m.sun}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* Right Sidebar (reuse dashboard right sidebar if any, else placeholder) */}
+      <aside className="hidden xl:flex flex-col w-80 bg-white/80 border-l border-[#e0d6f7] p-6 min-h-screen">
+        <div className="font-bold text-[#7c5fe6] text-lg mb-6">Reminders</div>
+        <div className="flex flex-col gap-4">
+          <div className="bg-[#e7e0ff] rounded-xl p-4 text-[#4b2676] font-semibold">Live: Sunset Yoga 18:30</div>
+          <div className="bg-[#e7e0ff] rounded-xl p-4 text-[#4b2676] font-semibold">Bedtime Nidra 21:00</div>
+          <div className="bg-[#e7e0ff] rounded-xl p-4 text-[#4b2676] font-semibold">Morning Ritual 06:00</div>
+        </div>
+      </aside>
+    </div>
+  );
 }
