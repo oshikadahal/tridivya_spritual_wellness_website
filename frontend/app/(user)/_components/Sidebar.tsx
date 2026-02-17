@@ -19,6 +19,7 @@ const menuItems = [
     { icon: Play, label: "Meditation Videos", href: "/meditationvideos" },
     { icon: Dumbbell, label: "Yoga Programs", href: "/yogaprograms" },
     { icon: BookOpen, label: "Mantra Library", href: "/mantraprogram" },
+    { icon: BookOpen, label: "Wisdom Library", href: "/wisdomlibrary" },
     { icon: Heart, label: "Saved Sessions", href: "/saved" },
 ];
 
