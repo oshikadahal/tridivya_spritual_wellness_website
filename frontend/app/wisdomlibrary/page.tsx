@@ -2,6 +2,8 @@
 import React from "react";
 import Sidebar from "../(user)/_components/Sidebar";
 import UserHeader from "../(user)/_components/UserHeader";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const books = [
   {
@@ -80,6 +82,10 @@ const books = [
 
 export default function WisdomLibraryPage() {
   const [savedBooks, setSavedBooks] = React.useState<number[]>([]);
+  const { user } = useAuth();
+  const router = useRouter();
+  const { logout } = useAuth();
+  const [showLogoutModal, setShowLogoutModal] = React.useState(false);
 
   const handleToggleSave = (idx: number) => {
     setSavedBooks((prev) =>
@@ -87,6 +93,12 @@ export default function WisdomLibraryPage() {
         ? prev.filter((i) => i !== idx)
         : [...prev, idx]
     );
+  };
+
+  const handleLogout = async () => {
+    setShowLogoutModal(false);
+    await logout();
+    router.push("/auth/login");
   };
 
   return (
@@ -133,6 +145,7 @@ export default function WisdomLibraryPage() {
               </div>
             </div>
           </section>
+        
           {/* Right Sidebar */}
           <div className="w-80 bg-white/50 backdrop-blur border-l border-purple-200 p-6 space-y-6">
             {/* Mantra of the Day */}
@@ -199,10 +212,52 @@ export default function WisdomLibraryPage() {
             </div>
           </div>
         </div>
-        </div>
+        <button
+          className="mt-4 w-full bg-[#7B61FF] text-white py-3 rounded-xl font-semibold hover:bg-[#5B6EF8] transition flex items-center justify-center gap-2"
+          onClick={() => setShowLogoutModal(true)}
+        >
+          <span className="material-icons">logout</span> Logout
+        </button>
+
+        {/* Logout Confirmation Modal */}
+        {showLogoutModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-2xl shadow-lg p-8 max-w-sm w-full relative">
+              <button
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+                onClick={() => setShowLogoutModal(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+              <div className="flex flex-col items-center">
+                <div className="bg-red-100 rounded-full p-4 mb-4">
+                  <span className="material-icons text-red-500 text-4xl">error_outline</span>
+                </div>
+                <h2 className="text-xl font-bold mb-2 text-center">Are you sure you want to log out?</h2>
+                <p className="text-gray-600 mb-6 text-center">You will be logged out of your account.</p>
+                <div className="flex gap-4 w-full">
+                  <button
+                    className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition"
+                    onClick={() => setShowLogoutModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="flex-1 py-2 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+                    onClick={handleLogout}
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
 
 

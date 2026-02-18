@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useLogoutModal } from "@/context/LogoutModalContext";
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -26,10 +27,12 @@ const menuItems = [
 export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
+    const { setShowLogoutModal } = useLogoutModal();
 
     const handleLogout = async () => {
         await signOut({ redirect: false });
         router.push("/login");
+        setShowLogoutModal(true);
     };
 
     return (
@@ -82,7 +85,7 @@ export default function Sidebar() {
                     <span className="font-medium text-sm">Settings</span>
                 </Link>
                 <button
-                    onClick={handleLogout}
+                    onClick={() => setShowLogoutModal(true)}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all"
                 >
                     <LogOut className="w-5 h-5" />

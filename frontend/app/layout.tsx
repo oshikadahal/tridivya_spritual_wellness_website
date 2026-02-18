@@ -5,6 +5,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "next-themes";
 import "react-toastify/dist/ReactToastify.css";
+import { LogoutModalProvider } from "@/context/LogoutModalContext";
+import LogoutModal from "@/components/LogoutModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +34,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <AuthProvider>
-            {children}
-            <ToastContainer position="top-right" autoClose={3000} />
-          </AuthProvider>
+          <LogoutModalProvider>
+            <AuthProvider>
+              {children}
+              <ToastContainer position="top-right" autoClose={3000} />
+              <LogoutModal />
+            </AuthProvider>
+          </LogoutModalProvider>
         </ThemeProvider>
       </body>
     </html>
