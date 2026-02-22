@@ -9,4 +9,15 @@ const axiosInstance = axios.create({
     withCredentials: true, // Include cookies in requests
 });
 
+axiosInstance.interceptors.request.use((config) => {
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            config.headers = config.headers || {};
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return config;
+});
+
 export default axiosInstance;

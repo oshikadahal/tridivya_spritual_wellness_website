@@ -4,14 +4,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { LoginData, loginSchema } from "../schema";
 import { loginUser } from "@/lib/api/auth";
-import { handleLogin } from "@/lib/actions/auth-action";
 
 export default function LoginForm() {
     const router = useRouter();
+    const { login: setAuthState } = useAuth();
     const {
         register,
         handleSubmit,
@@ -25,22 +26,29 @@ export default function LoginForm() {
     const submit = async (values: LoginData) => {
         setError(null);
         try {
-            const response = await handleLogin(values);
+            const response = await loginUser(values);
             if (!response.success) {
                 setError(response.message || 'Login failed');
                 return;
             }
 
+            // persist auth locally for client-side requests
             if (response.token) {
                 localStorage.setItem("auth_token", response.token);
+                document.cookie = `auth_token=${response.token}; path=/`;
             }
-            
-            // Redirect based on user role
-            const redirectUrl = response.data?.role === 'admin' 
-                ? '/admin/dashboard' 
+            if (response.data) {
+                localStorage.setItem("user_data", JSON.stringify(response.data));
+                document.cookie = `user_data=${encodeURIComponent(JSON.stringify(response.data))}; path=/`;
+                // update in-memory auth state to avoid a flash back to /login
+                setAuthState(response.data);
+            }
+
+            const redirectUrl = response.data?.role === 'admin'
+                ? '/admin/dashboard'
                 : '/dashboard';
-            
-            window.location.href = redirectUrl;
+
+            router.replace(redirectUrl);
         } catch (err: Error | any) {
             setError(err.message || 'Login failed');
         }
