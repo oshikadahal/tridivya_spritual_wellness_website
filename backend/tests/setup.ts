@@ -6,13 +6,19 @@ let mongo: MongoMemoryServer | null = null;
 
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
-  const uri = mongo.getUri();
-  process.env.MONGODB_URI = uri;
-  await connectDatabase(uri);
+  const baseUri = mongo.getUri();
+  const dbName = process.env.TEST_DB_NAME || 'tridivya_wellness_test';
+  const url = new URL(baseUri);
+  url.pathname = `/${dbName}`;
+  const testUri = url.toString();
+
+  process.env.MONGODB_URI = testUri;
+  await connectDatabase(testUri);
 });
 
 afterEach(async () => {
-  if (mongoose.connection.readyState === 1) {
+  const shouldClearEachTest = process.env.TEST_CLEAR_DB_EACH_TEST === 'true';
+  if (shouldClearEachTest && mongoose.connection.readyState === 1) {
     await mongoose.connection.db.dropDatabase();
   }
 });

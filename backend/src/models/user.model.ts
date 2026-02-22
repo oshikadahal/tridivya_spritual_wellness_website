@@ -1,5 +1,6 @@
 ﻿import mongoose, { Schema, Document } from 'mongoose';
 import { UserType } from '../types/user.type';
+import { resolveCollectionName } from '../utils/collection-name';
 
 const UserSchema: Schema = new Schema<UserType>(
   {
@@ -17,7 +18,10 @@ const UserSchema: Schema = new Schema<UserType>(
     resetPasswordToken: { type: String, required: false },
     resetPasswordExpires: { type: Date, required: false }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    collection: resolveCollectionName('users'),
+  }
 );
 
 export interface IUser extends UserType, Document {
