@@ -1,0 +1,1757 @@
+{
+  "started_at": "2026-02-22T07:54:03.331Z",
+  "mongo_db_name": "(from MONGODB_URI)",
+  "mongo_uri_used": "mongodb+srv://oshikadahal61_db_user:OabrTQztIEb8GsJX@cluster0.kfokskw.mongodb.net/tridivya_wellness?retryWrites=true&w=majority",
+  "base_url": "http://localhost:5062",
+  "steps": [
+    {
+      "name": "Register admin candidate",
+      "method": "POST",
+      "endpoint": "/api/auth/register",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "success": true,
+        "message": "User Created",
+        "data": {
+          "email": "admin_1771746847807@example.com",
+          "password": "$2a$10$LghbAHNXtoNYsYNtjPSx2eex97FVAMWMZVacQCHB5GqVDQ70jedkC",
+          "username": "admin_1771746847807",
+          "firstName": "Admin",
+          "lastName": "User",
+          "role": "user",
+          "_id": "699ab621bbb8b9a02158c55e",
+          "createdAt": "2026-02-22T07:54:09.495Z",
+          "updatedAt": "2026-02-22T07:54:09.495Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Admin login",
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "success": true,
+        "message": "Login successful",
+        "data": {
+          "_id": "699ab621bbb8b9a02158c55e",
+          "email": "admin_1771746847807@example.com",
+          "password": "$2a$10$LghbAHNXtoNYsYNtjPSx2eex97FVAMWMZVacQCHB5GqVDQ70jedkC",
+          "username": "admin_1771746847807",
+          "firstName": "Admin",
+          "lastName": "User",
+          "role": "admin",
+          "createdAt": "2026-02-22T07:54:09.495Z",
+          "updatedAt": "2026-02-22T07:54:09.993Z",
+          "__v": 0
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWFiNjIxYmJiOGI5YTAyMTU4YzU1ZSIsImVtYWlsIjoiYWRtaW5fMTc3MTc0Njg0NzgwN0BleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoiYWRtaW5fMTc3MTc0Njg0NzgwNyIsImZpcnN0TmFtZSI6IkFkbWluIiwibGFzdE5hbWUiOiJVc2VyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzcxNzQ2ODUwLCJleHAiOjE3NzQzMzg4NTB9.A9FMV8Dfmvy6hzoPUa0JmkjJ9zJd-wfyR_6T2pia7uk"
+      }
+    },
+    {
+      "name": "Register normal user",
+      "method": "POST",
+      "endpoint": "/api/auth/register",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "success": true,
+        "message": "User Created",
+        "data": {
+          "email": "user_1771746847807@example.com",
+          "password": "$2a$10$wH6D1RP9lkdsxBYMSKNQ6OF12iyiaK8uj0AXFQ3MZejfs72GprqLq",
+          "username": "user_1771746847807",
+          "firstName": "Normal",
+          "lastName": "User",
+          "role": "user",
+          "_id": "699ab623bbb8b9a02158c573",
+          "createdAt": "2026-02-22T07:54:11.080Z",
+          "updatedAt": "2026-02-22T07:54:11.080Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Normal user login",
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "success": true,
+        "message": "Login successful",
+        "data": {
+          "_id": "699ab623bbb8b9a02158c573",
+          "email": "user_1771746847807@example.com",
+          "password": "$2a$10$wH6D1RP9lkdsxBYMSKNQ6OF12iyiaK8uj0AXFQ3MZejfs72GprqLq",
+          "username": "user_1771746847807",
+          "firstName": "Normal",
+          "lastName": "User",
+          "role": "user",
+          "createdAt": "2026-02-22T07:54:11.080Z",
+          "updatedAt": "2026-02-22T07:54:11.080Z",
+          "__v": 0
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWFiNjIzYmJiOGI5YTAyMTU4YzU3MyIsImVtYWlsIjoidXNlcl8xNzcxNzQ2ODQ3ODA3QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ1c2VyXzE3NzE3NDY4NDc4MDciLCJmaXJzdE5hbWUiOiJOb3JtYWwiLCJsYXN0TmFtZSI6IlVzZXIiLCJyb2xlIjoidXNlciIsImlhdCI6MTc3MTc0Njg1MSwiZXhwIjoxNzc0MzM4ODUxfQ.RSShGnkdR1E_NYPWx9rQC_rNPhPR8stkRbwZ7W0Osnc"
+      }
+    },
+    {
+      "name": "Create meditation 1 - Mindful Breathing",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Mindful Breathing",
+        "subtitle": "Calm your mind",
+        "description": "A guided meditation for relaxation and stress relief",
+        "difficulty": "beginner",
+        "duration_seconds": 600,
+        "media_url": "https://example.com/meditation1.mp3",
+        "goal_slug": "stress_relief",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab623bbb8b9a02158c579",
+        "id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "created_at": "2026-02-22T07:54:11.788Z",
+        "updated_at": "2026-02-22T07:54:11.788Z"
+      }
+    },
+    {
+      "name": "Create meditation 2 - Body Scan",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Body Scan Meditation",
+        "subtitle": "Release tension",
+        "description": "Progressive relaxation through body awareness",
+        "difficulty": "intermediate",
+        "duration_seconds": 900,
+        "media_url": "https://example.com/meditation2.mp3",
+        "goal_slug": "better_sleep",
+        "is_featured": false,
+        "is_trending": true,
+        "is_active": true,
+        "_id": "699ab624bbb8b9a02158c57c",
+        "id": "a560b510-fbf9-48af-9895-0b787204c6df",
+        "created_at": "2026-02-22T07:54:12.195Z",
+        "updated_at": "2026-02-22T07:54:12.195Z"
+      }
+    },
+    {
+      "name": "Create meditation 3 - Loving Kindness",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Loving Kindness Meditation",
+        "subtitle": "Cultivate compassion",
+        "description": "Metta meditation for self-love and compassion",
+        "difficulty": "advanced",
+        "duration_seconds": 1200,
+        "media_url": "https://example.com/meditation3.mp3",
+        "goal_slug": "emotional_balance",
+        "is_featured": true,
+        "is_trending": true,
+        "is_active": true,
+        "_id": "699ab624bbb8b9a02158c57f",
+        "id": "6b9a56f6-7ad7-4b94-9d32-610482cd02f4",
+        "created_at": "2026-02-22T07:54:12.599Z",
+        "updated_at": "2026-02-22T07:54:12.599Z"
+      }
+    },
+    {
+      "name": "Create meditation 4 - Focus & Concentration",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Focus & Concentration",
+        "subtitle": "Sharpen your mind",
+        "description": "Enhance mental clarity and concentration",
+        "difficulty": "beginner",
+        "duration_seconds": 480,
+        "media_url": "https://example.com/meditation4.mp3",
+        "goal_slug": "focus",
+        "is_featured": false,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab625bbb8b9a02158c582",
+        "id": "4207a5af-4ce0-4e59-852c-34dbb478c465",
+        "created_at": "2026-02-22T07:54:13.017Z",
+        "updated_at": "2026-02-22T07:54:13.017Z"
+      }
+    },
+    {
+      "name": "Create yoga 1 - Morning Flow",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Morning Flow",
+        "subtitle": "Start your day right",
+        "description": "Energizing yoga sequence to wake up the body",
+        "difficulty": "intermediate",
+        "duration_seconds": 1200,
+        "media_url": "https://example.com/yoga1.mp4",
+        "goal_slug": "flexibility",
+        "is_featured": false,
+        "is_trending": true,
+        "is_active": true,
+        "_id": "699ab625bbb8b9a02158c585",
+        "id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+        "created_at": "2026-02-22T07:54:13.424Z",
+        "updated_at": "2026-02-22T07:54:13.424Z"
+      }
+    },
+    {
+      "name": "Create yoga 2 - Power Yoga",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Power Yoga",
+        "subtitle": "Build strength",
+        "description": "Challenging vinyasa flow for strength building",
+        "difficulty": "advanced",
+        "duration_seconds": 1800,
+        "media_url": "https://example.com/yoga2.mp4",
+        "goal_slug": "strength",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab625bbb8b9a02158c588",
+        "id": "2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+        "created_at": "2026-02-22T07:54:13.833Z",
+        "updated_at": "2026-02-22T07:54:13.833Z"
+      }
+    },
+    {
+      "name": "Create yoga 3 - Gentle Stretching",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Gentle Stretching",
+        "subtitle": "Relax and unwind",
+        "description": "Slow-paced yoga for flexibility and relaxation",
+        "difficulty": "beginner",
+        "duration_seconds": 900,
+        "media_url": "https://example.com/yoga3.mp4",
+        "goal_slug": "better_sleep",
+        "is_featured": false,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab626bbb8b9a02158c58b",
+        "id": "1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9",
+        "created_at": "2026-02-22T07:54:14.238Z",
+        "updated_at": "2026-02-22T07:54:14.238Z"
+      }
+    },
+    {
+      "name": "Create yoga 4 - Chair Yoga",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Chair Yoga",
+        "subtitle": "Accessible practice",
+        "description": "Yoga poses adapted for seated practice",
+        "difficulty": "beginner",
+        "duration_seconds": 600,
+        "media_url": "https://example.com/yoga4.mp4",
+        "goal_slug": "flexibility",
+        "is_featured": true,
+        "is_trending": true,
+        "is_active": true,
+        "_id": "699ab626bbb8b9a02158c58e",
+        "id": "e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6",
+        "created_at": "2026-02-22T07:54:14.643Z",
+        "updated_at": "2026-02-22T07:54:14.643Z"
+      }
+    },
+    {
+      "name": "Create mantra 1 - Om",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Om Chanting",
+        "meaning": "The primordial sound, representing the essence of reality",
+        "lyrics": "Om",
+        "transliteration": "Aum",
+        "pronunciation_guide": "Pronounce as AUM with three syllables: A-U-M",
+        "audio_url": "https://example.com/mantra1.mp3",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab627bbb8b9a02158c591",
+        "id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+        "created_at": "2026-02-22T07:54:15.050Z",
+        "updated_at": "2026-02-22T07:54:15.050Z"
+      }
+    },
+    {
+      "name": "Create mantra 2 - Gayatri",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Gayatri Mantra",
+        "meaning": "Prayer to the divine light for illumination of the intellect",
+        "lyrics": "Om Bhur Bhuvaḥ Swaḥ, Tat Savitur Vareṇyaṃ, Bhargo Devasya Dhīmahi, Dhiyo Yo Naḥ Prachodayāt",
+        "transliteration": "Om Bhur Bhuvah Svah, Tat Savitur Varenyam, Bhargo Devasya Dhimahi, Dhiyo Yo Nah Prachodayat",
+        "pronunciation_guide": "Recite slowly with focus on each syllable",
+        "audio_url": "https://example.com/mantra2.mp3",
+        "is_featured": true,
+        "is_trending": true,
+        "is_active": true,
+        "_id": "699ab627bbb8b9a02158c594",
+        "id": "e73816dc-dd51-4960-a4e6-7c474fcb4bd3",
+        "created_at": "2026-02-22T07:54:15.457Z",
+        "updated_at": "2026-02-22T07:54:15.457Z"
+      }
+    },
+    {
+      "name": "Create mantra 3 - Shanti",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Shanti Mantra",
+        "meaning": "May there be peace in all three realms",
+        "lyrics": "Om Shanti Shanti Shanti",
+        "transliteration": "Om Shanti Shanti Shanti",
+        "pronunciation_guide": "Pronounce Shanti as SHAHN-tee",
+        "audio_url": "https://example.com/mantra3.mp3",
+        "is_featured": false,
+        "is_trending": true,
+        "is_active": true,
+        "_id": "699ab627bbb8b9a02158c597",
+        "id": "2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1",
+        "created_at": "2026-02-22T07:54:15.874Z",
+        "updated_at": "2026-02-22T07:54:15.874Z"
+      }
+    },
+    {
+      "name": "Create mantra 4 - Maha Mrityunjaya",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "Maha Mrityunjaya Mantra",
+        "meaning": "Victory over death and suffering",
+        "lyrics": "Om Tryambakam Yajamahe Sugandhim Pushtivardhanam, Urvarukamiva Bandhanan Mrityor Mukshiya Maamritat",
+        "transliteration": "Om Tryambakam Yajamahe Sugandhim Pushtivardhanam, Urvarukamiva Bandhanan Mrityor Mukshiya Maamritat",
+        "pronunciation_guide": "Chant with devotion and clear pronunciation",
+        "audio_url": "https://example.com/mantra4.mp3",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab628bbb8b9a02158c59a",
+        "id": "095d4511-bd66-45ff-91fe-959e1c52215c",
+        "created_at": "2026-02-22T07:54:16.281Z",
+        "updated_at": "2026-02-22T07:54:16.281Z"
+      }
+    },
+    {
+      "name": "Create mantra 5 - So Hum",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "title": "So Hum Mantra",
+        "meaning": "I am That - unity with the divine",
+        "lyrics": "So Hum",
+        "transliteration": "So Hum",
+        "pronunciation_guide": "Inhale on So, exhale on Hum",
+        "audio_url": "https://example.com/mantra5.mp3",
+        "is_featured": false,
+        "is_trending": false,
+        "is_active": true,
+        "_id": "699ab628bbb8b9a02158c59d",
+        "id": "c10591b5-87f0-429d-9785-87f0a308efe0",
+        "created_at": "2026-02-22T07:54:16.687Z",
+        "updated_at": "2026-02-22T07:54:16.687Z"
+      }
+    },
+    {
+      "name": "List meditations",
+      "method": "GET",
+      "endpoint": "/api/v1/meditations?page=1&limit=10",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "data": [
+          {
+            "_id": "699ab625bbb8b9a02158c582",
+            "title": "Focus & Concentration",
+            "subtitle": "Sharpen your mind",
+            "description": "Enhance mental clarity and concentration",
+            "difficulty": "beginner",
+            "duration_seconds": 480,
+            "media_url": "https://example.com/meditation4.mp3",
+            "goal_slug": "focus",
+            "is_featured": false,
+            "is_trending": false,
+            "is_active": true,
+            "id": "4207a5af-4ce0-4e59-852c-34dbb478c465",
+            "created_at": "2026-02-22T07:54:13.017Z",
+            "updated_at": "2026-02-22T07:54:13.017Z"
+          },
+          {
+            "_id": "699ab624bbb8b9a02158c57f",
+            "title": "Loving Kindness Meditation",
+            "subtitle": "Cultivate compassion",
+            "description": "Metta meditation for self-love and compassion",
+            "difficulty": "advanced",
+            "duration_seconds": 1200,
+            "media_url": "https://example.com/meditation3.mp3",
+            "goal_slug": "emotional_balance",
+            "is_featured": true,
+            "is_trending": true,
+            "is_active": true,
+            "id": "6b9a56f6-7ad7-4b94-9d32-610482cd02f4",
+            "created_at": "2026-02-22T07:54:12.599Z",
+            "updated_at": "2026-02-22T07:54:12.599Z"
+          },
+          {
+            "_id": "699ab624bbb8b9a02158c57c",
+            "title": "Body Scan Meditation",
+            "subtitle": "Release tension",
+            "description": "Progressive relaxation through body awareness",
+            "difficulty": "intermediate",
+            "duration_seconds": 900,
+            "media_url": "https://example.com/meditation2.mp3",
+            "goal_slug": "better_sleep",
+            "is_featured": false,
+            "is_trending": true,
+            "is_active": true,
+            "id": "a560b510-fbf9-48af-9895-0b787204c6df",
+            "created_at": "2026-02-22T07:54:12.195Z",
+            "updated_at": "2026-02-22T07:54:12.195Z"
+          },
+          {
+            "_id": "699ab623bbb8b9a02158c579",
+            "title": "Mindful Breathing",
+            "subtitle": "Calm your mind",
+            "description": "A guided meditation for relaxation and stress relief",
+            "difficulty": "beginner",
+            "duration_seconds": 600,
+            "media_url": "https://example.com/meditation1.mp3",
+            "goal_slug": "stress_relief",
+            "is_featured": true,
+            "is_trending": false,
+            "is_active": true,
+            "id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+            "created_at": "2026-02-22T07:54:11.788Z",
+            "updated_at": "2026-02-22T07:54:11.788Z"
+          }
+        ],
+        "total": 4,
+        "page": 1,
+        "limit": 10
+      }
+    },
+    {
+      "name": "Get meditation 1 by ID",
+      "method": "GET",
+      "endpoint": "/api/v1/meditations/be5930fc-0e06-4b3d-920a-74987138a68e",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab623bbb8b9a02158c579",
+        "title": "Mindful Breathing",
+        "subtitle": "Calm your mind",
+        "description": "A guided meditation for relaxation and stress relief",
+        "difficulty": "beginner",
+        "duration_seconds": 600,
+        "media_url": "https://example.com/meditation1.mp3",
+        "goal_slug": "stress_relief",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "created_at": "2026-02-22T07:54:11.788Z",
+        "updated_at": "2026-02-22T07:54:11.788Z",
+        "review_summary": {
+          "average_rating": 0,
+          "total_reviews": 0
+        }
+      }
+    },
+    {
+      "name": "List yogas",
+      "method": "GET",
+      "endpoint": "/api/v1/yogas",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "data": [
+          {
+            "_id": "699ab626bbb8b9a02158c58e",
+            "title": "Chair Yoga",
+            "subtitle": "Accessible practice",
+            "description": "Yoga poses adapted for seated practice",
+            "difficulty": "beginner",
+            "duration_seconds": 600,
+            "media_url": "https://example.com/yoga4.mp4",
+            "goal_slug": "flexibility",
+            "is_featured": true,
+            "is_trending": true,
+            "is_active": true,
+            "id": "e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6",
+            "created_at": "2026-02-22T07:54:14.643Z",
+            "updated_at": "2026-02-22T07:54:14.643Z"
+          },
+          {
+            "_id": "699ab626bbb8b9a02158c58b",
+            "title": "Gentle Stretching",
+            "subtitle": "Relax and unwind",
+            "description": "Slow-paced yoga for flexibility and relaxation",
+            "difficulty": "beginner",
+            "duration_seconds": 900,
+            "media_url": "https://example.com/yoga3.mp4",
+            "goal_slug": "better_sleep",
+            "is_featured": false,
+            "is_trending": false,
+            "is_active": true,
+            "id": "1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9",
+            "created_at": "2026-02-22T07:54:14.238Z",
+            "updated_at": "2026-02-22T07:54:14.238Z"
+          },
+          {
+            "_id": "699ab625bbb8b9a02158c588",
+            "title": "Power Yoga",
+            "subtitle": "Build strength",
+            "description": "Challenging vinyasa flow for strength building",
+            "difficulty": "advanced",
+            "duration_seconds": 1800,
+            "media_url": "https://example.com/yoga2.mp4",
+            "goal_slug": "strength",
+            "is_featured": true,
+            "is_trending": false,
+            "is_active": true,
+            "id": "2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+            "created_at": "2026-02-22T07:54:13.833Z",
+            "updated_at": "2026-02-22T07:54:13.833Z"
+          },
+          {
+            "_id": "699ab625bbb8b9a02158c585",
+            "title": "Morning Flow",
+            "subtitle": "Start your day right",
+            "description": "Energizing yoga sequence to wake up the body",
+            "difficulty": "intermediate",
+            "duration_seconds": 1200,
+            "media_url": "https://example.com/yoga1.mp4",
+            "goal_slug": "flexibility",
+            "is_featured": false,
+            "is_trending": true,
+            "is_active": true,
+            "id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+            "created_at": "2026-02-22T07:54:13.424Z",
+            "updated_at": "2026-02-22T07:54:13.424Z"
+          }
+        ],
+        "total": 4,
+        "page": 1,
+        "limit": 10
+      }
+    },
+    {
+      "name": "Get yoga 1 by ID",
+      "method": "GET",
+      "endpoint": "/api/v1/yogas/42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab625bbb8b9a02158c585",
+        "title": "Morning Flow",
+        "subtitle": "Start your day right",
+        "description": "Energizing yoga sequence to wake up the body",
+        "difficulty": "intermediate",
+        "duration_seconds": 1200,
+        "media_url": "https://example.com/yoga1.mp4",
+        "goal_slug": "flexibility",
+        "is_featured": false,
+        "is_trending": true,
+        "is_active": true,
+        "id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+        "created_at": "2026-02-22T07:54:13.424Z",
+        "updated_at": "2026-02-22T07:54:13.424Z",
+        "review_summary": {
+          "average_rating": 0,
+          "total_reviews": 0
+        }
+      }
+    },
+    {
+      "name": "List mantras",
+      "method": "GET",
+      "endpoint": "/api/v1/mantras",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "data": [
+          {
+            "_id": "699ab628bbb8b9a02158c59d",
+            "title": "So Hum Mantra",
+            "meaning": "I am That - unity with the divine",
+            "lyrics": "So Hum",
+            "transliteration": "So Hum",
+            "pronunciation_guide": "Inhale on So, exhale on Hum",
+            "audio_url": "https://example.com/mantra5.mp3",
+            "is_featured": false,
+            "is_trending": false,
+            "is_active": true,
+            "id": "c10591b5-87f0-429d-9785-87f0a308efe0",
+            "created_at": "2026-02-22T07:54:16.687Z",
+            "updated_at": "2026-02-22T07:54:16.687Z"
+          },
+          {
+            "_id": "699ab628bbb8b9a02158c59a",
+            "title": "Maha Mrityunjaya Mantra",
+            "meaning": "Victory over death and suffering",
+            "lyrics": "Om Tryambakam Yajamahe Sugandhim Pushtivardhanam, Urvarukamiva Bandhanan Mrityor Mukshiya Maamritat",
+            "transliteration": "Om Tryambakam Yajamahe Sugandhim Pushtivardhanam, Urvarukamiva Bandhanan Mrityor Mukshiya Maamritat",
+            "pronunciation_guide": "Chant with devotion and clear pronunciation",
+            "audio_url": "https://example.com/mantra4.mp3",
+            "is_featured": true,
+            "is_trending": false,
+            "is_active": true,
+            "id": "095d4511-bd66-45ff-91fe-959e1c52215c",
+            "created_at": "2026-02-22T07:54:16.281Z",
+            "updated_at": "2026-02-22T07:54:16.281Z"
+          },
+          {
+            "_id": "699ab627bbb8b9a02158c597",
+            "title": "Shanti Mantra",
+            "meaning": "May there be peace in all three realms",
+            "lyrics": "Om Shanti Shanti Shanti",
+            "transliteration": "Om Shanti Shanti Shanti",
+            "pronunciation_guide": "Pronounce Shanti as SHAHN-tee",
+            "audio_url": "https://example.com/mantra3.mp3",
+            "is_featured": false,
+            "is_trending": true,
+            "is_active": true,
+            "id": "2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1",
+            "created_at": "2026-02-22T07:54:15.874Z",
+            "updated_at": "2026-02-22T07:54:15.874Z"
+          },
+          {
+            "_id": "699ab627bbb8b9a02158c594",
+            "title": "Gayatri Mantra",
+            "meaning": "Prayer to the divine light for illumination of the intellect",
+            "lyrics": "Om Bhur Bhuvaḥ Swaḥ, Tat Savitur Vareṇyaṃ, Bhargo Devasya Dhīmahi, Dhiyo Yo Naḥ Prachodayāt",
+            "transliteration": "Om Bhur Bhuvah Svah, Tat Savitur Varenyam, Bhargo Devasya Dhimahi, Dhiyo Yo Nah Prachodayat",
+            "pronunciation_guide": "Recite slowly with focus on each syllable",
+            "audio_url": "https://example.com/mantra2.mp3",
+            "is_featured": true,
+            "is_trending": true,
+            "is_active": true,
+            "id": "e73816dc-dd51-4960-a4e6-7c474fcb4bd3",
+            "created_at": "2026-02-22T07:54:15.457Z",
+            "updated_at": "2026-02-22T07:54:15.457Z"
+          },
+          {
+            "_id": "699ab627bbb8b9a02158c591",
+            "title": "Om Chanting",
+            "meaning": "The primordial sound, representing the essence of reality",
+            "lyrics": "Om",
+            "transliteration": "Aum",
+            "pronunciation_guide": "Pronounce as AUM with three syllables: A-U-M",
+            "audio_url": "https://example.com/mantra1.mp3",
+            "is_featured": true,
+            "is_trending": false,
+            "is_active": true,
+            "id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+            "created_at": "2026-02-22T07:54:15.050Z",
+            "updated_at": "2026-02-22T07:54:15.050Z"
+          }
+        ],
+        "total": 5,
+        "page": 1,
+        "limit": 10
+      }
+    },
+    {
+      "name": "Get mantra 1 by ID",
+      "method": "GET",
+      "endpoint": "/api/v1/mantras/f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab627bbb8b9a02158c591",
+        "title": "Om Chanting",
+        "meaning": "The primordial sound, representing the essence of reality",
+        "lyrics": "Om",
+        "transliteration": "Aum",
+        "pronunciation_guide": "Pronounce as AUM with three syllables: A-U-M",
+        "audio_url": "https://example.com/mantra1.mp3",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+        "created_at": "2026-02-22T07:54:15.050Z",
+        "updated_at": "2026-02-22T07:54:15.050Z",
+        "review_summary": {
+          "average_rating": 0,
+          "total_reviews": 0
+        }
+      }
+    },
+    {
+      "name": "Save meditation 1",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-meditations",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Meditation saved successfully"
+      }
+    },
+    {
+      "name": "Save meditation 2",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-meditations",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Meditation saved successfully"
+      }
+    },
+    {
+      "name": "Save meditation 3",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-meditations",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Meditation saved successfully"
+      }
+    },
+    {
+      "name": "Get saved meditations",
+      "method": "GET",
+      "endpoint": "/api/v1/me/saved-meditations",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "a560b510-fbf9-48af-9895-0b787204c6df",
+        "6b9a56f6-7ad7-4b94-9d32-610482cd02f4"
+      ]
+    },
+    {
+      "name": "Save yoga 1",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-yogas",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Yoga saved successfully"
+      }
+    },
+    {
+      "name": "Save yoga 2",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-yogas",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Yoga saved successfully"
+      }
+    },
+    {
+      "name": "Save yoga 3",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-yogas",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Yoga saved successfully"
+      }
+    },
+    {
+      "name": "Get saved yogas",
+      "method": "GET",
+      "endpoint": "/api/v1/me/saved-yogas",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+        "2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+        "1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9"
+      ]
+    },
+    {
+      "name": "Save mantra 1",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-mantras",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Mantra saved successfully"
+      }
+    },
+    {
+      "name": "Save mantra 2",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-mantras",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Mantra saved successfully"
+      }
+    },
+    {
+      "name": "Save mantra 3",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-mantras",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Mantra saved successfully"
+      }
+    },
+    {
+      "name": "Save mantra 4",
+      "method": "POST",
+      "endpoint": "/api/v1/me/saved-mantras",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Mantra saved successfully"
+      }
+    },
+    {
+      "name": "Get saved mantras",
+      "method": "GET",
+      "endpoint": "/api/v1/me/saved-mantras",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+        "e73816dc-dd51-4960-a4e6-7c474fcb4bd3",
+        "2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1",
+        "095d4511-bd66-45ff-91fe-959e1c52215c"
+      ]
+    },
+    {
+      "name": "Upsert meditation 1 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/meditation-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab62d45451774af13a98a",
+        "meditation_id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_played_at": "2026-02-22T07:54:24.247Z",
+        "last_position_seconds": 300,
+        "progress_percent": 50,
+        "started_at": "2026-02-22T07:54:24.247Z",
+        "status": "in_progress",
+        "updated_at": "2026-02-22T07:54:24.247Z"
+      }
+    },
+    {
+      "name": "Upsert meditation 2 progress - completed",
+      "method": "POST",
+      "endpoint": "/api/v1/me/meditation-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab62e45451774af13a98b",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "meditation_id": "a560b510-fbf9-48af-9895-0b787204c6df",
+        "completed_at": "2026-02-22T07:54:24.654Z",
+        "last_played_at": "2026-02-22T07:54:24.654Z",
+        "last_position_seconds": 900,
+        "progress_percent": 100,
+        "started_at": "2026-02-22T07:54:24.654Z",
+        "status": "completed",
+        "updated_at": "2026-02-22T07:54:24.654Z"
+      }
+    },
+    {
+      "name": "Upsert meditation 3 progress - just started",
+      "method": "POST",
+      "endpoint": "/api/v1/me/meditation-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab62e45451774af13a98c",
+        "meditation_id": "6b9a56f6-7ad7-4b94-9d32-610482cd02f4",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_played_at": "2026-02-22T07:54:25.059Z",
+        "last_position_seconds": 120,
+        "progress_percent": 10,
+        "started_at": "2026-02-22T07:54:25.059Z",
+        "status": "in_progress",
+        "updated_at": "2026-02-22T07:54:25.059Z"
+      }
+    },
+    {
+      "name": "Upsert meditation 4 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/meditation-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab62f45451774af13a98d",
+        "meditation_id": "4207a5af-4ce0-4e59-852c-34dbb478c465",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_played_at": "2026-02-22T07:54:25.461Z",
+        "last_position_seconds": 360,
+        "progress_percent": 75,
+        "started_at": "2026-02-22T07:54:25.461Z",
+        "status": "in_progress",
+        "updated_at": "2026-02-22T07:54:25.461Z"
+      }
+    },
+    {
+      "name": "Get meditation progress",
+      "method": "GET",
+      "endpoint": "/api/v1/me/meditation-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        {
+          "_id": "699ab62d45451774af13a98a",
+          "meditation_id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_played_at": "2026-02-22T07:54:24.247Z",
+          "last_position_seconds": 300,
+          "progress_percent": 50,
+          "started_at": "2026-02-22T07:54:24.247Z",
+          "status": "in_progress",
+          "updated_at": "2026-02-22T07:54:24.247Z"
+        },
+        {
+          "_id": "699ab62e45451774af13a98b",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "meditation_id": "a560b510-fbf9-48af-9895-0b787204c6df",
+          "completed_at": "2026-02-22T07:54:24.654Z",
+          "last_played_at": "2026-02-22T07:54:24.654Z",
+          "last_position_seconds": 900,
+          "progress_percent": 100,
+          "started_at": "2026-02-22T07:54:24.654Z",
+          "status": "completed",
+          "updated_at": "2026-02-22T07:54:24.654Z"
+        },
+        {
+          "_id": "699ab62e45451774af13a98c",
+          "meditation_id": "6b9a56f6-7ad7-4b94-9d32-610482cd02f4",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_played_at": "2026-02-22T07:54:25.059Z",
+          "last_position_seconds": 120,
+          "progress_percent": 10,
+          "started_at": "2026-02-22T07:54:25.059Z",
+          "status": "in_progress",
+          "updated_at": "2026-02-22T07:54:25.059Z"
+        },
+        {
+          "_id": "699ab62f45451774af13a98d",
+          "meditation_id": "4207a5af-4ce0-4e59-852c-34dbb478c465",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_played_at": "2026-02-22T07:54:25.461Z",
+          "last_position_seconds": 360,
+          "progress_percent": 75,
+          "started_at": "2026-02-22T07:54:25.461Z",
+          "status": "in_progress",
+          "updated_at": "2026-02-22T07:54:25.461Z"
+        }
+      ]
+    },
+    {
+      "name": "Upsert yoga 1 progress - completed",
+      "method": "POST",
+      "endpoint": "/api/v1/me/yoga-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab62f45451774af13a98e",
+        "yoga_id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "completed_at": "2026-02-22T07:54:26.276Z",
+        "last_played_at": "2026-02-22T07:54:26.276Z",
+        "last_position_seconds": 1200,
+        "progress_percent": 100,
+        "started_at": "2026-02-22T07:54:26.276Z",
+        "status": "completed",
+        "updated_at": "2026-02-22T07:54:26.276Z"
+      }
+    },
+    {
+      "name": "Upsert yoga 2 progress - halfway",
+      "method": "POST",
+      "endpoint": "/api/v1/me/yoga-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63045451774af13a98f",
+        "yoga_id": "2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_played_at": "2026-02-22T07:54:26.680Z",
+        "last_position_seconds": 900,
+        "progress_percent": 50,
+        "started_at": "2026-02-22T07:54:26.680Z",
+        "status": "in_progress",
+        "updated_at": "2026-02-22T07:54:26.680Z"
+      }
+    },
+    {
+      "name": "Upsert yoga 3 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/yoga-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63045451774af13a990",
+        "yoga_id": "1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_played_at": "2026-02-22T07:54:27.087Z",
+        "last_position_seconds": 270,
+        "progress_percent": 30,
+        "started_at": "2026-02-22T07:54:27.087Z",
+        "status": "in_progress",
+        "updated_at": "2026-02-22T07:54:27.087Z"
+      }
+    },
+    {
+      "name": "Upsert yoga 4 progress - completed",
+      "method": "POST",
+      "endpoint": "/api/v1/me/yoga-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63145451774af13a991",
+        "yoga_id": "e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "completed_at": "2026-02-22T07:54:27.499Z",
+        "last_played_at": "2026-02-22T07:54:27.499Z",
+        "last_position_seconds": 600,
+        "progress_percent": 100,
+        "started_at": "2026-02-22T07:54:27.499Z",
+        "status": "completed",
+        "updated_at": "2026-02-22T07:54:27.499Z"
+      }
+    },
+    {
+      "name": "Get yoga progress",
+      "method": "GET",
+      "endpoint": "/api/v1/me/yoga-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        {
+          "_id": "699ab62f45451774af13a98e",
+          "yoga_id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "completed_at": "2026-02-22T07:54:26.276Z",
+          "last_played_at": "2026-02-22T07:54:26.276Z",
+          "last_position_seconds": 1200,
+          "progress_percent": 100,
+          "started_at": "2026-02-22T07:54:26.276Z",
+          "status": "completed",
+          "updated_at": "2026-02-22T07:54:26.276Z"
+        },
+        {
+          "_id": "699ab63045451774af13a98f",
+          "yoga_id": "2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_played_at": "2026-02-22T07:54:26.680Z",
+          "last_position_seconds": 900,
+          "progress_percent": 50,
+          "started_at": "2026-02-22T07:54:26.680Z",
+          "status": "in_progress",
+          "updated_at": "2026-02-22T07:54:26.680Z"
+        },
+        {
+          "_id": "699ab63045451774af13a990",
+          "yoga_id": "1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_played_at": "2026-02-22T07:54:27.087Z",
+          "last_position_seconds": 270,
+          "progress_percent": 30,
+          "started_at": "2026-02-22T07:54:27.087Z",
+          "status": "in_progress",
+          "updated_at": "2026-02-22T07:54:27.087Z"
+        },
+        {
+          "_id": "699ab63145451774af13a991",
+          "yoga_id": "e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "completed_at": "2026-02-22T07:54:27.499Z",
+          "last_played_at": "2026-02-22T07:54:27.499Z",
+          "last_position_seconds": 600,
+          "progress_percent": 100,
+          "started_at": "2026-02-22T07:54:27.499Z",
+          "status": "completed",
+          "updated_at": "2026-02-22T07:54:27.499Z"
+        }
+      ]
+    },
+    {
+      "name": "Upsert mantra 1 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/mantra-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63145451774af13a992",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "mantra_id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+        "last_practiced_at": "2026-02-22T07:54:28.308Z",
+        "times_practiced": 10,
+        "updated_at": "2026-02-22T07:54:28.308Z"
+      }
+    },
+    {
+      "name": "Upsert mantra 2 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/mantra-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63245451774af13a993",
+        "mantra_id": "e73816dc-dd51-4960-a4e6-7c474fcb4bd3",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_practiced_at": "2026-02-22T07:54:28.759Z",
+        "times_practiced": 25,
+        "updated_at": "2026-02-22T07:54:28.759Z"
+      }
+    },
+    {
+      "name": "Upsert mantra 3 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/mantra-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63245451774af13a994",
+        "mantra_id": "2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_practiced_at": "2026-02-22T07:54:29.164Z",
+        "times_practiced": 5,
+        "updated_at": "2026-02-22T07:54:29.164Z"
+      }
+    },
+    {
+      "name": "Upsert mantra 4 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/mantra-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63345451774af13a995",
+        "mantra_id": "095d4511-bd66-45ff-91fe-959e1c52215c",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_practiced_at": "2026-02-22T07:54:29.577Z",
+        "times_practiced": 15,
+        "updated_at": "2026-02-22T07:54:29.577Z"
+      }
+    },
+    {
+      "name": "Upsert mantra 5 progress",
+      "method": "POST",
+      "endpoint": "/api/v1/me/mantra-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab63345451774af13a996",
+        "mantra_id": "c10591b5-87f0-429d-9785-87f0a308efe0",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "last_practiced_at": "2026-02-22T07:54:29.982Z",
+        "times_practiced": 8,
+        "updated_at": "2026-02-22T07:54:29.982Z"
+      }
+    },
+    {
+      "name": "Get mantra progress",
+      "method": "GET",
+      "endpoint": "/api/v1/me/mantra-progress",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        {
+          "_id": "699ab63145451774af13a992",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "mantra_id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+          "last_practiced_at": "2026-02-22T07:54:28.308Z",
+          "times_practiced": 10,
+          "updated_at": "2026-02-22T07:54:28.308Z"
+        },
+        {
+          "_id": "699ab63245451774af13a993",
+          "mantra_id": "e73816dc-dd51-4960-a4e6-7c474fcb4bd3",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_practiced_at": "2026-02-22T07:54:28.759Z",
+          "times_practiced": 25,
+          "updated_at": "2026-02-22T07:54:28.759Z"
+        },
+        {
+          "_id": "699ab63245451774af13a994",
+          "mantra_id": "2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_practiced_at": "2026-02-22T07:54:29.164Z",
+          "times_practiced": 5,
+          "updated_at": "2026-02-22T07:54:29.164Z"
+        },
+        {
+          "_id": "699ab63345451774af13a995",
+          "mantra_id": "095d4511-bd66-45ff-91fe-959e1c52215c",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_practiced_at": "2026-02-22T07:54:29.577Z",
+          "times_practiced": 15,
+          "updated_at": "2026-02-22T07:54:29.577Z"
+        },
+        {
+          "_id": "699ab63345451774af13a996",
+          "mantra_id": "c10591b5-87f0-429d-9785-87f0a308efe0",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "last_practiced_at": "2026-02-22T07:54:29.982Z",
+          "times_practiced": 8,
+          "updated_at": "2026-02-22T07:54:29.982Z"
+        }
+      ]
+    },
+    {
+      "name": "Create meditation 1 review",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations/be5930fc-0e06-4b3d-920a-74987138a68e/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "meditation_id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "rating": 5,
+        "comment": "Excellent meditation session! Very calming and relaxing.",
+        "_id": "699ab636bbb8b9a02158c5e6",
+        "id": "0bdc52e0-ed87-4af5-a002-23fa62cb1b65",
+        "created_at": "2026-02-22T07:54:30.793Z",
+        "updated_at": "2026-02-22T07:54:30.793Z"
+      }
+    },
+    {
+      "name": "Create meditation 2 review",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations/a560b510-fbf9-48af-9895-0b787204c6df/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "meditation_id": "a560b510-fbf9-48af-9895-0b787204c6df",
+        "rating": 4,
+        "comment": "Great body scan, helped me release tension.",
+        "_id": "699ab637bbb8b9a02158c5e9",
+        "id": "fceb922d-3ac2-49d3-825c-930ff835d4dc",
+        "created_at": "2026-02-22T07:54:31.197Z",
+        "updated_at": "2026-02-22T07:54:31.197Z"
+      }
+    },
+    {
+      "name": "Create meditation 3 review",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations/6b9a56f6-7ad7-4b94-9d32-610482cd02f4/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "meditation_id": "6b9a56f6-7ad7-4b94-9d32-610482cd02f4",
+        "rating": 5,
+        "comment": "Beautiful loving kindness practice. Very heart-opening.",
+        "_id": "699ab637bbb8b9a02158c5ec",
+        "id": "c57e8528-bbe4-45e4-af46-aae7c774126c",
+        "created_at": "2026-02-22T07:54:31.605Z",
+        "updated_at": "2026-02-22T07:54:31.605Z"
+      }
+    },
+    {
+      "name": "Create meditation 4 review",
+      "method": "POST",
+      "endpoint": "/api/v1/meditations/4207a5af-4ce0-4e59-852c-34dbb478c465/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "meditation_id": "4207a5af-4ce0-4e59-852c-34dbb478c465",
+        "rating": 4,
+        "comment": "Helpful for concentration, though could be longer.",
+        "_id": "699ab638bbb8b9a02158c5ef",
+        "id": "1656e9de-d969-4c68-a86f-a5e05bc63e16",
+        "created_at": "2026-02-22T07:54:32.010Z",
+        "updated_at": "2026-02-22T07:54:32.010Z"
+      }
+    },
+    {
+      "name": "Get meditation 1 reviews",
+      "method": "GET",
+      "endpoint": "/api/v1/meditations/be5930fc-0e06-4b3d-920a-74987138a68e/reviews",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        {
+          "_id": "699ab636bbb8b9a02158c5e6",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "meditation_id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+          "rating": 5,
+          "comment": "Excellent meditation session! Very calming and relaxing.",
+          "id": "0bdc52e0-ed87-4af5-a002-23fa62cb1b65",
+          "created_at": "2026-02-22T07:54:30.793Z",
+          "updated_at": "2026-02-22T07:54:30.793Z"
+        }
+      ]
+    },
+    {
+      "name": "Update meditation 1 review",
+      "method": "PATCH",
+      "endpoint": "/api/v1/meditations/be5930fc-0e06-4b3d-920a-74987138a68e/reviews/0bdc52e0-ed87-4af5-a002-23fa62cb1b65",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab636bbb8b9a02158c5e6",
+        "user_id": "699ab623bbb8b9a02158c573",
+        "meditation_id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "rating": 4,
+        "comment": "Good, but could be longer. Still very helpful.",
+        "id": "0bdc52e0-ed87-4af5-a002-23fa62cb1b65",
+        "created_at": "2026-02-22T07:54:30.793Z",
+        "updated_at": "2026-02-22T07:54:32.613Z"
+      }
+    },
+    {
+      "name": "Create yoga 1 review",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas/42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "yoga_id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+        "rating": 5,
+        "comment": "Perfect morning routine! Energized me for the day.",
+        "_id": "699ab639bbb8b9a02158c5f5",
+        "id": "5b562415-22fc-471e-b319-dbd04c138faf",
+        "created_at": "2026-02-22T07:54:33.023Z",
+        "updated_at": "2026-02-22T07:54:33.023Z"
+      }
+    },
+    {
+      "name": "Create yoga 2 review",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas/2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "yoga_id": "2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+        "rating": 4,
+        "comment": "Challenging but rewarding power yoga session.",
+        "_id": "699ab639bbb8b9a02158c5f8",
+        "id": "7633f65f-cd1f-4ada-b453-78e22d6be375",
+        "created_at": "2026-02-22T07:54:33.427Z",
+        "updated_at": "2026-02-22T07:54:33.427Z"
+      }
+    },
+    {
+      "name": "Create yoga 3 review",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas/1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "yoga_id": "1ea37f2d-a496-4b3d-a17e-a7fb0dad9ca9",
+        "rating": 5,
+        "comment": "So relaxing before bed. Helped me sleep better.",
+        "_id": "699ab639bbb8b9a02158c5fb",
+        "id": "6656171e-9481-4575-9280-206e1fd64aef",
+        "created_at": "2026-02-22T07:54:33.830Z",
+        "updated_at": "2026-02-22T07:54:33.830Z"
+      }
+    },
+    {
+      "name": "Create yoga 4 review",
+      "method": "POST",
+      "endpoint": "/api/v1/yogas/e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "yoga_id": "e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6",
+        "rating": 5,
+        "comment": "Great accessible practice for everyone!",
+        "_id": "699ab63abbb8b9a02158c5fe",
+        "id": "b66ea5d8-ab0e-414c-9ebb-2731de3bafc3",
+        "created_at": "2026-02-22T07:54:34.235Z",
+        "updated_at": "2026-02-22T07:54:34.235Z"
+      }
+    },
+    {
+      "name": "Get yoga 1 reviews",
+      "method": "GET",
+      "endpoint": "/api/v1/yogas/42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd/reviews",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        {
+          "_id": "699ab639bbb8b9a02158c5f5",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "yoga_id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+          "rating": 5,
+          "comment": "Perfect morning routine! Energized me for the day.",
+          "id": "5b562415-22fc-471e-b319-dbd04c138faf",
+          "created_at": "2026-02-22T07:54:33.023Z",
+          "updated_at": "2026-02-22T07:54:33.023Z"
+        }
+      ]
+    },
+    {
+      "name": "Create mantra 1 review",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras/f12a49be-c8c6-4c6f-b7bc-c50db79f04ea/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "mantra_id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+        "rating": 5,
+        "comment": "Very peaceful and centering. Perfect for beginners.",
+        "_id": "699ab63abbb8b9a02158c602",
+        "id": "4699ef24-af04-4160-bf05-8a15b2ce3896",
+        "created_at": "2026-02-22T07:54:34.836Z",
+        "updated_at": "2026-02-22T07:54:34.836Z"
+      }
+    },
+    {
+      "name": "Create mantra 2 review",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras/e73816dc-dd51-4960-a4e6-7c474fcb4bd3/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "mantra_id": "e73816dc-dd51-4960-a4e6-7c474fcb4bd3",
+        "rating": 5,
+        "comment": "Powerful and enlightening mantra. Improves focus.",
+        "_id": "699ab63bbbb8b9a02158c605",
+        "id": "685b4b2c-fc2b-4a03-90f5-28b510493a6d",
+        "created_at": "2026-02-22T07:54:35.250Z",
+        "updated_at": "2026-02-22T07:54:35.250Z"
+      }
+    },
+    {
+      "name": "Create mantra 3 review",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras/2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "mantra_id": "2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1",
+        "rating": 4,
+        "comment": "Simple yet effective peace mantra.",
+        "_id": "699ab63bbbb8b9a02158c608",
+        "id": "0e3d3bb7-83cb-4bab-b446-1404ec9d1879",
+        "created_at": "2026-02-22T07:54:35.654Z",
+        "updated_at": "2026-02-22T07:54:35.654Z"
+      }
+    },
+    {
+      "name": "Create mantra 4 review",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras/095d4511-bd66-45ff-91fe-959e1c52215c/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "mantra_id": "095d4511-bd66-45ff-91fe-959e1c52215c",
+        "rating": 5,
+        "comment": "Transformative healing mantra. Very powerful.",
+        "_id": "699ab63cbbb8b9a02158c60b",
+        "id": "e7de1f36-4923-4fd8-a597-8aa4856ef2cc",
+        "created_at": "2026-02-22T07:54:36.057Z",
+        "updated_at": "2026-02-22T07:54:36.057Z"
+      }
+    },
+    {
+      "name": "Create mantra 5 review",
+      "method": "POST",
+      "endpoint": "/api/v1/mantras/c10591b5-87f0-429d-9785-87f0a308efe0/reviews",
+      "expected_status": 201,
+      "actual_status": 201,
+      "ok": true,
+      "response": {
+        "user_id": "699ab623bbb8b9a02158c573",
+        "mantra_id": "c10591b5-87f0-429d-9785-87f0a308efe0",
+        "rating": 4,
+        "comment": "Natural breath awareness. Very grounding.",
+        "_id": "699ab63cbbb8b9a02158c60e",
+        "id": "1a2b1b84-f53e-4fca-b1ae-6f119d42be45",
+        "created_at": "2026-02-22T07:54:36.461Z",
+        "updated_at": "2026-02-22T07:54:36.461Z"
+      }
+    },
+    {
+      "name": "Get mantra 1 reviews",
+      "method": "GET",
+      "endpoint": "/api/v1/mantras/f12a49be-c8c6-4c6f-b7bc-c50db79f04ea/reviews",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": [
+        {
+          "_id": "699ab63abbb8b9a02158c602",
+          "user_id": "699ab623bbb8b9a02158c573",
+          "mantra_id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+          "rating": 5,
+          "comment": "Very peaceful and centering. Perfect for beginners.",
+          "id": "4699ef24-af04-4160-bf05-8a15b2ce3896",
+          "created_at": "2026-02-22T07:54:34.836Z",
+          "updated_at": "2026-02-22T07:54:34.836Z"
+        }
+      ]
+    },
+    {
+      "name": "Update meditation 1",
+      "method": "PATCH",
+      "endpoint": "/api/v1/meditations/be5930fc-0e06-4b3d-920a-74987138a68e",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab623bbb8b9a02158c579",
+        "title": "Mindful Breathing - Updated",
+        "subtitle": "Calm your mind",
+        "description": "A guided meditation for relaxation and stress relief",
+        "difficulty": "beginner",
+        "duration_seconds": 600,
+        "media_url": "https://example.com/meditation1.mp3",
+        "goal_slug": "stress_relief",
+        "is_featured": true,
+        "is_trending": true,
+        "is_active": true,
+        "id": "be5930fc-0e06-4b3d-920a-74987138a68e",
+        "created_at": "2026-02-22T07:54:11.788Z",
+        "updated_at": "2026-02-22T07:54:37.073Z"
+      }
+    },
+    {
+      "name": "Update yoga 1",
+      "method": "PATCH",
+      "endpoint": "/api/v1/yogas/42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab625bbb8b9a02158c585",
+        "title": "Morning Flow - Enhanced",
+        "subtitle": "Start your day right",
+        "description": "Energizing yoga sequence to wake up the body",
+        "difficulty": "intermediate",
+        "duration_seconds": 1200,
+        "media_url": "https://example.com/yoga1.mp4",
+        "goal_slug": "flexibility",
+        "is_featured": false,
+        "is_trending": true,
+        "is_active": true,
+        "id": "42c5966a-6f5c-4bf0-87a6-f53ef0fa48cd",
+        "created_at": "2026-02-22T07:54:13.424Z",
+        "updated_at": "2026-02-22T07:54:37.475Z"
+      }
+    },
+    {
+      "name": "Update mantra 1",
+      "method": "PATCH",
+      "endpoint": "/api/v1/mantras/f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "_id": "699ab627bbb8b9a02158c591",
+        "title": "Om Chanting - Extended",
+        "meaning": "The primordial sound, representing the essence of reality",
+        "lyrics": "Om",
+        "transliteration": "Aum",
+        "pronunciation_guide": "Pronounce as AUM with three syllables: A-U-M",
+        "audio_url": "https://example.com/mantra1.mp3",
+        "is_featured": true,
+        "is_trending": false,
+        "is_active": true,
+        "id": "f12a49be-c8c6-4c6f-b7bc-c50db79f04ea",
+        "created_at": "2026-02-22T07:54:15.050Z",
+        "updated_at": "2026-02-22T07:54:37.875Z"
+      }
+    },
+    {
+      "name": "Unsave meditation 2",
+      "method": "DELETE",
+      "endpoint": "/api/v1/me/saved-meditations/a560b510-fbf9-48af-9895-0b787204c6df",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Meditation unsaved successfully"
+      }
+    },
+    {
+      "name": "Unsave yoga 2",
+      "method": "DELETE",
+      "endpoint": "/api/v1/me/saved-yogas/2e7b0c1b-c87b-47a9-a6e2-d148ccb61d8b",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Yoga unsaved successfully"
+      }
+    },
+    {
+      "name": "Delete meditation 1 review",
+      "method": "DELETE",
+      "endpoint": "/api/v1/meditations/be5930fc-0e06-4b3d-920a-74987138a68e/reviews/0bdc52e0-ed87-4af5-a002-23fa62cb1b65",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Review deleted successfully"
+      }
+    },
+    {
+      "name": "Delete mantra 3 review",
+      "method": "DELETE",
+      "endpoint": "/api/v1/mantras/2ba6b7a7-3e8b-4c7d-9487-12cadf8a16b1/reviews/0e3d3bb7-83cb-4bab-b446-1404ec9d1879",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Review deleted successfully"
+      }
+    },
+    {
+      "name": "Delete meditation 4",
+      "method": "DELETE",
+      "endpoint": "/api/v1/meditations/4207a5af-4ce0-4e59-852c-34dbb478c465",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Meditation deleted successfully"
+      }
+    },
+    {
+      "name": "Delete yoga 4",
+      "method": "DELETE",
+      "endpoint": "/api/v1/yogas/e4b11090-9ae9-4e0f-b2dd-e5fa3754f7d6",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Yoga deleted successfully"
+      }
+    },
+    {
+      "name": "Delete mantra 5",
+      "method": "DELETE",
+      "endpoint": "/api/v1/mantras/c10591b5-87f0-429d-9785-87f0a308efe0",
+      "expected_status": 200,
+      "actual_status": 200,
+      "ok": true,
+      "response": {
+        "message": "Mantra deleted successfully"
+      }
+    }
+  ],
+  "summary": {
+    "total": 79,
+    "passed": 79,
+    "failed": 0,
+    "success_rate": "100.0%"
+  },
+  "finished_at": "2026-02-22T07:54:40.935Z"
+}
