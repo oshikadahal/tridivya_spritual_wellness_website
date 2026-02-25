@@ -1,11 +1,10 @@
 "use client";
 
+import Sidebar from "../(user)/_components/Sidebar";
+import UserHeader from "../(user)/_components/UserHeader";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-
-import Sidebar from "./_components/Sidebar";
-import UserHeader from "./_components/UserHeader";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, loading } = useAuth();
@@ -30,10 +29,9 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
             <Sidebar />
             <main className="flex-1 overflow-y-auto">
                 {/* Top Navbar */}
-                                <div className="sticky top-0 z-20 bg-gradient-to-br from-purple-50 to-blue-50">
-                                    {/* Top Navbar */}
-                                    <UserHeader />
-                                </div>
+                <div className="sticky top-0 z-20 bg-gradient-to-br from-purple-50 to-blue-50">
+                    <UserHeader />
+                </div>
                 {children}
             </main>
         </div>
