@@ -148,4 +148,26 @@ export class UserService {
     await userRepository.clearResetToken(user.id);
     return { success: true };
   }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+      throw new HttpError(404, 'User not found');
+    }
+
+    const isCurrentValid = await bcryptjs.compare(currentPassword, user.password);
+    if (!isCurrentValid) {
+      throw new HttpError(400, 'Current password is incorrect');
+    }
+
+    const isSamePassword = await bcryptjs.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new HttpError(400, 'New password must be different from current password');
+    }
+
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+    await userRepository.updateUser(user.id, { password: hashedPassword });
+
+    return { success: true };
+  }
 }
