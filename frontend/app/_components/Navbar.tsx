@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -12,7 +12,6 @@ const NAV_LINKS = [
 
 export default function Navbar() {
     const pathname = usePathname();
-    const router = useRouter();
     const { user, isAuthenticated, logout } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -32,7 +31,6 @@ export default function Navbar() {
 
     const handleLogout = async () => {
         await logout();
-        router.push("/login");
     };
 
     return (
