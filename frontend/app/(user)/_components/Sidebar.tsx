@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
     LayoutDashboard, 
+    Calendar,
+    CalendarCheck,
     Play, 
     Dumbbell, 
     BookOpen, 
@@ -18,6 +20,8 @@ import { useLogoutModal } from "@/context/LogoutModalContext";
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+    { icon: Calendar, label: "Booking", href: "/booking" },
+    { icon: CalendarCheck, label: "My Bookings", href: "/my-bookings" },
     { icon: Search, label: "Search", href: "/search" },
     { icon: Play, label: "Meditation Videos", href: "/meditationvideos" },
     { icon: Dumbbell, label: "Yoga Programs", href: "/yogaprograms" },
