@@ -1,5 +1,5 @@
 ﻿import { UserService } from '../services/user.service';
-import { CreateUserDTO, LoginUserDTO, UpdateUserDto, ForgotPasswordDTO, ResetPasswordDTO } from '../dtos/user.dto';
+import { CreateUserDTO, LoginUserDTO, UpdateUserDto, ForgotPasswordDTO, ResetPasswordDTO, ChangePasswordDTO } from '../dtos/user.dto';
 import { Request, Response } from 'express';
 import z from 'zod';
 
@@ -71,6 +71,31 @@ export class AuthController {
       return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
     }
   }
+
+  async changePassword(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.status(400).json({ success: false, message: 'User ID not found in request' });
+      }
+
+      const parsed = ChangePasswordDTO.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
+      }
+
+      await userService.changePassword(
+        userId,
+        parsed.data.currentPassword,
+        parsed.data.newPassword
+      );
+
+      return res.status(200).json({ success: true, message: 'Password changed successfully' });
+    } catch (error: any) {
+      return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
    async getProfile(req: Request, res: Response) {
     try {
       const userId = req.user ?._id;
