@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LoginData, loginSchema } from "../schema";
 import { loginUser } from "@/lib/api/auth";
+import { setAuthToken, setUserData } from "@/lib/cookie";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -32,14 +33,12 @@ export default function LoginForm() {
                 return;
             }
 
-            // persist auth locally for client-side requests
+            // persist auth in cookies for client-side requests
             if (response.token) {
-                localStorage.setItem("auth_token", response.token);
-                document.cookie = `auth_token=${response.token}; path=/`;
+                await setAuthToken(response.token);
             }
             if (response.data) {
-                localStorage.setItem("user_data", JSON.stringify(response.data));
-                document.cookie = `user_data=${encodeURIComponent(JSON.stringify(response.data))}; path=/`;
+                await setUserData(response.data);
                 // update in-memory auth state to avoid a flash back to /login
                 setAuthState(response.data);
             }
