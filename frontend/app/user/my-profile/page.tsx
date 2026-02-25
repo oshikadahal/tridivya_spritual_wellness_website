@@ -116,7 +116,10 @@ function UserProfile() {
                 <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
                     <h3 className="text-xl font-semibold text-slate-900 mb-4">Security Settings</h3>
                     <div className="flex flex-wrap gap-4">
-                        <button className="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-xl text-slate-700 font-semibold hover:bg-slate-50 transition">
+                        <button
+                            onClick={() => router.push("/user/change-password")}
+                            className="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-xl text-slate-700 font-semibold hover:bg-slate-50 transition"
+                        >
                             <span className="text-lg">🔒</span> Change Password
                         </button>
                         <button
