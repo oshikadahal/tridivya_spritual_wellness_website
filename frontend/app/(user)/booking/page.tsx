@@ -23,6 +23,9 @@ export default function BookingPage() {
     const [paymentMethod, setPaymentMethod] = useState("esewa");
 
     const totalAmount = isPrivate ? 1500 : 1000;
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    const minDate = today.toISOString().split("T")[0];
 
     return (
         <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
@@ -83,8 +86,14 @@ export default function BookingPage() {
                             <input
                                 id="date"
                                 type="date"
+                                min={minDate}
                                 value={selectedDate}
-                                onChange={(event) => setSelectedDate(event.target.value)}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    if (value >= minDate) {
+                                        setSelectedDate(value);
+                                    }
+                                }}
                                 className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                             />
                         </div>
@@ -190,7 +199,6 @@ export default function BookingPage() {
                             <div className="rounded-2xl bg-slate-50 px-4 py-4 flex items-center justify-between">
                                 <div>
                                     <p className="text-xs text-slate-600">Service: {selectedType} ({isPrivate ? "Private" : "Group"})</p>
-                                    <p className="text-[11px] text-slate-500 mt-1">VAT & service charges included</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Total Amount</p>

@@ -128,7 +128,7 @@ export default function Dashboard() {
                             <div className="text-xs font-semibold opacity-80">Continue where you left</div>
                             <div className="text-2xl font-bold mt-1">Resume Session</div>
                         </div>
-                        <Link href="/mantraprogram" aria-label="Resume your mantra session" className="bg-white text-indigo-600 rounded-full w-12 h-12 flex items-center justify-center shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70">
+                        <Link href="/mantraprogram" aria-label="Resume your mantra session" className="session-btn-primary rounded-full w-12 h-12 flex items-center justify-center shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70">
                             <Play className="w-5 h-5" />
                         </Link>
                     </div>
@@ -148,7 +148,7 @@ export default function Dashboard() {
                             <span>•</span>
                             <span>{featuredMantra?.goal_slug ?? "Daily Focus"}</span>
                         </div>
-                        <Link href="/mantraprogram" className="mt-6 inline-flex items-center gap-2 bg-white text-indigo-600 px-5 py-3 rounded-full font-semibold shadow-lg">
+                        <Link href="/mantraprogram" className="session-btn-primary mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold shadow-lg">
                             <Play className="w-4 h-4" /> Resume Session
                         </Link>
                     </div>
@@ -176,7 +176,7 @@ export default function Dashboard() {
                                 <Link
                                     href={getRecommendedLink(item)}
                                     aria-label={`Open ${item.title}`}
-                                    className="mt-auto bg-indigo-600 hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 text-white text-sm font-semibold py-2 rounded-xl transition text-center"
+                                    className="session-btn-primary mt-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 text-sm font-semibold py-2 rounded-xl transition text-center"
                                 >
                                     Start Practice
                                 </Link>
@@ -212,7 +212,7 @@ export default function Dashboard() {
                     </div>
                     <button
                         disabled={moodSubmitting}
-                        className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-3 rounded-xl disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="session-btn-primary w-full sm:w-auto font-semibold px-5 py-3 rounded-xl disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         {moodSubmitting ? "Saving..." : "Get Session Recommendation"}
                     </button>

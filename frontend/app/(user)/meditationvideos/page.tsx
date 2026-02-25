@@ -128,7 +128,7 @@ export default function MeditationVideosPage() {
                             <Link
                                 href={`/meditationvideos/${featured.id}`}
                                 aria-label={`Play featured meditation ${featured.title}`}
-                                className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-[#7c62f7] hover:bg-[#6a5ae0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white font-semibold shadow-lg transition"
+                                className="session-btn-primary inline-flex items-center gap-2 h-12 px-7 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white font-semibold shadow-lg transition"
                             >
                                 <Play className="w-4 h-4" />
                                 Play Session

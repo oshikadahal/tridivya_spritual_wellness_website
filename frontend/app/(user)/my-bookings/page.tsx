@@ -1,50 +1,296 @@
 "use client";
 
-const bookings = [
+import { ChevronLeft, ChevronRight, Clock3, User2 } from "lucide-react";
+import { useMemo, useState } from "react";
+
+const tabs = ["Upcoming", "Completed", "Cancelled"] as const;
+
+type BookingStatus = (typeof tabs)[number];
+
+type Booking = {
+    id: number;
+    month: string;
+    day: string;
+    title: string;
+    mode: string;
+    instructor: string;
+    time: string;
+    duration: string;
+    primaryAction: string;
+    status: BookingStatus;
+    dateISO: string;
+};
+
+const bookings: Booking[] = [
     {
         id: 1,
-        sessionType: "Yoga Practice",
-        sessionMode: "Private One-on-One",
-        date: "2026-03-02",
+        month: "OCT",
+        day: "24",
+        title: "Hatha Yoga Practice",
+        mode: "PRIVATE",
+        instructor: "Dr. Sarah Mitchell",
         time: "09:30 AM",
+        duration: "60 min",
+        primaryAction: "Join Session",
         status: "Upcoming",
+        dateISO: "2026-10-24",
     },
     {
         id: 2,
-        sessionType: "Guided Meditation",
-        sessionMode: "Group Session",
-        date: "2026-03-05",
-        time: "06:00 PM",
+        month: "OCT",
+        day: "26",
+        title: "Deep Meditation",
+        mode: "GROUP",
+        instructor: "Master Kenji",
+        time: "04:00 PM",
+        duration: "45 min",
+        primaryAction: "Manage",
         status: "Upcoming",
+        dateISO: "2026-10-26",
+    },
+    {
+        id: 3,
+        month: "OCT",
+        day: "21",
+        title: "Vinyasa Flow",
+        mode: "GROUP",
+        instructor: "Ravi Sharma",
+        time: "07:00 AM",
+        duration: "40 min",
+        primaryAction: "View",
+        status: "Completed",
+        dateISO: "2026-10-21",
+    },
+    {
+        id: 4,
+        month: "OCT",
+        day: "18",
+        title: "Evening Breathwork",
+        mode: "PRIVATE",
+        instructor: "Maya Karki",
+        time: "06:30 PM",
+        duration: "30 min",
+        primaryAction: "View",
+        status: "Cancelled",
+        dateISO: "2026-10-18",
     },
 ];
 
-export default function MyBookingsPage() {
-    return (
-        <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
-            <main className="max-w-7xl mx-auto px-4 py-8">
-                <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
-                    <h1 className="text-3xl font-bold text-slate-900">My Bookings</h1>
-                    <p className="text-slate-500 mt-1">Track your upcoming wellness sessions.</p>
+const weekdayLabels = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
-                    <div className="mt-6 space-y-4">
-                        {bookings.map((booking) => (
-                            <article key={booking.id} className="rounded-xl border border-slate-200 p-4 sm:p-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                    <div>
-                                        <h2 className="text-lg font-semibold text-slate-900">{booking.sessionType}</h2>
-                                        <p className="text-sm text-slate-600 mt-1">{booking.sessionMode}</p>
+const monthLabelFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+});
+
+const toDateKey = (date: Date) => {
+    const localDate = new Date(date);
+    localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+    return localDate.toISOString().split("T")[0];
+};
+
+export default function MyBookingsPage() {
+    const [activeTab, setActiveTab] = useState<BookingStatus>("Upcoming");
+    const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
+    const [visibleMonth, setVisibleMonth] = useState(new Date(2026, 9, 1));
+
+    const monthStart = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+    const daysInMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0).getDate();
+    const firstWeekday = monthStart.getDay();
+
+    const activeTabBookings = useMemo(
+        () => bookings.filter((booking) => booking.status === activeTab),
+        [activeTab]
+    );
+
+    const bookingDatesInMonth = useMemo(() => {
+        const monthPrefix = `${visibleMonth.getFullYear()}-${String(visibleMonth.getMonth() + 1).padStart(2, "0")}-`;
+        return new Set(
+            activeTabBookings
+                .filter((booking) => booking.dateISO.startsWith(monthPrefix))
+                .map((booking) => Number(booking.dateISO.split("-")[2]))
+        );
+    }, [activeTabBookings, visibleMonth]);
+
+    const filteredBookings = useMemo(() => {
+        if (!selectedDateKey) return activeTabBookings;
+        return activeTabBookings.filter((booking) => booking.dateISO === selectedDateKey);
+    }, [activeTabBookings, selectedDateKey]);
+
+    const calendarDays = useMemo(() => {
+        const cells: Array<{ day: number | null; dateKey: string | null }> = [];
+
+        for (let i = 0; i < firstWeekday; i++) {
+            cells.push({ day: null, dateKey: null });
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cellDate = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), day);
+            cells.push({ day, dateKey: toDateKey(cellDate) });
+        }
+
+        while (cells.length % 7 !== 0) {
+            cells.push({ day: null, dateKey: null });
+        }
+
+        return cells;
+    }, [daysInMonth, firstWeekday, visibleMonth]);
+
+    const handlePreviousMonth = () => {
+        setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    };
+
+    const handleNextMonth = () => {
+        setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    };
+
+    const handleDateSelect = (dateKey: string | null) => {
+        if (!dateKey) return;
+        setSelectedDateKey((current) => (current === dateKey ? null : dateKey));
+    };
+
+    return (
+        <div className="min-h-screen bg-linear-to-b from-indigo-50 via-slate-50 to-slate-100 text-slate-900">
+            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold text-slate-900">My Bookings</h1>
+                </div>
+
+                <section className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6 items-start">
+                    <div>
+                        <div className="flex items-center gap-8 border-b border-slate-200">
+                            {tabs.map((tab) => {
+                                const isActive = activeTab === tab;
+                                return (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        onClick={() => setActiveTab(tab)}
+                                        className={`relative pb-3 text-sm font-medium transition ${
+                                            isActive ? "text-violet-600" : "text-slate-500 hover:text-slate-700"
+                                        }`}
+                                    >
+                                        {tab}
+                                        {isActive && <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-violet-600 rounded-full" />}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <div className="mt-6">
+                            <p className="text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase mb-4 flex items-center gap-2">
+                                <span className="h-1.5 w-1.5 rounded-full bg-violet-600" />
+                                {activeTab} Sessions
+                            </p>
+
+                            <div className="space-y-4">
+                                {filteredBookings.map((booking) => {
+                                    return (
+                                        <article
+                                            key={booking.id}
+                                            className="bg-white border border-slate-200 rounded-3xl p-4 md:p-5 shadow-sm"
+                                        >
+                                            <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                                                <div className="flex items-center gap-4 md:gap-5 min-w-0">
+                                                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex flex-col items-center justify-center shrink-0">
+                                                        <span className="text-[10px] font-bold tracking-wide text-violet-600">{booking.month}</span>
+                                                        <span className="text-3xl leading-none font-bold text-violet-700">{booking.day}</span>
+                                                    </div>
+
+                                                    <div className="min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <h2 className="text-3xl leading-tight md:text-[30px] font-semibold text-slate-900">{booking.title}</h2>
+                                                            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-semibold text-slate-500">
+                                                                {booking.mode}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
+                                                            <span className="inline-flex items-center gap-1">
+                                                                <User2 className="w-4 h-4" /> {booking.instructor}
+                                                            </span>
+                                                            <span className="inline-flex items-center gap-1">
+                                                                <Clock3 className="w-4 h-4" /> {booking.time} ({booking.duration})
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+
+                                {filteredBookings.length === 0 && (
+                                    <div className="bg-white border border-slate-200 rounded-3xl p-6 text-sm text-slate-500">
+                                        No {activeTab.toLowerCase()} sessions found for the selected date.
                                     </div>
-                                    <span className="inline-flex items-center rounded-full bg-violet-100 text-violet-700 px-3 py-1 text-xs font-semibold">
-                                        {booking.status}
-                                    </span>
-                                </div>
-                                <div className="mt-3 text-sm text-slate-600">
-                                    {booking.date} at {booking.time}
-                                </div>
-                            </article>
-                        ))}
+                                )}
+                            </div>
+                        </div>
                     </div>
+
+                    <aside className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-bold text-slate-800 uppercase">{monthLabelFormatter.format(visibleMonth)}</h3>
+                            <div className="flex items-center gap-2 text-slate-400">
+                                <button
+                                    type="button"
+                                    onClick={handlePreviousMonth}
+                                    className="w-6 h-6 rounded-full hover:bg-slate-100 inline-flex items-center justify-center"
+                                    aria-label="Previous month"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleNextMonth}
+                                    className="w-6 h-6 rounded-full hover:bg-slate-100 inline-flex items-center justify-center"
+                                    aria-label="Next month"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 grid grid-cols-7 gap-y-3 text-center">
+                            {weekdayLabels.map((day) => (
+                                <span key={day} className="text-[10px] font-semibold text-slate-400">
+                                    {day}
+                                </span>
+                            ))}
+
+                            {calendarDays.map((cell, index) => {
+                                const isSelected = cell.dateKey !== null && selectedDateKey === cell.dateKey;
+                                const hasDot = cell.day !== null && bookingDatesInMonth.has(cell.day);
+                                return (
+                                    <button
+                                        key={`${cell.day ?? "empty"}-${index}`}
+                                        type="button"
+                                        disabled={cell.day === null}
+                                        onClick={() => handleDateSelect(cell.dateKey)}
+                                        className={`relative text-sm h-7 flex items-center justify-center rounded-full ${
+                                            cell.day === null
+                                                ? "cursor-default text-transparent"
+                                                : "text-slate-500 hover:bg-slate-100"
+                                        } ${isSelected ? "border border-violet-500 text-violet-700" : ""} ${
+                                            hasDot ? "text-violet-700 font-semibold" : ""
+                                        }`}
+                                    >
+                                        {cell.day ?? ""}
+                                        {hasDot && <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-violet-600" />}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => setSelectedDateKey(null)}
+                            className="mt-4 text-xs font-semibold text-violet-600 hover:text-violet-700"
+                        >
+                            Clear date filter
+                        </button>
+                    </aside>
                 </section>
             </main>
         </div>
