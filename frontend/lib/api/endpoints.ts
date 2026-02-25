@@ -87,5 +87,13 @@ export const API= {
         NOTIFICATIONS: "/api/me/settings/notifications",
         APPEARANCE: "/api/me/settings/appearance",
         DATA: "/api/me/settings/data",
+    },
+    BOOKINGS: {
+        LIST: "/api/v1/bookings",
+        BY_ID: (id: string) => `/api/v1/bookings/${id}`,
+        CREATE: "/api/v1/bookings",
+        UPDATE_STATUS: (id: string) => `/api/v1/bookings/${id}/status`,
+        CANCEL: (id: string) => `/api/v1/bookings/${id}/cancel`,
+        DELETE: (id: string) => `/api/v1/bookings/${id}`,
     }
 }

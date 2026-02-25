@@ -13,6 +13,7 @@ import announcementRoutes from './routes/announcement.route';
 import dashboardRoutes from './routes/dashboard.route';
 import searchRoutes from './routes/search.route';
 import userSettingsRoutes from './routes/user-settings.route';
+import bookingRoutes from './routes/booking.routes';
 
 const app = express();
 
@@ -43,5 +44,6 @@ app.use('/api/admin/announcements', announcementRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/me/settings', userSettingsRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
 
 export default app;

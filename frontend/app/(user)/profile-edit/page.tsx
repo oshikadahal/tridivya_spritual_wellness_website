@@ -30,9 +30,9 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading...</p>
         </div>
       </div>
@@ -41,10 +41,10 @@ export default function EditProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-slate-900 text-lg font-semibold mb-4">User data not found</p>
-          <Link href="/profile" className="text-indigo-600 hover:underline">
+          <Link href="/profile" className="text-violet-600 hover:text-violet-700">
             Back to profile
           </Link>
         </div>
@@ -53,11 +53,11 @@ export default function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/profile" className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-2">
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/profile" className="text-violet-600 hover:text-violet-700 font-medium flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -68,13 +68,13 @@ export default function EditProfilePage() {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 md:p-10">
           <UserProfileEditForm user={user} />
         </div>
 
         {/* Help Text */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
+        <div className="mt-6 p-4 bg-violet-50 border border-violet-200 rounded-2xl">
+          <p className="text-sm text-violet-700">
             <span className="font-semibold">Tip:</span> Update your profile information and profile picture. Changes are saved immediately after clicking "Save Changes".
           </p>
         </div>

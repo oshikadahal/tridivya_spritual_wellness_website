@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { createBooking, SessionTypeEnum, SessionModeEnum } from "@/lib/api/booking";
+import { useAuth } from "@/context/AuthContext";
 
-const sessionTypes = [
+const sessionTypes: SessionTypeEnum[] = [
     "Yoga Practice",
     "Guided Meditation",
     "Breathwork Session",
@@ -16,16 +20,71 @@ const sessionTypes = [
 const timeSlots = ["08:00 AM", "09:30 AM", "11:00 AM", "02:00 PM", "04:30 PM", "06:00 PM"];
 
 export default function BookingPage() {
+    const router = useRouter();
+    const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState("");
-    const [selectedType, setSelectedType] = useState(sessionTypes[0]);
+    const [selectedType, setSelectedType] = useState<SessionTypeEnum>(sessionTypes[0]);
     const [selectedSlot, setSelectedSlot] = useState("09:30 AM");
     const [isPrivate, setIsPrivate] = useState(true);
-    const [paymentMethod, setPaymentMethod] = useState("esewa");
+    const [paymentMethod, setPaymentMethod] = useState<"esewa">("esewa");
+    const [fullName, setFullName] = useState(user ? `${user.firstName} ${user.lastName}` : "");
+    const [email, setEmail] = useState(user?.email || "");
+    const [phone, setPhone] = useState("");
+    const [specialRequest, setSpecialRequest] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const totalAmount = isPrivate ? 1500 : 1000;
     const today = new Date();
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     const minDate = today.toISOString().split("T")[0];
+
+    const handleSubmit = async () => {
+        // Validation
+        if (!selectedDate) {
+            toast.error("Please select a date");
+            return;
+        }
+        if (!fullName.trim()) {
+            toast.error("Please enter your full name");
+            return;
+        }
+        if (!email.trim()) {
+            toast.error("Please enter your email");
+            return;
+        }
+        if (!phone.trim()) {
+            toast.error("Please enter your phone number");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            await createBooking({
+                session_type: selectedType,
+                session_mode: isPrivate ? "private" : "group",
+                booking_date: selectedDate,
+                time_slot: selectedSlot,
+                full_name: fullName,
+                email: email,
+                phone: phone,
+                special_request: specialRequest || undefined,
+                payment_method: paymentMethod,
+                amount: totalAmount,
+                duration_minutes: 60,
+            });
+
+            toast.success("Booking confirmed successfully! Redirecting...");
+            
+            // Redirect to my-bookings after 1.5 seconds
+            setTimeout(() => {
+                router.push("/my-bookings");
+            }, 1500);
+        } catch (err: any) {
+            toast.error(err.message || "Failed to create booking. Please try again.");
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
@@ -45,7 +104,7 @@ export default function BookingPage() {
                                 <select
                                     id="sessionType"
                                     value={selectedType}
-                                    onChange={(event) => setSelectedType(event.target.value)}
+                                    onChange={(event) => setSelectedType(event.target.value as SessionTypeEnum)}
                                     className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                 >
                                     {sessionTypes.map((type) => (
@@ -131,6 +190,8 @@ export default function BookingPage() {
                                 <input
                                     id="fullName"
                                     type="text"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
                                     placeholder="e.g. Aarya Sharma"
                                     className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                 />
@@ -144,6 +205,8 @@ export default function BookingPage() {
                                     <input
                                         id="email"
                                         type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         placeholder="aarya@example.com"
                                         className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                     />
@@ -156,6 +219,8 @@ export default function BookingPage() {
                                     <input
                                         id="phone"
                                         type="tel"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
                                         placeholder="+977 98XXXXXXXX"
                                         className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                     />
@@ -169,6 +234,8 @@ export default function BookingPage() {
                                 <textarea
                                     id="specialRequest"
                                     rows={4}
+                                    value={specialRequest}
+                                    onChange={(e) => setSpecialRequest(e.target.value)}
                                     placeholder="Any injuries, preferences, or goals we should know about?"
                                     className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                 />
@@ -208,9 +275,11 @@ export default function BookingPage() {
 
                             <button
                                 type="button"
-                                className="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3.5 shadow-lg transition"
+                                onClick={handleSubmit}
+                                disabled={isSubmitting}
+                                className="session-btn-primary w-full rounded-full font-semibold py-3.5 shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Confirm Booking →
+                                {isSubmitting ? "Processing..." : "Confirm Booking →"}
                             </button>
 
                             <p className="text-[11px] text-slate-500 text-center">

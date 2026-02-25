@@ -32,7 +32,7 @@ export default function UserRightSidebar() {
   return (
     <aside className="w-80 bg-white/50 backdrop-blur border-l border-purple-200 p-6 space-y-6 rounded-2xl min-h-screen">
       {/* Mantra of the Day */}
-      <div className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl p-6 text-white mb-4">
+      <div className="bg-linear-to-br from-purple-500 to-blue-500 rounded-2xl p-6 text-white mb-4">
         <p className="text-sm font-semibold mb-3 opacity-90">Mantra of the Day</p>
         <h3 className="text-2xl font-bold mb-2 leading-tight">
           Lokah Samastah Sukhino Bhavantu
@@ -40,7 +40,7 @@ export default function UserRightSidebar() {
         <p className="text-sm opacity-90 mb-4">
           "May all beings everywhere be happy and free"
         </p>
-        <button className="w-full bg-white text-purple-600 py-3 rounded-xl font-semibold hover:bg-purple-50 transition flex items-center justify-center gap-2">
+        <button className="session-btn-primary w-full py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
           <Music className="w-5 h-5" />
           Listen & Chant
         </button>
@@ -83,7 +83,7 @@ export default function UserRightSidebar() {
         </div>
         <p className="text-sm text-gray-600 mb-4">6 of 8 sessions completed</p>
         <div className="w-full bg-purple-100 rounded-full h-3 mb-4">
-          <div className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full" style={{ width: '75%' }}></div>
+          <div className="bg-linear-to-r from-purple-500 to-blue-500 h-3 rounded-full" style={{ width: '75%' }}></div>
         </div>
         <button className="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold hover:bg-purple-700 transition">
           VIEW INSIGHTS

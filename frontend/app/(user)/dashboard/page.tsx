@@ -223,7 +223,7 @@ export default function Dashboard() {
                     <p className="text-xs font-semibold opacity-90">Mantra of the Day</p>
                     <h3 className="text-2xl font-bold mt-1">{featuredMantra?.title ?? "No mantra available"}</h3>
                     <p className="text-sm opacity-90 mt-2 max-w-3xl">{featuredMantra?.meaning || featuredMantra?.description || "Explore mantra sessions tailored to your current goals."}</p>
-                    <Link href="/mantraprogram" className="mt-4 inline-flex items-center gap-2 bg-white text-indigo-600 px-4 py-3 rounded-xl font-semibold shadow">
+                    <Link href="/mantraprogram" className="session-btn-primary mt-4 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-semibold shadow">
                         <Play className="w-4 h-4" /> Listen & Chant
                     </Link>
                 </section>

@@ -74,7 +74,7 @@ const getClientAuthToken = () => {
     return null;
 };
 
-const getAuthHeaders = () => {
+export const getAuthHeaders = () => {
     const token = getClientAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
 };

@@ -66,63 +66,93 @@ export default function SavedSessionsPage() {
     };
 
     return (
-        <div className="p-8">
-            <h1 className="text-3xl font-bold text-[#3B4A6B] mb-2">Your Saved Sessions</h1>
-            <div className="flex items-center mb-6">
-                <input
-                    type="text"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Search your library..."
-                    className="border border-[#E6EAF3] rounded-lg px-4 py-2 focus:outline-none w-80 mr-4"
-                />
-            </div>
-            <div className="bg-[#F3F4F6] rounded-xl p-4 flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                    <span className="bg-[#E6EAF3] p-3 rounded-xl">
-                        <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#5B6EF8" fillOpacity="0.1"/><path d="M7 7h10v10H7V7z" fill="#5B6EF8"/></svg>
-                    </span>
-                    <span className="font-medium text-[#3B4A6B]">You have {sessions.length} saved sessions</span>
-                </div>
-            </div>
-            <div className="flex gap-2 mb-8">
-                {filters.map((f) => (
-                    <button
-                        key={f}
-                        className={`px-4 py-2 rounded-lg font-medium ${filter === f ? "bg-[#5B6EF8] text-white" : "bg-[#E6EAF3] text-[#3B4A6B]"}`}
-                        onClick={() => setFilter(f)}
-                    >
-                        {f}
-                    </button>
-                ))}
-            </div>
-
-            {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4">{error}</div>}
-            {loading && <div className="text-sm text-slate-500 mb-4">Loading...</div>}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredSessions.map((session) => (
-                    <div key={`${session.content_type}-${session.content_id}`} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col">
-                        <div className="flex items-center gap-4 mb-4">
-                            <img src={session.thumbnail_url || "/images/homepage.png"} alt={session.title} className="w-20 h-20 rounded-xl object-cover" />
-                            <div className="flex-1">
-                                <div className="flex gap-2 mb-1">
-                                    <span className="bg-[#5B6EF8] text-white px-2 py-1 rounded-lg text-xs font-semibold capitalize">{session.content_type}</span>
-                                    <span className="bg-[#E6EAF3] text-[#5B6EF8] px-2 py-1 rounded-lg text-xs font-semibold">{durationText(session.duration_seconds)}</span>
-                                </div>
-                                <h2 className="text-lg font-bold text-[#3B4A6B] mb-1">{session.title}</h2>
-                                {session.subtitle && <span className="text-xs text-[#6B7280]">{session.subtitle}</span>}
-                            </div>
+        <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
+            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10 space-y-6">
+                <section className="space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                        <div>
+                            <h1 className="text-3xl font-bold text-slate-900">Your Saved Sessions</h1>
+                            <p className="text-sm text-slate-500 mt-1">All your bookmarked practices in one place.</p>
                         </div>
-                        <Link
-                            href={getSessionLink(session)}
-                            className="mt-4 inline-flex items-center justify-center px-6 py-2 rounded-lg font-medium text-white bg-[#5B6EF8]"
-                        >
-                            Open Session
-                        </Link>
+                        <div className="w-full md:w-80">
+                            <input
+                                type="text"
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                placeholder="Search your library..."
+                                className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                            />
+                        </div>
                     </div>
-                ))}
-            </div>
+
+                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 flex items-center gap-3 shadow-sm">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#4F46E5" fillOpacity="0.15"/><path d="M7 7h10v10H7V7z" fill="#4F46E5"/></svg>
+                        </span>
+                        <p className="text-sm font-medium text-slate-700">You have {sessions.length} saved sessions</p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {filters.map((f) => (
+                            <button
+                                key={f}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium transition ${filter === f ? "session-btn-primary text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
+                                onClick={() => setFilter(f)}
+                            >
+                                {f}
+                            </button>
+                        ))}
+                    </div>
+                </section>
+
+                {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>}
+                {loading && <div className="text-sm text-slate-500">Loading...</div>}
+
+                {!loading && filteredSessions.length === 0 ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+                        No saved sessions found for this filter.
+                    </div>
+                ) : (
+                    <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        {filteredSessions.map((session) => (
+                            <article
+                                key={`${session.content_type}-${session.content_id}`}
+                                className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col"
+                            >
+                                <div className="flex gap-4">
+                                    <img
+                                        src={session.thumbnail_url || "/images/homepage.png"}
+                                        alt={session.title}
+                                        className="w-20 h-20 rounded-xl object-cover shrink-0"
+                                    />
+
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                                            <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md text-[11px] font-semibold capitalize">
+                                                {session.content_type}
+                                            </span>
+                                            <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[11px] font-semibold">
+                                                {durationText(session.duration_seconds)}
+                                            </span>
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-slate-900 leading-tight">{session.title}</h2>
+                                        {session.subtitle && (
+                                            <p className="text-sm text-slate-500 mt-1 line-clamp-2">{session.subtitle}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <Link
+                                    href={getSessionLink(session)}
+                                    className="session-btn-primary mt-4 inline-flex items-center justify-center px-6 py-2.5 rounded-xl font-semibold"
+                                >
+                                    Open Session
+                                </Link>
+                            </article>
+                        ))}
+                    </section>
+                )}
+            </main>
         </div>
     );
 }

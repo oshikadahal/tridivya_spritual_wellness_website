@@ -15,6 +15,10 @@ export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+    const profileImageUrl = user?.imageUrl
+        ? (user.imageUrl.startsWith("http") ? user.imageUrl : `${apiBaseUrl}${user.imageUrl}`)
+        : null;
 
     const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname?.startsWith(href));
 
@@ -74,9 +78,9 @@ export default function Navbar() {
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
                                     className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
                                 >
-                                    {user.imageUrl ? (
+                                    {profileImageUrl ? (
                                         <img
-                                            src={user.imageUrl}
+                                            src={profileImageUrl}
                                             alt={user.firstName}
                                             className="w-8 h-8 rounded-full object-cover border border-white/20"
                                         />

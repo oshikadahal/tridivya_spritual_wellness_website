@@ -1,14 +1,15 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Clock3, User2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { getBookings, BookingResponse, BookingStatusEnum, cancelBooking } from "@/lib/api/booking";
 
 const tabs = ["Upcoming", "Completed", "Cancelled"] as const;
 
 type BookingStatus = (typeof tabs)[number];
 
-type Booking = {
-    id: number;
+type BookingDisplay = {
+    id: string;
     month: string;
     day: string;
     title: string;
@@ -16,65 +17,9 @@ type Booking = {
     instructor: string;
     time: string;
     duration: string;
-    primaryAction: string;
     status: BookingStatus;
     dateISO: string;
 };
-
-const bookings: Booking[] = [
-    {
-        id: 1,
-        month: "OCT",
-        day: "24",
-        title: "Hatha Yoga Practice",
-        mode: "PRIVATE",
-        instructor: "Dr. Sarah Mitchell",
-        time: "09:30 AM",
-        duration: "60 min",
-        primaryAction: "Join Session",
-        status: "Upcoming",
-        dateISO: "2026-10-24",
-    },
-    {
-        id: 2,
-        month: "OCT",
-        day: "26",
-        title: "Deep Meditation",
-        mode: "GROUP",
-        instructor: "Master Kenji",
-        time: "04:00 PM",
-        duration: "45 min",
-        primaryAction: "Manage",
-        status: "Upcoming",
-        dateISO: "2026-10-26",
-    },
-    {
-        id: 3,
-        month: "OCT",
-        day: "21",
-        title: "Vinyasa Flow",
-        mode: "GROUP",
-        instructor: "Ravi Sharma",
-        time: "07:00 AM",
-        duration: "40 min",
-        primaryAction: "View",
-        status: "Completed",
-        dateISO: "2026-10-21",
-    },
-    {
-        id: 4,
-        month: "OCT",
-        day: "18",
-        title: "Evening Breathwork",
-        mode: "PRIVATE",
-        instructor: "Maya Karki",
-        time: "06:30 PM",
-        duration: "30 min",
-        primaryAction: "View",
-        status: "Cancelled",
-        dateISO: "2026-10-18",
-    },
-];
 
 const weekdayLabels = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
@@ -89,10 +34,50 @@ const toDateKey = (date: Date) => {
     return localDate.toISOString().split("T")[0];
 };
 
+const formatBookingForDisplay = (booking: BookingResponse): BookingDisplay => {
+    const bookingDate = new Date(booking.booking_date);
+    const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+    
+    return {
+        id: booking.id,
+        month: monthFormatter.format(bookingDate).toUpperCase(),
+        day: bookingDate.getDate().toString().padStart(2, "0"),
+        title: booking.session_type,
+        mode: booking.session_mode.toUpperCase(),
+        instructor: booking.instructor || "Instructor",
+        time: booking.time_slot,
+        duration: `${booking.duration_minutes} min`,
+        status: booking.status.charAt(0).toUpperCase() + booking.status.slice(1) as BookingStatus,
+        dateISO: booking.booking_date.split("T")[0],
+    };
+};
+
 export default function MyBookingsPage() {
     const [activeTab, setActiveTab] = useState<BookingStatus>("Upcoming");
     const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
-    const [visibleMonth, setVisibleMonth] = useState(new Date(2026, 9, 1));
+    const [visibleMonth, setVisibleMonth] = useState(new Date());
+    const [bookings, setBookings] = useState<BookingDisplay[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    // Fetch bookings on mount
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                setIsLoading(true);
+                setError("");
+                const data = await getBookings();
+                const formattedBookings = data.map(formatBookingForDisplay);
+                setBookings(formattedBookings);
+            } catch (err: any) {
+                setError(err.message || "Failed to fetch bookings");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBookings();
+    }, []);
 
     const monthStart = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
     const daysInMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0).getDate();
@@ -156,7 +141,22 @@ export default function MyBookingsPage() {
                     <h1 className="text-3xl font-bold text-slate-900">My Bookings</h1>
                 </div>
 
-                <section className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6 items-start">
+                {isLoading && (
+                    <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600"></div>
+                        <p className="text-slate-600 mt-4">Loading your bookings...</p>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-3xl p-6 text-red-700">
+                        <p className="font-semibold">Error loading bookings</p>
+                        <p className="text-sm mt-1">{error}</p>
+                    </div>
+                )}
+
+                {!isLoading && !error && (
+                    <section className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6 items-start">
                     <div>
                         <div className="flex items-center gap-8 border-b border-slate-200">
                             {tabs.map((tab) => {
@@ -292,6 +292,7 @@ export default function MyBookingsPage() {
                         </button>
                     </aside>
                 </section>
+                )}
             </main>
         </div>
     );

@@ -10,6 +10,10 @@ export default function UserHeader() {
   const router = useRouter();
 
   const initials = `${user?.firstName?.[0] ?? "U"}${user?.lastName?.[0] ?? ""}`;
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+  const profileImageUrl = user?.imageUrl
+    ? (user.imageUrl.startsWith("http") ? user.imageUrl : `${apiBaseUrl}${user.imageUrl}`)
+    : null;
 
   return (
     <header className="w-full bg-transparent px-4 md:px-8 py-3 md:py-4 flex items-center justify-between">
@@ -43,9 +47,17 @@ export default function UserHeader() {
           onClick={() => router.push("/user/my-profile")}
           className="flex items-center gap-2 md:gap-3 bg-white border border-slate-200 rounded-full px-2.5 md:px-3 py-1.5 md:py-2 shadow-sm hover:shadow-md transition"
         >
-          <span className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-sm">
-            {initials}
-          </span>
+          {profileImageUrl ? (
+            <img
+              src={profileImageUrl}
+              alt={user?.firstName || "User"}
+              className="w-9 h-9 rounded-full object-cover border border-violet-100"
+            />
+          ) : (
+            <span className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-sm">
+              {initials}
+            </span>
+          )}
           <span className="text-sm font-medium text-slate-700">{user?.firstName ?? "User"}</span>
         </button>
       </div>

@@ -173,7 +173,7 @@ export default function MantraProgramPage() {
                             {mantraOfDay.meaning || mantraOfDay.description || mantraOfDay.subtitle || "Practice this mantra for grounding and clarity."}
                         </p>
                         <button
-                            className="mt-6 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-white text-[#6a5ae0] font-semibold"
+                            className="session-btn-primary mt-6 inline-flex items-center gap-2 h-11 px-6 rounded-full font-semibold"
                             onClick={() => handlePlayMantra(mantraOfDay.audio_url)}
                             aria-label={`${currentTrackUrl === mantraOfDay.audio_url && isPlaying ? "Pause" : "Play"} mantra ${mantraOfDay.title}`}
                         >
@@ -251,10 +251,8 @@ export default function MantraProgramPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    {playlistItems.map((item, index) => (
-                        <article key={item.id} className={`rounded-3xl p-5 text-center shadow-sm relative overflow-hidden ${
-                            index % 2 === 0 ? "bg-linear-to-br from-amber-100 to-orange-100" : "bg-linear-to-br from-teal-100 to-green-100"
-                        }`}>
+                    {playlistItems.map((item) => (
+                        <article key={item.id} className="rounded-3xl p-5 text-center shadow-sm relative overflow-hidden bg-linear-to-br from-violet-100 to-indigo-100">
                             <div className="relative h-32 rounded-2xl overflow-hidden mb-4 bg-white/10">
                                 <Image src={item.image_url || item.cover_image_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
                             </div>
