@@ -4,8 +4,16 @@ import axios from "./axios";
 import { API } from "./endpoints";
 
 const getClientAuthToken = () => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("auth_token");
+    if (typeof document === "undefined") return null;
+    const cookieName = "auth_token=";
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+        const trimmedCookie = cookie.trim();
+        if (trimmedCookie.startsWith(cookieName)) {
+            return trimmedCookie.substring(cookieName.length);
+        }
+    }
+    return null;
 };
 
 const getAuthHeaders = () => {

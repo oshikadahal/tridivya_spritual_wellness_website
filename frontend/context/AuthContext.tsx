@@ -18,8 +18,9 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   setUser: (user: User) => void;
+  setUserData: (user: User) => void;
   setIsAuthenticated: (value: boolean) => void;
   checkAuth: () => Promise<void>;
 }
@@ -59,11 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await clearAuthCookies();
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("auth_token");
-    }
     setUser(null);
     setIsAuthenticated(false);
+    if (typeof window !== "undefined") {
+      window.location.replace("/login");
+    }
   };
 
   return (
@@ -75,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         setUser,
+        setUserData: setUser,
         setIsAuthenticated,
         checkAuth,
       }}

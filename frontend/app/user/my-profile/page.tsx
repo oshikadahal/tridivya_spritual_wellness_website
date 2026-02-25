@@ -9,6 +9,7 @@ import { handleUpdateProfile } from "@/lib/actions/auth-action";
 import { deleteUserProfilePicture } from "@/lib/api/auth";
 import { toast } from "react-toastify";
 import { Trash2, Camera, ArrowLeft, Loader } from "lucide-react";
+import { useLogoutModal } from "@/context/LogoutModalContext";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5051';
 
@@ -21,6 +22,7 @@ const getImageUrl = (imageUrl: string | null | undefined) => {
 function UserProfile() {
     const { user, isAuthenticated, loading, setUser } = useAuth();
     const router = useRouter();
+    const { setShowLogoutModal } = useLogoutModal();
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
@@ -206,7 +208,10 @@ function UserProfile() {
                         <button className="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition">
                             <span className="text-lg">🔒</span> Change Password
                         </button>
-                        <button className="flex items-center gap-2 px-6 py-3 border border-red-200 bg-red-50 text-red-700 rounded-lg font-medium hover:bg-red-100 transition">
+                        <button
+                            onClick={() => setShowLogoutModal(true)}
+                            className="flex items-center gap-2 px-6 py-3 border border-red-200 bg-red-50 text-red-700 rounded-lg font-medium hover:bg-red-100 transition"
+                        >
                             <span className="text-lg">❗</span> Log Out
                         </button>
                     </div>
