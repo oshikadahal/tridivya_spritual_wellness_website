@@ -9,6 +9,10 @@ import yogaRoutes from './routes/yoga.route';
 import mantraRoutes from './routes/mantra.route';
 import libraryItemRoutes from './routes/library-item.route';
 import meRoutes from './routes/me.route';
+import announcementRoutes from './routes/announcement.route';
+import dashboardRoutes from './routes/dashboard.route';
+import searchRoutes from './routes/search.route';
+import userSettingsRoutes from './routes/user-settings.route';
 
 const app = express();
 
@@ -35,5 +39,9 @@ app.use('/api/v1/yogas', yogaRoutes);
 app.use('/api/v1/mantras', mantraRoutes);
 app.use('/api/v1/library-items', libraryItemRoutes);
 app.use('/api/v1/me', meRoutes);
+app.use('/api/admin/announcements', announcementRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/me/settings', userSettingsRoutes);
 
 export default app;
