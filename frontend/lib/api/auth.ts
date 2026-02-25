@@ -68,6 +68,28 @@ export const resetPassword = async (payload: { token: string; password: string; 
     }
 }
 
+export const changePassword = async (payload: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
+    try {
+        const token = await getAuthToken();
+        const response = await axios.post(
+            API.AUTH.CHANGE_PASSWORD,
+            payload,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Change password failed"
+        );
+    }
+}
+
 export const updateProfile = async (profileData: FormData) => {
     try {
         const token = await getAuthToken();
