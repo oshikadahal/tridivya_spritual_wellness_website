@@ -138,9 +138,9 @@ export default function ProfilePage() {
           </div>
 
           {/* Edit Profile Button */}
-          <button className="w-full py-2 px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-semibold">
+          <Link href="/profile-edit" className="block w-full py-2 px-4 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold text-center">
             Edit Profile
-          </button>
+          </Link>
         </div>
 
         {/* My Journey Section */}
