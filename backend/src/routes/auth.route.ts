@@ -10,6 +10,7 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
+router.post('/change-password', authorizedMiddleware, authController.changePassword);
 
 // Get current user profile
 router.get('/profile', authorizedMiddleware, authController.getProfile);
