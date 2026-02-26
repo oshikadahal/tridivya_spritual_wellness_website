@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createAdminContent, deleteAdminContent, type AdminContentPayload, getAdminContentList, type ContentType, updateAdminContent, uploadAdminImage, uploadAdminVideo } from "@/lib/api/admin-content";
+import { createAdminContent, deleteAdminContent, type AdminContentPayload, getAdminContentList, type ContentType, updateAdminContent, uploadAdminAudio, uploadAdminImage, uploadAdminVideo } from "@/lib/api/admin-content";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -16,6 +16,7 @@ type ContentItem = {
   goal_slug?: string;
   is_active?: boolean;
   image_url?: string;
+  thumbnail_url?: string;
   media_url?: string;
   audio_url?: string;
   cover_image_url?: string;
@@ -30,9 +31,10 @@ const defaultPayload: AdminContentPayload = {
   subtitle: "",
   description: "",
   image_url: "",
+  thumbnail_url: undefined,
   media_url: "",
   audio_url: "",
-  cover_image_url: "",
+  cover_image_url: undefined,
   duration_seconds: 600,
   difficulty: "beginner",
   goal_slug: "wellness",
@@ -61,6 +63,7 @@ export default function AdminContentCrudPage({
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingAudio, setUploadingAudio] = useState(false);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<AdminContentPayload>(defaultPayload);
@@ -99,6 +102,7 @@ export default function AdminContentCrudPage({
       subtitle: item.subtitle || "",
       description: item.description || "",
       image_url: item.image_url || "",
+      thumbnail_url: item.thumbnail_url || item.image_url || "",
       media_url: item.media_url || "",
       audio_url: item.audio_url || "",
       cover_image_url: item.cover_image_url || "",
@@ -123,11 +127,41 @@ export default function AdminContentCrudPage({
     e.preventDefault();
     try {
       setSaving(true);
+      const basePayload: AdminContentPayload = {
+        title: form.title,
+        subtitle: form.subtitle?.trim() || undefined,
+        description: form.description,
+        image_url: form.image_url,
+        thumbnail_url: form.image_url,
+        difficulty: form.difficulty,
+        goal_slug: form.goal_slug,
+        is_active: form.is_active,
+        is_featured: form.is_featured,
+        is_trending: form.is_trending,
+      };
+
+      const payload: AdminContentPayload = isMantra
+        ? {
+            ...basePayload,
+            audio_url: form.audio_url?.trim() || undefined,
+          duration_seconds: form.duration_seconds,
+            cover_image_url: form.cover_image_url?.trim() || form.image_url,
+            meaning: form.meaning?.trim() || undefined,
+            lyrics: form.lyrics?.trim() || undefined,
+            transliteration: form.transliteration?.trim() || undefined,
+            pronunciation_guide: form.pronunciation_guide?.trim() || undefined,
+          }
+        : {
+            ...basePayload,
+            media_url: form.media_url?.trim() || undefined,
+            duration_seconds: form.duration_seconds,
+          };
+
       if (editingId) {
-        await updateAdminContent(type, editingId, form);
+        await updateAdminContent(type, editingId, payload);
         toast.success(`${title.slice(0, -1)} updated`);
       } else {
-        await createAdminContent(type, form);
+        await createAdminContent(type, payload);
         toast.success(`${title.slice(0, -1)} created`);
       }
       closeModal();
@@ -180,11 +214,42 @@ export default function AdminContentCrudPage({
       }
 
       setForm((prev) => ({ ...prev, [field]: imageUrl }));
+      setForm((prev) => {
+        if (field === "image_url") {
+          return {
+            ...prev,
+            image_url: imageUrl,
+            thumbnail_url: imageUrl,
+            ...(type === "mantra" && !prev.cover_image_url ? { cover_image_url: imageUrl } : {}),
+          };
+        }
+
+        return { ...prev, [field]: imageUrl };
+      });
       toast.success("Image uploaded successfully");
     } catch (error: any) {
       toast.error(error?.message || "Failed to upload image");
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const handleAudioUpload = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      setUploadingAudio(true);
+      const audioUrl = await uploadAdminAudio(file);
+      if (!audioUrl) {
+        toast.error("Audio upload failed");
+        return;
+      }
+
+      setForm((prev) => ({ ...prev, audio_url: audioUrl }));
+      toast.success("Audio uploaded successfully");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to upload audio");
+    } finally {
+      setUploadingAudio(false);
     }
   };
 
@@ -325,6 +390,17 @@ export default function AdminContentCrudPage({
                   <div>
                     <label className="mb-1 block text-sm font-medium text-slate-700">Audio URL</label>
                     <input required value={form.audio_url || ""} onChange={(e) => setForm({ ...form, audio_url: e.target.value })} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400" />
+                    <div className="mt-2">
+                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100">
+                        <input
+                          type="file"
+                          accept="audio/*"
+                          className="hidden"
+                          onChange={(e) => handleAudioUpload(e.target.files?.[0])}
+                        />
+                        {uploadingAudio ? "Uploading..." : "Upload Audio"}
+                      </label>
+                    </div>
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium text-slate-700">Cover Image URL</label>
@@ -340,6 +416,10 @@ export default function AdminContentCrudPage({
                         {uploadingImage ? "Uploading..." : "Upload Cover"}
                       </label>
                     </div>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700">Duration (seconds)</label>
+                    <input type="number" min={0} required value={form.duration_seconds || 0} onChange={(e) => setForm({ ...form, duration_seconds: Number(e.target.value) })} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium text-slate-700">Meaning</label>
