@@ -8,6 +8,7 @@ import { RegisterData, registerSchema } from "../schema";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { handleRegister } from "@/lib/actions/auth-action";
+import { Eye, EyeOff } from "lucide-react";
 
 
 
@@ -15,6 +16,8 @@ import { handleRegister } from "@/lib/actions/auth-action";
 export default function RegisterForm() {
     const router = useRouter();
     const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const {
         register,
         handleSubmit,
@@ -81,14 +84,24 @@ export default function RegisterForm() {
 
             <div className="space-y-1">
                 <label className="text-sm font-medium text-slate-700">Password</label>
-                <input
-                    id="password"
-                    type="password"
-                    autoComplete="new-password"
-                    className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
-                    {...register("password")}
-                    placeholder="Create a password"
-                />
+                <div className="relative">
+                    <input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 pr-10 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                        {...register("password")}
+                        placeholder="Create a password"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                </div>
                 {errors.password?.message && (
                     <p className="text-xs text-red-500">{errors.password.message}</p>
                 )}
@@ -96,14 +109,24 @@ export default function RegisterForm() {
 
             <div className="space-y-1">
                 <label className="text-sm font-medium text-slate-700">Confirm Password</label>
-                <input
-                    id="confirmPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
-                    {...register("confirmPassword")}
-                    placeholder="Confirm your password"
-                />
+                <div className="relative">
+                    <input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 pr-10 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                        {...register("confirmPassword")}
+                        placeholder="Confirm your password"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    >
+                        {showConfirmPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                </div>
                 {errors.confirmPassword?.message && (
                     <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
                 )}

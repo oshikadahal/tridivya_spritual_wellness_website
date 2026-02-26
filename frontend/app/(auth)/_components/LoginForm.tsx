@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { LoginData, loginSchema } from "../schema";
 import { loginUser } from "@/lib/api/auth";
 import { setAuthToken, setUserData } from "@/lib/cookie";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -23,6 +24,7 @@ export default function LoginForm() {
         mode: "onSubmit",
     });
     const [error, setError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const submit = async (values: LoginData) => {
         setError(null);
@@ -78,14 +80,24 @@ export default function LoginForm() {
 
             <div className="space-y-1">
                 <label className="text-sm font-medium text-slate-700">Password</label>
-                <input
-                    id="password"
-                    type="password"
-                    autoComplete="current-password"
-                    className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
-                    {...register("password")}
-                    placeholder="••••••••"
-                />
+                <div className="relative">
+                    <input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 pr-10 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-300"
+                        {...register("password")}
+                        placeholder="••••••••"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                </div>
                 {errors.password?.message && (
                     <p className="text-xs text-red-500">{errors.password.message}</p>
                 )}
