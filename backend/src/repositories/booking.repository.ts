@@ -43,6 +43,14 @@ export class BookingRepository {
     ).exec();
   }
 
+  async updateById(id: string, data: Partial<IBooking>): Promise<IBooking | null> {
+    return await Booking.findOneAndUpdate(
+      { id },
+      { ...data, updated_at: new Date() },
+      { new: true }
+    ).exec();
+  }
+
   async deleteById(id: string): Promise<boolean> {
     const result = await Booking.deleteOne({ id }).exec();
     return result.deletedCount > 0;
