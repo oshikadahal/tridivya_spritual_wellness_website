@@ -195,7 +195,7 @@ export default function AdminReviewsPage() {
               <select
                 value={createForm.type}
                 onChange={(e) => setCreateForm({ type: e.target.value as ContentType, contentId: "", rating: 5, comment: "" })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="yoga">Yoga</option>
                 <option value="meditation">Meditation</option>
@@ -208,7 +208,7 @@ export default function AdminReviewsPage() {
                 required
                 value={createForm.contentId}
                 onChange={(e) => setCreateForm({ ...createForm, contentId: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               >
                 {optionsByType[createForm.type].map((item) => (
                   <option key={item.id} value={item.id}>{item.title}</option>
@@ -217,11 +217,11 @@ export default function AdminReviewsPage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Rating</label>
-              <input type="number" min={1} max={5} required value={createForm.rating} onChange={(e) => setCreateForm({ ...createForm, rating: Number(e.target.value) })} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+              <input type="number" min={1} max={5} required value={createForm.rating} onChange={(e) => setCreateForm({ ...createForm, rating: Number(e.target.value) })} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-indigo-500" />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Comment</label>
-              <textarea rows={3} value={createForm.comment} onChange={(e) => setCreateForm({ ...createForm, comment: e.target.value })} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+              <textarea rows={3} value={createForm.comment} onChange={(e) => setCreateForm({ ...createForm, comment: e.target.value })} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-indigo-500" />
             </div>
             <div className="flex justify-end gap-3">
               <button type="button" onClick={() => setOpenCreate(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-slate-700">Cancel</button>
@@ -235,14 +235,14 @@ export default function AdminReviewsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
           <form onSubmit={handleEdit} className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl space-y-4">
             <h2 className="text-xl font-bold text-slate-900">Edit Review</h2>
-            <p className="text-sm text-slate-500">{selectedReview.contentTitle}</p>
+            <p className="text-sm text-slate-700">{selectedReview.contentTitle}</p>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Rating</label>
-              <input type="number" min={1} max={5} required value={editForm.rating} onChange={(e) => setEditForm({ ...editForm, rating: Number(e.target.value) })} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+              <input type="number" min={1} max={5} required value={editForm.rating} onChange={(e) => setEditForm({ ...editForm, rating: Number(e.target.value) })} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-indigo-500" />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Comment</label>
-              <textarea rows={3} value={editForm.comment} onChange={(e) => setEditForm({ ...editForm, comment: e.target.value })} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+              <textarea rows={3} value={editForm.comment} onChange={(e) => setEditForm({ ...editForm, comment: e.target.value })} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-indigo-500" />
             </div>
             <div className="flex justify-end gap-3">
               <button type="button" onClick={() => { setOpenEdit(false); setSelectedReview(null); }} className="rounded-lg border border-slate-300 px-4 py-2 text-slate-700">Cancel</button>
