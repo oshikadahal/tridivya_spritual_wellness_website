@@ -2,6 +2,7 @@
 
 import axios from "./axios";
 import { API } from "./endpoints";
+import { CreateBookingData, UpdateBookingData } from "./booking";
 
 const getClientAuthToken = () => {
     if (typeof document === "undefined") return null;
@@ -206,6 +207,116 @@ export const deleteAdminProfilePicture = async () => {
             err.response?.data?.message
             || err.message
             || "Failed to delete profile picture"
+        );
+    }
+}
+
+export const getAllBookingsAdmin = async (status?: "upcoming" | "completed" | "cancelled") => {
+    try {
+        const response = await axios.get(API.ADMIN.BOOKINGS, {
+            params: status ? { status } : undefined,
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to fetch bookings"
+        );
+    }
+}
+
+export const createBookingAdmin = async (data: CreateBookingData) => {
+    try {
+        const response = await axios.post(API.ADMIN.CREATE_BOOKING, data, {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to create booking"
+        );
+    }
+}
+
+export const updateBookingAdmin = async (id: string, data: UpdateBookingData) => {
+    try {
+        const response = await axios.put(API.ADMIN.UPDATE_BOOKING(id), data, {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to update booking"
+        );
+    }
+}
+
+export const updateBookingStatusAdmin = async (
+    id: string,
+    status: "upcoming" | "completed" | "cancelled"
+) => {
+    try {
+        const response = await axios.patch(
+            API.ADMIN.BOOKING_STATUS(id),
+            { status },
+            {
+                headers: {
+                    ...getAuthHeaders(),
+                },
+            }
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to update booking status"
+        );
+    }
+}
+
+export const deleteBookingAdmin = async (id: string) => {
+    try {
+        const response = await axios.delete(API.ADMIN.BOOKING_BY_ID(id), {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to delete booking"
+        );
+    }
+}
+
+export const getAdminDashboardOverview = async () => {
+    try {
+        const response = await axios.get(API.ADMIN.DASHBOARD_OVERVIEW, {
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message
+            || err.message
+            || "Failed to fetch admin dashboard overview"
         );
     }
 }

@@ -1,25 +1,67 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAllUsers } from "@/lib/api/admin";
-import { useAuth } from "@/context/AuthContext";
-import { Users, TrendingUp, Activity, BarChart3, UserPlus } from "lucide-react";
-import AdminProfile from "@/app/admin/_components/AdminProfile";
+import { getAdminDashboardOverview } from "@/lib/api/admin";
+import { CalendarDays, Clock3, Library, Sparkles, Star, TrendingUp, Users } from "lucide-react";
+
+type RecentActivityItem = {
+    type: "users" | "reviews" | "bookings";
+    title: string;
+    subtitle: string;
+};
 
 interface DashboardStats {
-    totalUsers: number;
-    adminUsers: number;
-    regularUsers: number;
+    cards: {
+        totalUsers: number;
+        usersDelta: number;
+        todaysBookings: number;
+        bookingsDelta: number;
+        newReviews: number;
+        reviewsDelta: number;
+        contentLibrary: number;
+    };
+    distribution: {
+        yoga: number;
+        meditation: number;
+        mantras: number;
+        totalAssets: number;
+    };
+    highlights: {
+        yogaCompletion: number;
+        meditationEngagement: number;
+        mantraGrowth: number;
+        monthlyActiveUsersGrowth: number;
+    };
+    recentActivity: RecentActivityItem[];
 }
 
-export default function AdminDashboard() {
-    const { user } = useAuth();
-    const [stats, setStats] = useState<DashboardStats>({
+const initialStats: DashboardStats = {
+    cards: {
         totalUsers: 0,
-        adminUsers: 0,
-        regularUsers: 0,
-    });
+        usersDelta: 0,
+        todaysBookings: 0,
+        bookingsDelta: 0,
+        newReviews: 0,
+        reviewsDelta: 0,
+        contentLibrary: 0,
+    },
+    distribution: {
+        yoga: 0,
+        meditation: 0,
+        mantras: 0,
+        totalAssets: 0,
+    },
+    highlights: {
+        yogaCompletion: 0,
+        meditationEngagement: 0,
+        mantraGrowth: 0,
+        monthlyActiveUsersGrowth: 0,
+    },
+    recentActivity: [],
+};
+
+export default function AdminDashboard() {
+    const [stats, setStats] = useState<DashboardStats>(initialStats);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -28,14 +70,9 @@ export default function AdminDashboard() {
 
     const fetchStats = async () => {
         try {
-            const response = await getAllUsers(1, 1000);
+            const response = await getAdminDashboardOverview();
             if (response.success) {
-                const users = response.data;
-                setStats({
-                    totalUsers: users.length,
-                    adminUsers: users.filter((u: any) => u.role === "admin").length,
-                    regularUsers: users.filter((u: any) => u.role === "user").length,
-                });
+                setStats(response.data);
             }
         } catch (err) {
             console.error("Failed to fetch stats:", err);
@@ -44,212 +81,195 @@ export default function AdminDashboard() {
         }
     };
 
+    const activityIcon = (type: RecentActivityItem["type"]) => {
+        if (type === "users") {
+            return (
+                <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-violet-100 text-violet-700">
+                    <Users size={14} />
+                </span>
+            );
+        }
+        if (type === "reviews") {
+            return (
+                <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                    <Star size={14} />
+                </span>
+            );
+        }
+        return (
+            <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-orange-100 text-orange-700">
+                <Clock3 size={14} />
+            </span>
+        );
+    };
+
+    const yogaShare = stats.distribution.yoga;
+    const meditationShare = stats.distribution.meditation;
+    const mantraShare = stats.distribution.mantras;
+    const yogaEnd = yogaShare;
+    const meditationEnd = yogaShare + meditationShare;
+
     return (
-        <div className="space-y-8">
-            {/* Header */}
+        <div className="space-y-6">
             <div>
-                <h1 className="text-4xl font-bold text-slate-900">Admin Overview</h1>
-                <p className="text-slate-600 mt-2">Welcome back! Here's your wellness platform overview.</p>
+                <h1 className="text-3xl font-bold text-slate-900">Admin Overview</h1>
+                <p className="mt-1 text-sm text-slate-500">Welcome back! Here's your wellness platform overview.</p>
             </div>
 
-            {/* Admin Profile Section */}
-            <AdminProfile />
-
-            {/* Stats Grid - 4 Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Total Practitioners */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">Total Practitioners</p>
-                            <p className="text-4xl font-bold text-slate-900 mt-2">{loading ? "..." : stats.totalUsers}</p>
-                        </div>
-                        <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-semibold">
-                            <span>↑</span>
-                            <span>12%</span>
-                        </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="mb-4 flex items-start justify-between">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                            <Users size={18} />
+                        </span>
+                        <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">{stats.cards.usersDelta >= 0 ? `+${stats.cards.usersDelta}%` : `${stats.cards.usersDelta}%`}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
-                        <Users className="text-indigo-500" size={16} />
-                        <span className="text-xs text-slate-500">Last month</span>
-                    </div>
+                    <p className="text-sm text-slate-500">Total Users</p>
+                    <p className="mt-1 text-4xl font-bold text-slate-900">{loading ? "..." : stats.cards.totalUsers.toLocaleString()}</p>
                 </div>
 
-                {/* Monthly Revenue */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">Monthly Revenue</p>
-                            <p className="text-4xl font-bold text-slate-900 mt-2">$42,150</p>
-                        </div>
-                        <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-semibold">
-                            <span>↑</span>
-                            <span>8.4%</span>
-                        </div>
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="mb-4 flex items-start justify-between">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 text-violet-600">
+                            <CalendarDays size={18} />
+                        </span>
+                        <span className="rounded-md bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700">{stats.cards.bookingsDelta >= 0 ? `+${stats.cards.bookingsDelta}%` : `${stats.cards.bookingsDelta}%`}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
-                        <TrendingUp className="text-indigo-500" size={16} />
-                        <span className="text-xs text-slate-500">Compared to last month</span>
-                    </div>
+                    <p className="text-sm text-slate-500">Today's Bookings</p>
+                    <p className="mt-1 text-4xl font-bold text-slate-900">{loading ? "..." : stats.cards.todaysBookings.toLocaleString()}</p>
                 </div>
 
-                {/* Active Sessions */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">Active Sessions</p>
-                            <p className="text-4xl font-bold text-slate-900 mt-2">1,842</p>
-                        </div>
-                        <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-semibold">
-                            <span>↑</span>
-                            <span>5.2%</span>
-                        </div>
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="mb-4 flex items-start justify-between">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                            <Star size={18} />
+                        </span>
+                        <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">{stats.cards.reviewsDelta >= 0 ? `+${stats.cards.reviewsDelta}%` : `${stats.cards.reviewsDelta}%`}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
-                        <Activity className="text-indigo-500" size={16} />
-                        <span className="text-xs text-slate-500">Real-time users</span>
-                    </div>
+                    <p className="text-sm text-slate-500">New Reviews</p>
+                    <p className="mt-1 text-4xl font-bold text-slate-900">{loading ? "..." : stats.cards.newReviews.toLocaleString()}</p>
                 </div>
 
-                {/* New Bookings */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">New Bookings</p>
-                            <p className="text-4xl font-bold text-slate-900 mt-2">856</p>
-                        </div>
-                        <div className="flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded-lg text-xs font-semibold">
-                            <span>↓</span>
-                            <span>2%</span>
-                        </div>
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="mb-4 flex items-start justify-between">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                            <Library size={18} />
+                        </span>
+                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">Total</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
-                        <BarChart3 className="text-indigo-500" size={16} />
-                        <span className="text-xs text-slate-500">This month</span>
-                    </div>
+                    <p className="text-sm text-slate-500">Content Library</p>
+                    <p className="mt-1 text-4xl font-bold text-slate-900">{loading ? "..." : stats.cards.contentLibrary.toLocaleString()}</p>
                 </div>
             </div>
 
-            {/* Charts and Content Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* User Engagement Trends */}
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <div>
-                            <h2 className="text-lg font-bold text-slate-900">User Engagement Trends</h2>
-                            <p className="text-sm text-slate-600">Meditation minutes consumed daily</p>
-                        </div>
-                        <button className="text-sm text-slate-600 hover:text-slate-900">Last 30 Days ▼</button>
-                    </div>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-1">
+                    <h2 className="text-2xl font-bold text-slate-900">Content Distribution</h2>
 
-                    {/* Bar Chart */}
-                    <div className="h-64 flex items-end justify-between gap-3 bg-slate-50 rounded-lg p-8">
-                        {[35, 48, 42, 65, 72, 58, 78].map((height, i) => (
-                            <div key={i} className="flex flex-col items-center flex-1 gap-2">
-                                <div
-                                    className="w-full bg-linear-to-t from-indigo-500 to-indigo-400 rounded-sm"
-                                    style={{ height: `${height}%`, minHeight: "10px" }}
-                                ></div>
-                                <p className="text-xs text-slate-600 font-medium">WEEK {i + 1}</p>
+                    <div className="mt-6 flex justify-center">
+                        <div
+                            className="relative h-56 w-56 rounded-full"
+                            style={{
+                                background:
+                                    `conic-gradient(#6d28d9 0% ${yogaEnd}%, #8b5cf6 ${yogaEnd}% ${meditationEnd}%, #c4b5fd ${meditationEnd}% 100%)`,
+                            }}
+                        >
+                            <div className="absolute inset-6 rounded-full bg-white" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-5xl font-bold text-slate-900">100%</span>
+                                <span className="mt-1 text-xs font-semibold tracking-widest text-slate-400">TOTAL ASSETS</span>
                             </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Platform Growth Card */}
-                <div className="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-sm p-8 text-white border border-indigo-400">
-                    <h3 className="text-2xl font-bold mb-2">Platform Growth</h3>
-                    <p className="text-indigo-100 mb-6">You've reached 85% of your quarterly subscription target. Keep up the aim!</p>
-                    <button className="w-full bg-white text-indigo-600 font-semibold py-3 rounded-lg hover:bg-indigo-50 transition-colors">
-                        View Full Report
-                    </button>
-
-                    {/* Quick Stats */}
-                    <div className="mt-8 pt-8 border-t border-indigo-400 space-y-4">
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-indigo-100">Target Progress</span>
-                            <span className="font-bold">85%</span>
-                        </div>
-                        <div className="w-full bg-indigo-400/30 rounded-full h-2">
-                            <div className="bg-white rounded-full h-2 w-[85%]"></div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Quick Actions and Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Quick Actions */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <h2 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h2>
-                    <div className="space-y-3">
-                        <Link href="/admin/users/create">
-                            <button className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                <UserPlus size={20} />
-                                New Class
-                            </button>
-                        </Link>
-                        <Link href="/admin/users">
-                            <button className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                <Users size={20} />
-                                Upload Video
-                            </button>
-                        </Link>
+                    <div className="mt-8 space-y-3 text-sm">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-slate-700">
+                                <span className="h-3 w-3 rounded-full bg-violet-700" /> Yoga
+                            </div>
+                            <span className="font-semibold text-slate-900">{yogaShare}%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-slate-700">
+                                <span className="h-3 w-3 rounded-full bg-violet-500" /> Meditation
+                            </div>
+                            <span className="font-semibold text-slate-900">{meditationShare}%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-slate-700">
+                                <span className="h-3 w-3 rounded-full bg-violet-300" /> Mantras
+                            </div>
+                            <span className="font-semibold text-slate-900">{mantraShare}%</span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Recent Activity */}
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold text-slate-900">Recent Activity</h2>
-                        <a href="#" className="text-indigo-600 hover:text-indigo-700 text-sm font-semibold">
-                            View All Records
-                        </a>
+                <div className="grid min-h-96 gap-5 lg:col-span-2 lg:grid-cols-2">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-slate-900">Platform Highlights</h3>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+                                <Sparkles size={13} /> Live
+                            </span>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div>
+                                <div className="mb-2 flex items-center justify-between text-sm">
+                                    <span className="text-slate-600">Yoga program completion</span>
+                                    <span className="font-semibold text-slate-900">{stats.highlights.yogaCompletion}%</span>
+                                </div>
+                                <div className="h-2 rounded-full bg-slate-100">
+                                    <div className="h-2 rounded-full bg-violet-600" style={{ width: `${stats.highlights.yogaCompletion}%` }} />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="mb-2 flex items-center justify-between text-sm">
+                                    <span className="text-slate-600">Meditation engagement</span>
+                                    <span className="font-semibold text-slate-900">{stats.highlights.meditationEngagement}%</span>
+                                </div>
+                                <div className="h-2 rounded-full bg-slate-100">
+                                    <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${stats.highlights.meditationEngagement}%` }} />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="mb-2 flex items-center justify-between text-sm">
+                                    <span className="text-slate-600">Mantra listens growth</span>
+                                    <span className="font-semibold text-slate-900">{stats.highlights.mantraGrowth}%</span>
+                                </div>
+                                <div className="h-2 rounded-full bg-slate-100">
+                                    <div className="h-2 rounded-full bg-violet-400" style={{ width: `${Math.min(100, stats.highlights.mantraGrowth)}%` }} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 rounded-xl bg-slate-50 p-4">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                <TrendingUp size={16} className="text-emerald-600" />
+                                Monthly active users {stats.highlights.monthlyActiveUsersGrowth >= 0 ? "up" : "down"} by {Math.abs(stats.highlights.monthlyActiveUsersGrowth)}%
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-200">
-                                    <th className="text-left py-3 px-4 font-semibold text-slate-700">User</th>
-                                    <th className="text-left py-3 px-4 font-semibold text-slate-700">Activity</th>
-                                    <th className="text-left py-3 px-4 font-semibold text-slate-700">Status</th>
-                                    <th className="text-left py-3 px-4 font-semibold text-slate-700">Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                    <td className="py-4 px-4 text-slate-900 font-medium">Liam Thompson</td>
-                                    <td className="py-4 px-4 text-slate-600">Booked "Morning Vinyasa"</td>
-                                    <td className="py-4 px-4">
-                                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                                            Confirmed
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 text-slate-600">2 mins ago</td>
-                                </tr>
-                                <tr className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                    <td className="py-4 px-4 text-slate-900 font-medium">Sarah Williams</td>
-                                    <td className="py-4 px-4 text-slate-600">Completed Session</td>
-                                    <td className="py-4 px-4">
-                                        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full">
-                                            Active
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 text-slate-600">15 mins ago</td>
-                                </tr>
-                                <tr className="hover:bg-slate-50 transition-colors">
-                                    <td className="py-4 px-4 text-slate-900 font-medium">Michael Chen</td>
-                                    <td className="py-4 px-4 text-slate-600">Updated Profile</td>
-                                    <td className="py-4 px-4">
-                                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
-                                            Pending
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 text-slate-600">1 hour ago</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-slate-900">Recent Activity</h3>
+                            <span className="text-xs font-semibold text-slate-500">Today</span>
+                        </div>
+
+                        <div className="space-y-4">
+                            {stats.recentActivity.map((activity, index) => (
+                                <div key={`${activity.type}-${index}`} className="flex items-start gap-3 rounded-xl bg-slate-50 p-3">
+                                    {activityIcon(activity.type)}
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-900">{activity.title}</p>
+                                        <p className="text-xs text-slate-500">{activity.subtitle}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
