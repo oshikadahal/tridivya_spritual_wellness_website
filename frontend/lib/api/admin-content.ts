@@ -9,6 +9,7 @@ export interface AdminContentPayload {
   subtitle?: string;
   description: string;
   image_url: string;
+  thumbnail_url?: string;
   media_url?: string;
   audio_url?: string;
   cover_image_url?: string;
@@ -38,20 +39,30 @@ const parseList = (data: any): ContentItem[] => {
 
 export const getAdminContentList = async (type: ContentType): Promise<ContentItem[]> => {
   const base = getBasePath(type);
-  const response = await axios.get(base.LIST, { params: { limit: 100, page: 1 } });
+  const response = await axios.get(base.LIST, { params: { limit: 100, page: 1, is_active: true } });
   return parseList(response.data);
 };
 
 export const createAdminContent = async (type: ContentType, payload: AdminContentPayload) => {
   const base = getBasePath(type);
-  const response = await axios.post(base.LIST, payload);
-  return response.data;
+  try {
+    const response = await axios.post(base.LIST, payload);
+    return response.data;
+  } catch (error: any) {
+    const message = error?.response?.data?.message || error?.message || "Failed to create content";
+    throw new Error(message);
+  }
 };
 
 export const updateAdminContent = async (type: ContentType, id: string, payload: Partial<AdminContentPayload>) => {
   const base = getBasePath(type);
-  const response = await axios.patch(base.BY_ID(id), payload);
-  return response.data;
+  try {
+    const response = await axios.patch(base.BY_ID(id), payload);
+    return response.data;
+  } catch (error: any) {
+    const message = error?.response?.data?.message || error?.message || "Failed to update content";
+    throw new Error(message);
+  }
 };
 
 export const deleteAdminContent = async (type: ContentType, id: string) => {
@@ -64,26 +75,54 @@ export const uploadAdminVideo = async (videoFile: File): Promise<string> => {
   const formData = new FormData();
   formData.append("video", videoFile);
 
-  const response = await axios.post(API.ADMIN.UPLOAD_VIDEO, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  try {
+    const response = await axios.post(API.ADMIN.UPLOAD_VIDEO, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-  return response.data?.data?.url || "";
+    return response.data?.data?.url || "";
+  } catch (error: any) {
+    const message = error?.response?.data?.message || error?.message || "Failed to upload video";
+    throw new Error(message);
+  }
+};
+
+export const uploadAdminAudio = async (audioFile: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("audio", audioFile);
+
+  try {
+    const response = await axios.post(API.ADMIN.UPLOAD_AUDIO, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data?.data?.url || "";
+  } catch (error: any) {
+    const message = error?.response?.data?.message || error?.message || "Failed to upload audio";
+    throw new Error(message);
+  }
 };
 
 export const uploadAdminImage = async (imageFile: File): Promise<string> => {
   const formData = new FormData();
   formData.append("image", imageFile);
 
-  const response = await axios.post(API.ADMIN.UPLOAD_IMAGE, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  try {
+    const response = await axios.post(API.ADMIN.UPLOAD_IMAGE, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-  return response.data?.data?.url || "";
+    return response.data?.data?.url || "";
+  } catch (error: any) {
+    const message = error?.response?.data?.message || error?.message || "Failed to upload image";
+    throw new Error(message);
+  }
 };
 
 const getReviewsPath = (type: ContentType, contentId: string) => {

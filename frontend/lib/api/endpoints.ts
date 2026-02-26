@@ -35,6 +35,7 @@ export const API= {
         REVIEW_CREATE: (type: string, contentId: string) => `/api/admin/reviews/${type}/${contentId}`,
         UPLOAD_IMAGE: "/api/admin/uploads/image",
         UPLOAD_VIDEO: "/api/admin/uploads/video",
+        UPLOAD_AUDIO: "/api/admin/uploads/audio",
     },
     HOME: {
         ROOT: "/api/v1/home",
