@@ -114,7 +114,7 @@ export default function CreateUserForm() {
                                 <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-indigo-500 transition">
                                     <div className="text-center">
                                         <span className="text-2xl">📷</span>
-                                        <p className="text-sm text-slate-600">Click to upload image</p>
+                                        <p className="text-sm text-slate-700">Click to upload image</p>
                                     </div>
                                     <input
                                         ref={fileInputRef}
@@ -142,7 +142,7 @@ export default function CreateUserForm() {
                 <input
                     type="email"
                     placeholder="user@example.com"
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("email")}
                 />
                 {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -154,7 +154,7 @@ export default function CreateUserForm() {
                 <input
                     type="text"
                     placeholder="John"
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("firstName")}
                 />
                 {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
@@ -166,7 +166,7 @@ export default function CreateUserForm() {
                 <input
                     type="text"
                     placeholder="Doe"
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("lastName")}
                 />
                 {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
@@ -178,7 +178,7 @@ export default function CreateUserForm() {
                 <input
                     type="text"
                     placeholder="johndoe"
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("username")}
                 />
                 {errors.username && <p className="text-xs text-red-500">{errors.username.message}</p>}
@@ -188,7 +188,7 @@ export default function CreateUserForm() {
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700">Role</label>
                 <select
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("role")}
                 >
                     <option value="user">👤 User</option>
@@ -203,7 +203,7 @@ export default function CreateUserForm() {
                 <input
                     type="password"
                     placeholder="Enter password"
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("password")}
                 />
                 {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
@@ -215,7 +215,7 @@ export default function CreateUserForm() {
                 <input
                     type="password"
                     placeholder="Confirm password"
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                     {...register("confirmPassword")}
                 />
                 {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}

@@ -10,7 +10,7 @@ import { ArrowLeft, Upload } from "lucide-react";
 export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5051";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -138,7 +138,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
               alt="Profile"
               className="w-20 h-20 rounded-full object-cover border border-slate-200"
             />
-            <label className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50">
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 text-slate-700">
               <Upload size={16} /> Upload New Photo
               <input
                 type="file"
@@ -157,7 +157,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
@@ -180,7 +180,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
@@ -192,7 +192,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
@@ -203,7 +203,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 value={formData.role}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
@@ -221,7 +221,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
@@ -232,7 +232,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
           </div>
