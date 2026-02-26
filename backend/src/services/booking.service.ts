@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { bookingRepository } from '../repositories/booking.repository';
-import { CreateBookingDTO, UpdateBookingStatusDTO, BookingResponseDTO } from '../dtos/booking.dto';
+import { CreateBookingDTO, UpdateBookingDTO, UpdateBookingStatusDTO, BookingResponseDTO } from '../dtos/booking.dto';
 import { IBooking, BookingStatusEnum } from '../models/booking.model';
 import { HttpError } from '../errors/http-error';
 
@@ -19,6 +19,15 @@ function assignInstructor(index: number): string {
 }
 
 export class BookingService {
+  async getAllBookings(status?: BookingStatusEnum): Promise<BookingResponseDTO[]> {
+    const filters: any = {};
+    if (status) {
+      filters.status = status;
+    }
+    const bookings = await bookingRepository.findAll(filters);
+    return bookings.map((booking) => new BookingResponseDTO(booking));
+  }
+
   async createBooking(userId: mongoose.Types.ObjectId, dto: CreateBookingDTO): Promise<BookingResponseDTO> {
     // Validate that the booking date is not in the past
     const bookingDate = new Date(dto.booking_date);
@@ -122,6 +131,45 @@ export class BookingService {
     return new BookingResponseDTO(updatedBooking);
   }
 
+  async updateBooking(
+    userId: mongoose.Types.ObjectId,
+    bookingId: string,
+    dto: UpdateBookingDTO
+  ): Promise<BookingResponseDTO> {
+    const booking = await bookingRepository.findById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, 'Booking not found');
+    }
+
+    if (booking.user_id.toString() !== userId.toString()) {
+      throw new HttpError(403, 'Access denied');
+    }
+
+    if (booking.status !== 'upcoming') {
+      throw new HttpError(400, 'Only upcoming bookings can be edited');
+    }
+
+    const { booking_date, ...rest } = dto;
+    const updateData: any = { ...rest };
+    if (booking_date) {
+      const bookingDate = new Date(booking_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (bookingDate < today) {
+        throw new HttpError(400, 'Booking date cannot be in the past');
+      }
+      updateData.booking_date = bookingDate;
+    }
+
+    const updatedBooking = await bookingRepository.updateById(bookingId, updateData);
+    if (!updatedBooking) {
+      throw new HttpError(500, 'Failed to update booking');
+    }
+
+    return new BookingResponseDTO(updatedBooking);
+  }
+
   async cancelBooking(userId: mongoose.Types.ObjectId, bookingId: string): Promise<BookingResponseDTO> {
     const booking = await bookingRepository.findById(bookingId);
 
@@ -165,6 +213,98 @@ export class BookingService {
 
     const deleted = await bookingRepository.deleteById(bookingId);
 
+    if (!deleted) {
+      throw new HttpError(500, 'Failed to delete booking');
+    }
+  }
+
+  async adminUpdateBookingStatus(bookingId: string, dto: UpdateBookingStatusDTO): Promise<BookingResponseDTO> {
+    const booking = await bookingRepository.findById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, 'Booking not found');
+    }
+
+    const updatedBooking = await bookingRepository.updateStatus(bookingId, dto.status);
+
+    if (!updatedBooking) {
+      throw new HttpError(500, 'Failed to update booking');
+    }
+
+    return new BookingResponseDTO(updatedBooking);
+  }
+
+  async adminCreateBooking(userId: mongoose.Types.ObjectId, dto: CreateBookingDTO): Promise<BookingResponseDTO> {
+    const bookingDate = new Date(dto.booking_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (bookingDate < today) {
+      throw new HttpError(400, 'Booking date cannot be in the past');
+    }
+
+    const existingBookingsCount = await bookingRepository.countByUserIdAndStatus(userId, 'upcoming');
+
+    const bookingData: Partial<IBooking> = {
+      user_id: userId,
+      session_type: dto.session_type,
+      session_mode: dto.session_mode,
+      booking_date: bookingDate,
+      time_slot: dto.time_slot,
+      full_name: dto.full_name,
+      email: dto.email,
+      phone: dto.phone,
+      special_request: dto.special_request,
+      payment_method: dto.payment_method,
+      payment_status: 'pending',
+      amount: dto.amount,
+      status: 'upcoming',
+      instructor: assignInstructor(existingBookingsCount),
+      duration_minutes: dto.duration_minutes || 60,
+    };
+
+    const booking = await bookingRepository.create(bookingData);
+    return new BookingResponseDTO(booking);
+  }
+
+  async adminUpdateBooking(bookingId: string, dto: UpdateBookingDTO): Promise<BookingResponseDTO> {
+    const booking = await bookingRepository.findById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, 'Booking not found');
+    }
+
+    const { booking_date, ...rest } = dto;
+    const updateData: any = { ...rest };
+
+    if (booking_date) {
+      const bookingDate = new Date(booking_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (bookingDate < today) {
+        throw new HttpError(400, 'Booking date cannot be in the past');
+      }
+
+      updateData.booking_date = bookingDate;
+    }
+
+    const updatedBooking = await bookingRepository.updateById(bookingId, updateData);
+    if (!updatedBooking) {
+      throw new HttpError(500, 'Failed to update booking');
+    }
+
+    return new BookingResponseDTO(updatedBooking);
+  }
+
+  async adminDeleteBooking(bookingId: string): Promise<void> {
+    const booking = await bookingRepository.findById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, 'Booking not found');
+    }
+
+    const deleted = await bookingRepository.deleteById(bookingId);
     if (!deleted) {
       throw new HttpError(500, 'Failed to delete booking');
     }
