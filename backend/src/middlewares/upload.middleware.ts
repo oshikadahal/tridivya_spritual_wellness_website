@@ -21,21 +21,38 @@ const storage = multer.diskStorage({
         cb(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
     }
 });
-const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const imageFileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     // Accept images only
     if (!file.mimetype.startsWith('image/')) {
         return cb(new Error('Only image files are allowed!'));
     }
     cb(null, true);
 };
+const videoFileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    if (!file.mimetype.startsWith('video/')) {
+        return cb(new Error('Only video files are allowed!'));
+    }
+    cb(null, true);
+};
+
 const upload = multer({ 
     storage: storage, 
-    fileFilter: fileFilter,
+    fileFilter: imageFileFilter,
     limits: { fileSize: 5 * 1024 * 1024 } // 5 MB file size limit
+});
+
+const videoUpload = multer({
+    storage: storage,
+    fileFilter: videoFileFilter,
+    limits: { fileSize: 200 * 1024 * 1024 } // 200 MB video size limit
 });
 
 export const uploads = {
     single: (fieldName: string) => upload.single(fieldName),
     array: (fieldName: string, maxCount: number) => upload.array(fieldName, maxCount),
     fields: (fieldsArray: { name: string; maxCount?: number }[]) => upload.fields(fieldsArray)
+};
+
+export const videoUploads = {
+    single: (fieldName: string) => videoUpload.single(fieldName),
 };
