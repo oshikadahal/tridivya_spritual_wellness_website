@@ -10,7 +10,14 @@ export class MantraService {
   }
 
   async create(data: CreateMantraDTO) {
-    return this.repository.create(data);
+    const payload: CreateMantraDTO = {
+      ...data,
+      image_url: data.image_url,
+      thumbnail_url: data.thumbnail_url || data.image_url,
+      cover_image_url: data.cover_image_url || data.image_url,
+    };
+
+    return this.repository.create(payload);
   }
 
   async findAll(query: ListMantrasQueryDTO) {
@@ -32,7 +39,15 @@ export class MantraService {
   }
 
   async update(id: string, data: UpdateMantraDTO) {
-    const mantra = await this.repository.update(id, data);
+    const resolvedImageUrl = data.image_url;
+
+    const payload: UpdateMantraDTO = {
+      ...data,
+      thumbnail_url: data.thumbnail_url || (resolvedImageUrl ? resolvedImageUrl : undefined),
+      cover_image_url: data.cover_image_url || (resolvedImageUrl ? resolvedImageUrl : undefined),
+    };
+
+    const mantra = await this.repository.update(id, payload);
     if (!mantra) {
       throw new HttpError(404, 'Mantra not found');
     }

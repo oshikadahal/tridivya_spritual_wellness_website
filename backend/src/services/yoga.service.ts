@@ -10,7 +10,14 @@ export class YogaService {
   }
 
   async create(data: CreateYogaDTO) {
-    return this.repository.create(data);
+    const payload: CreateYogaDTO = {
+      ...data,
+      image_url: data.image_url,
+      thumbnail_url: data.thumbnail_url || data.image_url,
+      cover_image_url: data.cover_image_url || data.image_url,
+    };
+
+    return this.repository.create(payload);
   }
 
   async findAll(query: ListYogasQueryDTO) {
@@ -32,7 +39,15 @@ export class YogaService {
   }
 
   async update(id: string, data: UpdateYogaDTO) {
-    const yoga = await this.repository.update(id, data);
+    const resolvedImageUrl = data.image_url;
+
+    const payload: UpdateYogaDTO = {
+      ...data,
+      thumbnail_url: data.thumbnail_url || (resolvedImageUrl ? resolvedImageUrl : undefined),
+      cover_image_url: data.cover_image_url || (resolvedImageUrl ? resolvedImageUrl : undefined),
+    };
+
+    const yoga = await this.repository.update(id, payload);
     if (!yoga) {
       throw new HttpError(404, 'Yoga not found');
     }

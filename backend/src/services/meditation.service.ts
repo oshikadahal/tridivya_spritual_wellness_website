@@ -10,7 +10,14 @@ export class MeditationService {
   }
 
   async create(data: CreateMeditationDTO) {
-    return this.repository.create(data);
+    const payload: CreateMeditationDTO = {
+      ...data,
+      image_url: data.image_url,
+      thumbnail_url: data.thumbnail_url || data.image_url,
+      cover_image_url: data.cover_image_url || data.image_url,
+    };
+
+    return this.repository.create(payload);
   }
 
   async findAll(query: ListMeditationsQueryDTO) {
@@ -32,7 +39,15 @@ export class MeditationService {
   }
 
   async update(id: string, data: UpdateMeditationDTO) {
-    const meditation = await this.repository.update(id, data);
+    const resolvedImageUrl = data.image_url;
+
+    const payload: UpdateMeditationDTO = {
+      ...data,
+      thumbnail_url: data.thumbnail_url || (resolvedImageUrl ? resolvedImageUrl : undefined),
+      cover_image_url: data.cover_image_url || (resolvedImageUrl ? resolvedImageUrl : undefined),
+    };
+
+    const meditation = await this.repository.update(id, payload);
     if (!meditation) {
       throw new HttpError(404, 'Meditation not found');
     }

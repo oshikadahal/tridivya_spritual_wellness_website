@@ -5,6 +5,7 @@ import { resolveCollectionName } from '../utils/collection-name';
 export interface IMantra extends Document {
   id: string;
   title: string;
+  image_url?: string;
   meaning?: string;
   lyrics?: string;
   transliteration?: string;
@@ -26,6 +27,7 @@ const MantraSchema = new Schema<IMantra>(
   {
     id: { type: String, default: () => crypto.randomUUID(), unique: true, index: true },
     title: { type: String, required: true, trim: true },
+    image_url: { type: String, required: false },
     meaning: { type: String, required: false },
     lyrics: { type: String, required: false },
     transliteration: { type: String, required: false },

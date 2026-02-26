@@ -9,6 +9,7 @@ export interface IYoga extends Document {
   title: string;
   subtitle?: string;
   description?: string;
+  image_url?: string;
   difficulty: Difficulty;
   duration_seconds?: number;
   thumbnail_url?: string;
@@ -30,6 +31,7 @@ const YogaSchema = new Schema<IYoga>(
     title: { type: String, required: true, trim: true },
     subtitle: { type: String, required: false },
     description: { type: String, required: false },
+    image_url: { type: String, required: false },
     difficulty: {
       type: String,
       enum: ['beginner', 'intermediate', 'advanced', 'all_levels'],
