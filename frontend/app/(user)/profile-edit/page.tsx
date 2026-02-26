@@ -44,7 +44,7 @@ export default function EditProfilePage() {
       <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-slate-900 text-lg font-semibold mb-4">User data not found</p>
-          <Link href="/profile" className="text-violet-600 hover:text-violet-700">
+          <Link href="/user/my-profile" className="text-violet-600 hover:text-violet-700">
             Back to profile
           </Link>
         </div>
@@ -57,7 +57,7 @@ export default function EditProfilePage() {
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link href="/profile" className="text-violet-600 hover:text-violet-700 font-medium flex items-center gap-2">
+          <Link href="/user/my-profile" className="text-violet-600 hover:text-violet-700 font-medium flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>

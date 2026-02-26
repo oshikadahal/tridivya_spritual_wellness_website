@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { updateProfile } from "@/lib/api/auth";
 import { useAuth } from "@/context/AuthContext";
@@ -20,12 +19,11 @@ interface UserProfileEditFormProps {
 }
 
 export default function UserProfileEditForm({ user }: UserProfileEditFormProps) {
-  const router = useRouter();
   const { setUserData } = useAuth();
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(user.imageUrl ? `http://localhost:5051${user.imageUrl}` : null);
+  const [imagePreview, setImagePreview] = useState<string | null>(user.imageUrl ? `http://localhost:5050${user.imageUrl}` : null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
@@ -137,11 +135,6 @@ export default function UserProfileEditForm({ user }: UserProfileEditFormProps) 
           setUserData(response.data);
         }
         toast.success("Profile updated successfully!");
-        
-        // Redirect to profile page after a short delay
-        setTimeout(() => {
-          router.push("/profile");
-        }, 1500);
       } else {
         toast.error(response.message || "Failed to update profile");
       }
@@ -297,7 +290,7 @@ export default function UserProfileEditForm({ user }: UserProfileEditFormProps) 
         </button>
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => window.history.back()}
           className="flex-1 px-4 py-3 bg-slate-100 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-200 transition font-semibold"
         >
           Cancel

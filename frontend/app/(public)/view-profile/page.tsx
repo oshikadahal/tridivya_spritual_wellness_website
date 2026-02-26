@@ -66,7 +66,7 @@ export default function ProfilePage() {
   }
 
   const fullName = `${user.firstName} ${user.lastName}`;
-  const profileImage = user.imageUrl ? `http://localhost:5051${user.imageUrl}` : null;
+  const profileImage = user.imageUrl ? `http://localhost:5050${user.imageUrl}` : null;
 
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
