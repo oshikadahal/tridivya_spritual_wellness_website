@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { BookingResponse, CreateBookingData, PaymentMethodEnum, SessionModeEnum, SessionTypeEnum } from "@/lib/api/booking";
-import { createBookingAdmin, deleteBookingAdmin, getAllBookingsAdmin, updateBookingAdmin, updateBookingStatusAdmin } from "@/lib/api/admin";
+import { deleteBookingAdmin, getAllBookingsAdmin, updateBookingAdmin, updateBookingStatusAdmin } from "@/lib/api/admin";
 import { toast } from "react-toastify";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { Pencil, Trash2, X } from "lucide-react";
 
 const sessionTypes: SessionTypeEnum[] = [
   "Yoga Practice",
@@ -59,12 +59,6 @@ export default function AdminBookingsPage() {
     loadBookings();
   }, []);
 
-  const openCreateModal = () => {
-    setEditingId(null);
-    setFormData(defaultFormState);
-    setIsModalOpen(true);
-  };
-
   const openEditModal = (booking: BookingResponse) => {
     setEditingId(booking.id);
     setFormData({
@@ -103,13 +97,13 @@ export default function AdminBookingsPage() {
         duration_minutes: Number(formData.duration_minutes || 60),
       };
 
-      if (editingId) {
-        await updateBookingAdmin(editingId, payload);
-        toast.success("Booking updated successfully");
-      } else {
-        await createBookingAdmin(payload);
-        toast.success("Booking created successfully");
+      if (!editingId) {
+        toast.error("Booking creation is disabled in admin");
+        return;
       }
+
+      await updateBookingAdmin(editingId, payload);
+      toast.success("Booking updated successfully");
 
       closeModal();
       await loadBookings();
@@ -149,12 +143,6 @@ export default function AdminBookingsPage() {
       <div>
         <h1 className="text-3xl font-bold text-slate-900">Bookings Management</h1>
         <p className="mt-1 text-slate-600">View, update, and delete booking records</p>
-        <button
-          onClick={openCreateModal}
-          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-        >
-          <Plus size={16} /> Create Booking
-        </button>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -200,11 +188,12 @@ export default function AdminBookingsPage() {
                         disabled={updating === booking.id}
                         defaultValue={booking.status}
                         onChange={(e) => handleStatusChange(booking.id, e.target.value as "upcoming" | "completed" | "cancelled")}
-                        className="rounded border border-slate-300 px-2 py-1 text-xs"
+                        className="rounded border border-slate-300 bg-white px-2 py-1 text-xs text-slate-900"
+                        style={{ color: "#0f172a", backgroundColor: "#ffffff" }}
                       >
-                        <option value="upcoming">upcoming</option>
-                        <option value="completed">completed</option>
-                        <option value="cancelled">cancelled</option>
+                        <option value="upcoming" style={{ color: "#0f172a", backgroundColor: "#ffffff" }}>upcoming</option>
+                        <option value="completed" style={{ color: "#0f172a", backgroundColor: "#ffffff" }}>completed</option>
+                        <option value="cancelled" style={{ color: "#0f172a", backgroundColor: "#ffffff" }}>cancelled</option>
                       </select>
                       <button
                         onClick={() => openEditModal(booking)}
@@ -231,7 +220,7 @@ export default function AdminBookingsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-slate-900">{editingId ? "Edit Booking" : "Create Booking"}</h2>
+              <h2 className="text-xl font-semibold text-slate-900">Edit Booking</h2>
               <button onClick={closeModal} className="rounded p-1 text-slate-500 hover:bg-slate-100">
                 <X size={18} />
               </button>
@@ -299,7 +288,7 @@ export default function AdminBookingsPage() {
             <div className="mt-6 flex justify-end gap-3">
               <button onClick={closeModal} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Cancel</button>
               <button onClick={handleFormSubmit} disabled={saving} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
-                {saving ? "Saving..." : editingId ? "Update Booking" : "Create Booking"}
+                {saving ? "Saving..." : "Update Booking"}
               </button>
             </div>
           </div>
