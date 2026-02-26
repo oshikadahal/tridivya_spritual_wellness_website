@@ -20,6 +20,9 @@ router.get('/:id', bookingController.getBookingById.bind(bookingController));
 // Update booking status
 router.patch('/:id/status', bookingController.updateBookingStatus.bind(bookingController));
 
+// Update booking details
+router.put('/:id', bookingController.updateBooking.bind(bookingController));
+
 // Cancel a booking
 router.post('/:id/cancel', bookingController.cancelBooking.bind(bookingController));
 
