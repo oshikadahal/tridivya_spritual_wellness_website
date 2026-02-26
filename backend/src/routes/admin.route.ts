@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AdminUserController } from '../controllers/admin-user.controller';
 import { authorizedMiddleware } from '../middlewares/authorization.middleware';
 import { adminMiddleware } from '../middlewares/admin.middleware';
-import { uploads, videoUploads } from '../middlewares/upload.middleware';
+import { audioUploads, uploads, videoUploads } from '../middlewares/upload.middleware';
 import { bookingController } from '../controllers/booking.controller';
 
 const adminUserController = new AdminUserController();
@@ -13,7 +13,7 @@ router.use(authorizedMiddleware);
 router.use(adminMiddleware);
 
 // POST /api/admin/users - Create user with image upload
-router.post('/users', uploads.single('imageUrl'), adminUserController.createUser);
+router.post('/users', uploads.single('imageUrl'), adminUserController.createUser.bind(adminUserController));
 
 // GET /api/admin/dashboard/overview - Admin dashboard overview stats
 router.get('/dashboard/overview', adminUserController.getAdminOverviewStats.bind(adminUserController));
@@ -25,22 +25,25 @@ router.patch('/reviews/:type/:contentId/:reviewId', adminUserController.updateRe
 router.delete('/reviews/:type/:contentId/:reviewId', adminUserController.deleteReview.bind(adminUserController));
 
 // POST /api/admin/uploads/image - Upload image for content items
-router.post('/uploads/image', uploads.single('image'), adminUserController.uploadImage);
+router.post('/uploads/image', uploads.single('image'), adminUserController.uploadImage.bind(adminUserController));
 
 // POST /api/admin/uploads/video - Upload video for content items
-router.post('/uploads/video', videoUploads.single('video'), adminUserController.uploadVideo);
+router.post('/uploads/video', videoUploads.single('video'), adminUserController.uploadVideo.bind(adminUserController));
+
+// POST /api/admin/uploads/audio - Upload audio for content items
+router.post('/uploads/audio', audioUploads.single('audio'), adminUserController.uploadAudio.bind(adminUserController));
 
 // GET /api/admin/users - Get all users
-router.get('/users', adminUserController.getAllUsers);
+router.get('/users', adminUserController.getAllUsers.bind(adminUserController));
 
 // GET /api/admin/users/:id - Get user by ID
-router.get('/users/:id', adminUserController.getUserById);
+router.get('/users/:id', adminUserController.getUserById.bind(adminUserController));
 
 // PUT /api/admin/users/:id - Update user with image upload
-router.put('/users/:id', uploads.single('imageUrl'), adminUserController.updateUser);
+router.put('/users/:id', uploads.single('imageUrl'), adminUserController.updateUser.bind(adminUserController));
 
 // DELETE /api/admin/users/:id - Delete user
-router.delete('/users/:id', adminUserController.deleteUser);
+router.delete('/users/:id', adminUserController.deleteUser.bind(adminUserController));
 
 // Booking Routes - Admin Booking Management
 router.get('/bookings', bookingController.getAllBookings.bind(bookingController));
@@ -51,12 +54,12 @@ router.delete('/bookings/:id', bookingController.adminDeleteBooking.bind(booking
 
 // Profile Routes - Admin Profile Management
 // GET /api/admin/profile - Get current admin profile
-router.get('/profile', adminUserController.getAdminProfile);
+router.get('/profile', adminUserController.getAdminProfile.bind(adminUserController));
 
 // PUT /api/admin/profile - Update admin profile with image upload
-router.put('/profile', uploads.single('imageUrl'), adminUserController.updateAdminProfile);
+router.put('/profile', uploads.single('imageUrl'), adminUserController.updateAdminProfile.bind(adminUserController));
 
 // DELETE /api/admin/profile/picture - Delete admin profile picture
-router.delete('/profile/picture', adminUserController.deleteAdminProfilePicture);
+router.delete('/profile/picture', adminUserController.deleteAdminProfilePicture.bind(adminUserController));
 
 export default router;

@@ -1,35 +1,35 @@
 ﻿import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import {authorizedMiddleware} from '../middlewares/authorization.middleware';
-import { uploads } from "../middlewares/upload.middleware";
+import { profileImageUploads } from "../middlewares/upload.middleware";
 
 const authController = new AuthController();
 const router = Router();
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
-router.post('/change-password', authorizedMiddleware, authController.changePassword);
+router.post('/register', authController.register.bind(authController));
+router.post('/login', authController.login.bind(authController));
+router.post('/forgot-password', authController.forgotPassword.bind(authController));
+router.post('/reset-password', authController.resetPassword.bind(authController));
+router.post('/change-password', authorizedMiddleware, authController.changePassword.bind(authController));
 
 // Get current user profile
-router.get('/profile', authorizedMiddleware, authController.getProfile);
-router.get('/whoami', authorizedMiddleware, authController.getProfile);
+router.get('/profile', authorizedMiddleware, authController.getProfile.bind(authController));
+router.get('/whoami', authorizedMiddleware, authController.getProfile.bind(authController));
 
 // Upload profile picture - accepts imageUrl field from frontend
-router.put('/profile', authorizedMiddleware, uploads.single('imageUrl'), authController.updateProfile);
-router.put("/whoiam", authorizedMiddleware, uploads.single("imageUrl"), authController.updateProfile);
+router.put('/profile', authorizedMiddleware, profileImageUploads.single('imageUrl'), authController.updateProfile.bind(authController));
+router.put("/whoiam", authorizedMiddleware, profileImageUploads.single("imageUrl"), authController.updateProfile.bind(authController));
 router.put(
     "/update-profile",
     authorizedMiddleware,
-    uploads.single("imageUrl"),
-    authController.updateProfile
+    profileImageUploads.single("imageUrl"),
+    authController.updateProfile.bind(authController)
 )
 
 // PUT /api/auth/:id - Update user profile by ID with Multer
-router.put('/:id', authorizedMiddleware, uploads.single('imageUrl'), authController.updateProfile);
+router.put('/:id', authorizedMiddleware, profileImageUploads.single('imageUrl'), authController.updateProfile.bind(authController));
 
 // DELETE /api/auth/profile/picture - Delete user profile picture
-router.delete('/profile/picture', authorizedMiddleware, authController.deleteProfilePicture);
+router.delete('/profile/picture', authorizedMiddleware, authController.deleteProfilePicture.bind(authController));
 
 export default router;
