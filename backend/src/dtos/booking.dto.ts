@@ -35,12 +35,29 @@ export const UpdateBookingStatusSchema = z.object({
   status: BookingStatusSchema,
 });
 
+export const UpdateBookingSchema = z.object({
+  session_type: SessionTypeSchema.optional(),
+  session_mode: SessionModeSchema.optional(),
+  booking_date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid date format',
+  }).optional(),
+  time_slot: z.string().min(1, 'Time slot is required').optional(),
+  full_name: z.string().min(1, 'Full name is required').optional(),
+  email: z.string().email('Invalid email address').optional(),
+  phone: z.string().min(1, 'Phone number is required').optional(),
+  special_request: z.string().optional(),
+  payment_method: PaymentMethodSchema.optional(),
+  amount: z.number().min(0, 'Amount must be positive').optional(),
+  duration_minutes: z.number().min(30, 'Duration must be at least 30 minutes').optional(),
+});
+
 export type SessionTypeEnum = z.infer<typeof SessionTypeSchema>;
 export type SessionModeEnum = z.infer<typeof SessionModeSchema>;
 export type PaymentMethodEnum = z.infer<typeof PaymentMethodSchema>;
 export type BookingStatusEnum = z.infer<typeof BookingStatusSchema>;
 export type CreateBookingDTO = z.infer<typeof CreateBookingSchema>;
 export type UpdateBookingStatusDTO = z.infer<typeof UpdateBookingStatusSchema>;
+export type UpdateBookingDTO = z.infer<typeof UpdateBookingSchema>;
 
 export class BookingResponseDTO {
   id!: string;
