@@ -1,40 +1,26 @@
 "use client";
 
-import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
-    const { logout, user } = useAuth();
-
-    const handleLogout = async () => {
-        await logout();
-    };
+    const { user } = useAuth();
+    const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.username || "Admin";
+    const avatarInitial = displayName.charAt(0).toUpperCase();
 
     return (
-        <header className="shrink-0 bg-white border-b border-slate-200 shadow-sm">
+        <header className="shrink-0 border-b border-slate-200 bg-white">
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
-                    {/* Left: Logo & Title */}
-                    <div className="flex items-center gap-3">
-                        <Link href="/admin" className="flex items-center gap-2 group">
-                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-indigo-100 text-indigo-600 font-bold text-sm">A</span>
-                            <span className="text-base font-semibold tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">
-                                Admin Panel
-                            </span>
-                        </Link>
-                    </div>
+                    <div />
 
-                    {/* Right: User Menu */}
                     <div className="flex items-center gap-4">
-                        <div className="h-6 flex items-center justify-center text-xs font-semibold text-slate-600">
-                            {user?.email || 'Admin'}
+                        <div className="text-right">
+                            <p className="text-sm font-semibold text-slate-900">{displayName}</p>
+                            <p className="text-[10px] font-semibold tracking-wider text-slate-400">PLATFORM ADMIN</p>
                         </div>
-                        <button
-                            onClick={handleLogout}
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
-                        >
-                            Logout
-                        </button>
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-orange-300 text-white font-semibold text-sm">
+                            {avatarInitial}
+                        </span>
                     </div>
                 </div>
             </div>
