@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import multer from 'multer';
+import type { Request, Response, NextFunction } from 'express';
 import authRoutes from './routes/auth.route';
 import adminRoutes from './routes/admin.route';
 import homeRoutes from './routes/home.route';
@@ -45,5 +47,37 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/me/settings', userSettingsRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
+
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  if (!err) {
+    return next();
+  }
+
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        message: 'Uploaded file is too large',
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: err.message || 'Invalid upload request',
+    });
+  }
+
+  if (typeof err.message === 'string' && err.message.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    message: 'Internal Server Error',
+  });
+});
 
 export default app;
