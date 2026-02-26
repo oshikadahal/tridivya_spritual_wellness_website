@@ -2,6 +2,7 @@ import { UserService } from '../services/user.service';
 import { CreateUserDTO, UpdateUserDto } from '../dtos/user.dto';
 import { Request, Response } from 'express';
 import z from 'zod';
+import path from 'path';
 import { UserModel } from '../models/user.model';
 import { Booking } from '../models/booking.model';
 import { YogaModel } from '../models/yoga.model';
@@ -230,8 +231,13 @@ export class AdminUserController {
     }
   }
 
-  private buildUploadedFileUrl(req: Request, filename: string): string {
-    return `${req.protocol}://${req.get('host')}/uploads/${filename}`;
+  private buildUploadedFileUrl(req: Request, file: Express.Multer.File): string {
+    const folderName = path.basename(file.destination);
+    const relativePath = folderName && folderName !== 'uploads'
+      ? `${folderName}/${file.filename}`
+      : file.filename;
+
+    return `${req.protocol}://${req.get('host')}/uploads/${relativePath}`;
   }
 
   // POST /api/admin/uploads/image - Upload image for content items
@@ -241,7 +247,7 @@ export class AdminUserController {
         return res.status(400).json({ success: false, message: 'Image file is required' });
       }
 
-      const url = this.buildUploadedFileUrl(req, req.file.filename);
+      const url = this.buildUploadedFileUrl(req, req.file);
 
       return res.status(201).json({
         success: true,
@@ -263,11 +269,33 @@ export class AdminUserController {
         return res.status(400).json({ success: false, message: 'Video file is required' });
       }
 
-      const url = this.buildUploadedFileUrl(req, req.file.filename);
+      const url = this.buildUploadedFileUrl(req, req.file);
 
       return res.status(201).json({
         success: true,
         message: 'Video uploaded successfully',
+        data: {
+          url,
+          filename: req.file.filename,
+        },
+      });
+    } catch (error: any) {
+      return res.status(error.statusCode ?? 500).json({ success: false, message: error.message || 'Internal Server Error' });
+    }
+  }
+
+  // POST /api/admin/uploads/audio - Upload admin content audio
+  async uploadAudio(req: Request, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'Audio file is required' });
+      }
+
+      const url = this.buildUploadedFileUrl(req, req.file);
+
+      return res.status(201).json({
+        success: true,
+        message: 'Audio uploaded successfully',
         data: {
           url,
           filename: req.file.filename,
@@ -437,7 +465,7 @@ export class AdminUserController {
       
       // Add image if uploaded
       if (req.file) {
-        userData.imageUrl = this.buildUploadedFileUrl(req, req.file.filename);
+        userData.imageUrl = this.buildUploadedFileUrl(req, req.file);
       }
       
       const newUser = await userService.createUser(userData);
@@ -486,7 +514,7 @@ export class AdminUserController {
       
       // Add image if uploaded
       if (req.file) {
-        parsedData.data.imageUrl = this.buildUploadedFileUrl(req, req.file.filename);
+        parsedData.data.imageUrl = this.buildUploadedFileUrl(req, req.file);
       }
       
       const updatedUser = await userService.updateUser(userId, parsedData.data);
@@ -539,7 +567,7 @@ export class AdminUserController {
 
       // Add image if uploaded
       if (req.file) {
-        parsedData.data.imageUrl = this.buildUploadedFileUrl(req, req.file.filename);
+        parsedData.data.imageUrl = this.buildUploadedFileUrl(req, req.file);
       }
 
       const updatedUser = await userService.updateUser(userId, parsedData.data);

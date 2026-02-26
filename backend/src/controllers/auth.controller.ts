@@ -2,6 +2,7 @@
 import { CreateUserDTO, LoginUserDTO, UpdateUserDto, ForgotPasswordDTO, ResetPasswordDTO, ChangePasswordDTO } from '../dtos/user.dto';
 import { Request, Response } from 'express';
 import z from 'zod';
+import path from 'path';
 
 const userService = new UserService();
 
@@ -12,6 +13,15 @@ function prettifyZodError(error: z.ZodError) {
 }
 
 export class AuthController {
+  private buildUploadedFileUrl(file: Express.Multer.File): string {
+    const folderName = path.basename(file.destination);
+    const relativePath = folderName && folderName !== 'uploads'
+      ? `${folderName}/${file.filename}`
+      : file.filename;
+
+    return `/uploads/${relativePath}`;
+  }
+
   async register(req: Request, res: Response) {
     try {
       const parsedData = CreateUserDTO.safeParse(req.body);
@@ -132,7 +142,7 @@ export class AuthController {
                 );
             }
             if(req.file){
-                parsedData.data.imageUrl = `/uploads/${req.file.filename}`;
+              parsedData.data.imageUrl = this.buildUploadedFileUrl(req.file);
             }
             const updatedUser = await userService.updateUser(userId, parsedData.data);
             return res.status(200).json(
@@ -178,7 +188,7 @@ export class AuthController {
       }
 
       // Update user with new profile picture
-      const profilePictureUrl = `/uploads/${req.file.filename}`;
+      const profilePictureUrl = this.buildUploadedFileUrl(req.file);
       const updatedUser = await userService.updateUser(userId, {
         imageUrl: profilePictureUrl
       });
