@@ -104,7 +104,7 @@ export default function YogaProgramsPage() {
                         </div>
 
                         <div className="relative w-full max-w-md h-64 mx-auto rounded-sm overflow-hidden border border-white/30 bg-white/10">
-                            <Image src={featured.image_url || featured.thumbnail_url || "/images/homepage.png"} alt={featured.title} fill className="object-cover" priority />
+                            <Image src={featured.thumbnail_url || featured.cover_image_url || featured.image_url || "/images/homepage.png"} alt={featured.title} fill className="object-cover" priority />
                         </div>
                     </div>
                 </section>
@@ -135,7 +135,7 @@ export default function YogaProgramsPage() {
                     {jumpBackIn ? (
                         <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 shadow-sm">
                             <div className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0">
-                                <Image src={jumpBackIn.image_url || jumpBackIn.thumbnail_url || "/images/homepage.png"} alt={jumpBackIn.title} fill className="object-cover" />
+                                <Image src={jumpBackIn.thumbnail_url || jumpBackIn.cover_image_url || jumpBackIn.image_url || "/images/homepage.png"} alt={jumpBackIn.title} fill className="object-cover" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <h3 className="font-semibold text-lg truncate">{jumpBackIn.title}</h3>
@@ -184,7 +184,7 @@ export default function YogaProgramsPage() {
                     {trendingClasses.slice(0, 9).map((item, index) => (
                         <article key={item.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
                             <div className="relative h-48 rounded-2xl overflow-hidden">
-                                <Image src={item.image_url || item.thumbnail_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
+                                <Image src={item.thumbnail_url || item.cover_image_url || item.image_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
                                 {index === 0 && (
                                     <span className="absolute top-3 right-3 text-[10px] bg-slate-900/70 text-white px-2 py-1 rounded-full uppercase">Popular</span>
                                 )}

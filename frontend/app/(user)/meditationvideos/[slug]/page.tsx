@@ -14,7 +14,7 @@ import {
     upsertMeditationProgress,
 } from "@/lib/api/content";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5051";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
 
 const resolveMediaUrl = (mediaUrl: string | undefined, fallbackUrl: string) => {
     const source = mediaUrl || fallbackUrl;

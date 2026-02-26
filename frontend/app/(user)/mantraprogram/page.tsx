@@ -12,13 +12,51 @@ import {
     type ContentItem,
 } from "@/lib/api/content";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5051";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+
+const normalizeUploadPath = (value: string) => {
+    if (!value.startsWith("/uploads/")) return value;
+
+    const uploadSubPath = value.replace("/uploads/", "");
+    const hasKnownFolder = uploadSubPath.startsWith("images/") || uploadSubPath.startsWith("video/") || uploadSubPath.startsWith("audio/");
+
+    if (hasKnownFolder) return value;
+
+    return `/uploads/images/${uploadSubPath}`;
+};
 
 const resolveMediaUrl = (mediaUrl: string | undefined, fallbackUrl: string) => {
     const source = mediaUrl || fallbackUrl;
     if (source.startsWith("http")) return source;
     const normalizedPath = source.startsWith("/") ? source : `/${source}`;
     return `${API_BASE_URL}${normalizedPath}`;
+};
+
+const resolveImageUrl = (imageUrl?: string) => {
+    if (!imageUrl) return "/images/homepage.png";
+    if (imageUrl.includes("example.com")) return "/images/homepage.png";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    const normalizedPath = imageUrl.startsWith("/") ? normalizeUploadPath(imageUrl) : normalizeUploadPath(`/${imageUrl}`);
+    return `${API_BASE_URL}${normalizedPath}`;
+};
+
+const getMantraThumbnail = (item: ContentItem) => {
+    const candidates = [item.thumbnail_url, item.cover_image_url, item.image_url];
+
+    const uploadedImage = candidates.find(
+        (value) =>
+            typeof value === "string" &&
+            value.length > 0 &&
+            (value.includes("/uploads/") || value.startsWith("/uploads/"))
+    );
+
+    if (uploadedImage) return resolveImageUrl(uploadedImage);
+
+    const nonPlaceholder = candidates.find(
+        (value) => typeof value === "string" && value.length > 0 && !value.includes("example.com")
+    );
+
+    return resolveImageUrl(nonPlaceholder);
 };
 
 const durationText = (seconds?: number) => {
@@ -194,7 +232,7 @@ export default function MantraProgramPage() {
                             {popularMantras.map((mantra) => (
                                 <article key={mantra.id} className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm">
                                     <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                                        <Image src={mantra.image_url || mantra.cover_image_url || "/images/homepage.png"} alt={mantra.title} fill className="object-cover" />
+                                        <Image src={getMantraThumbnail(mantra)} alt={mantra.title} fill className="object-cover" />
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <h3 className="font-semibold truncate">{mantra.title}</h3>
@@ -254,7 +292,7 @@ export default function MantraProgramPage() {
                     {playlistItems.map((item) => (
                         <article key={item.id} className="rounded-3xl p-5 text-center shadow-sm relative overflow-hidden bg-linear-to-br from-violet-100 to-indigo-100">
                             <div className="relative h-32 rounded-2xl overflow-hidden mb-4 bg-white/10">
-                                <Image src={item.image_url || item.cover_image_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
+                                <Image src={getMantraThumbnail(item)} alt={item.title} fill className="object-cover" />
                             </div>
                             <h3 className="text-xl font-bold leading-tight">{item.title}</h3>
                             <p className="text-xs mt-2 text-slate-600">

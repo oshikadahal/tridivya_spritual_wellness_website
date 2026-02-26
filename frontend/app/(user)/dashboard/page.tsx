@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { createMoodCheckin, getMantraProgress, getMeditationProgress, getYogaProgress, listMantras, listMeditations, listYogas, type ContentItem } from "@/lib/api/content";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+
 const formatDuration = (seconds?: number) => {
     if (!seconds || seconds <= 0) return "--";
     const totalSeconds = Math.floor(seconds);
@@ -23,6 +25,27 @@ const moods = [
     { label: "Tired", emoji: "😮‍💨" },
     { label: "Energized", emoji: "⚡" }
 ];
+
+const normalizeUploadPath = (value: string) => {
+    if (!value.startsWith("/uploads/")) return value;
+
+    const uploadSubPath = value.replace("/uploads/", "");
+    const hasKnownFolder = uploadSubPath.startsWith("images/") || uploadSubPath.startsWith("video/") || uploadSubPath.startsWith("audio/");
+
+    if (hasKnownFolder) return value;
+
+    return `/uploads/images/${uploadSubPath}`;
+};
+
+const resolveImageUrl = (imageUrl?: string) => {
+    if (!imageUrl) return "/images/homepage.png";
+    if (imageUrl.includes("example.com")) return "/images/homepage.png";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    const normalizedPath = imageUrl.startsWith("/") ? normalizeUploadPath(imageUrl) : normalizeUploadPath(`/${imageUrl}`);
+    return `${API_BASE_URL}${normalizedPath}`;
+};
+
+const getCardImageUrl = (item: ContentItem) => resolveImageUrl(item.thumbnail_url || item.cover_image_url || item.image_url);
 
 export default function Dashboard() {
     const { isAuthenticated, loading, user } = useAuth();
@@ -166,7 +189,15 @@ export default function Dashboard() {
                         {recommendations.map((item) => (
                             <article key={`${item.contentType}-${item.id}`} className="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex flex-col gap-3">
                                 <div className="relative h-36 rounded-xl overflow-hidden">
-                                    <Image src={item.image_url || item.thumbnail_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
+                                    <img
+                                        src={getCardImageUrl(item)}
+                                        alt={item.title}
+                                        className="h-full w-full object-cover"
+                                        loading="lazy"
+                                        onError={(event) => {
+                                            event.currentTarget.src = "/images/homepage.png";
+                                        }}
+                                    />
                                 </div>
                                 <div className="flex items-center justify-between text-[11px] text-slate-500">
                                     <span>{formatDuration(item.duration_seconds)}</span>
