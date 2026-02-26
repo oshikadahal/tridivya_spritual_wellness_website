@@ -32,6 +32,20 @@ export interface CreateBookingData {
   duration_minutes?: number;
 }
 
+export interface UpdateBookingData {
+  session_type?: SessionTypeEnum;
+  session_mode?: SessionModeEnum;
+  booking_date?: string;
+  time_slot?: string;
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  special_request?: string;
+  payment_method?: PaymentMethodEnum;
+  amount?: number;
+  duration_minutes?: number;
+}
+
 export interface BookingResponse {
   id: string;
   user_id: string;
@@ -119,6 +133,24 @@ export const updateBookingStatus = async (
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || err.message || "Failed to update booking status"
+    );
+  }
+};
+
+export const updateBooking = async (
+  id: string,
+  data: UpdateBookingData
+): Promise<BookingResponse> => {
+  try {
+    const response = await axios.put(
+      API.BOOKINGS.UPDATE(id),
+      data,
+      { headers: { ...getAuthHeaders() } }
+    );
+    return response.data.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to update booking"
     );
   }
 };
