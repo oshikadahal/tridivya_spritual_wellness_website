@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -46,10 +47,14 @@ export default function Sidebar() {
             {/* Logo */}
             <div className="p-4 md:p-6 w-full">
                 <div className="flex items-center justify-center md:justify-start gap-2">
-                    <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-xl">T</span>
-                    </div>
-                    <span className="font-bold text-xl text-gray-800">Tridivya</span>
+                    <Image
+                        src="/images/logo.png"
+                        alt="Tridivya Wellness Logo"
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-lg object-cover"
+                    />
+                    <span className="font-bold text-xl text-gray-800">Tridivya Wellness</span>
                 </div>
             </div>
 
