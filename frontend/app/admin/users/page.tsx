@@ -20,6 +20,7 @@ interface User {
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [pagination, setPagination] = useState({
@@ -29,11 +30,17 @@ export default function UsersPage() {
         totalPages: 1,
     });
 
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5051";
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
     const resolveImageUrl = (imageUrl?: string) => {
         if (!imageUrl) return "/default-profile.png";
         if (imageUrl.startsWith("http")) return imageUrl;
         return `${API_BASE_URL}${imageUrl}`;
+    };
+
+    const getInitials = (firstName?: string, lastName?: string) => {
+        const firstInitial = firstName?.trim()?.charAt(0) || "U";
+        const lastInitial = lastName?.trim()?.charAt(0) || "";
+        return `${firstInitial}${lastInitial}`.toUpperCase();
     };
 
     useEffect(() => {
@@ -92,13 +99,13 @@ export default function UsersPage() {
             </div>
 
             {/* Users Table */}
-            <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
                 {loading ? (
                     <div className="text-center py-10">Loading...</div>
                 ) : users.length === 0 ? (
                     <div className="text-center py-10 text-slate-500">No users found</div>
                 ) : (
-                    <table className="w-full">
+                    <table className="w-full min-w-275">
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">User</th>
@@ -106,7 +113,7 @@ export default function UsersPage() {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Username</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Role</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Joined</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase">Actions</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase min-w-70">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -114,16 +121,30 @@ export default function UsersPage() {
                                 <tr key={user._id} className="hover:bg-slate-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-3">
-                                            <img
-                                                src={resolveImageUrl(user.imageUrl)}
-                                                alt={`${user.firstName} ${user.lastName}`}
-                                                className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                                            />
+                                            {imageErrors[user._id] || !user.imageUrl ? (
+                                                <div className="w-10 h-10 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600">
+                                                    {getInitials(user.firstName, user.lastName)}
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    src={resolveImageUrl(user.imageUrl)}
+                                                    alt={`${user.firstName} ${user.lastName}`}
+                                                    className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                                                    onError={() =>
+                                                        setImageErrors((prev) => ({ ...prev, [user._id]: true }))
+                                                    }
+                                                />
+                                            )}
                                             <div>
                                                 <p className="font-medium text-slate-900">
                                                     {user.firstName} {user.lastName}
                                                 </p>
-                                                <p className="text-xs text-slate-500">ID: {user._id.slice(-6)}</p>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <p className="text-xs text-slate-500">ID: {user._id.slice(-6)}</p>
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700">
+                                                        Profile
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -148,23 +169,23 @@ export default function UsersPage() {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                                         {new Date(user.createdAt).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                        <div className="inline-flex items-center gap-2">
+                                    <td className="px-6 py-4 text-right text-sm">
+                                        <div className="flex items-center justify-end gap-2 min-w-65">
                                             <Link
                                                 href={`/admin/users/${user._id}`}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+                                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
                                             >
                                                 <Eye size={14} /> View
                                             </Link>
                                             <Link
                                                 href={`/admin/users/${user._id}/edit`}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition"
+                                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition"
                                             >
                                                 <Pencil size={14} /> Edit
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(user._id)}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition"
+                                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition"
                                             >
                                                 <Trash2 size={14} /> Delete
                                             </button>
