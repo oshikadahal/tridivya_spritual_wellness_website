@@ -2,7 +2,8 @@
 
 import { ChevronLeft, ChevronRight, Clock3, User2 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
-import { getBookings, BookingResponse, BookingStatusEnum, cancelBooking } from "@/lib/api/booking";
+import { getBookings, BookingResponse, SessionTypeEnum, deleteBooking, updateBooking } from "@/lib/api/booking";
+import { toast } from "react-toastify";
 
 const tabs = ["Upcoming", "Completed", "Cancelled"] as const;
 
@@ -19,7 +20,29 @@ type BookingDisplay = {
     duration: string;
     status: BookingStatus;
     dateISO: string;
+    email: string;
+    phone: string;
+    fullName: string;
+    specialRequest?: string;
+    paymentMethod: "esewa" | "khalti" | "cash";
+    amount: number;
+    sessionType: SessionTypeEnum;
+    sessionMode: "private" | "group";
+    durationMinutes: number;
 };
+
+const sessionTypes: SessionTypeEnum[] = [
+    "Yoga Practice",
+    "Guided Meditation",
+    "Breathwork Session",
+    "Mantra Chanting",
+    "Stress Relief Session",
+    "Mindfulness Coaching",
+    "Sleep & Relaxation",
+    "Energy Balancing",
+];
+
+const timeSlots = ["08:00 AM", "09:30 AM", "11:00 AM", "02:00 PM", "04:30 PM", "06:00 PM"];
 
 const weekdayLabels = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
@@ -49,6 +72,15 @@ const formatBookingForDisplay = (booking: BookingResponse): BookingDisplay => {
         duration: `${booking.duration_minutes} min`,
         status: booking.status.charAt(0).toUpperCase() + booking.status.slice(1) as BookingStatus,
         dateISO: booking.booking_date.split("T")[0],
+        email: booking.email,
+        phone: booking.phone,
+        fullName: booking.full_name,
+        specialRequest: booking.special_request,
+        paymentMethod: booking.payment_method,
+        amount: booking.amount,
+        sessionType: booking.session_type,
+        sessionMode: booking.session_mode,
+        durationMinutes: booking.duration_minutes,
     };
 };
 
@@ -59,6 +91,23 @@ export default function MyBookingsPage() {
     const [bookings, setBookings] = useState<BookingDisplay[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [editingBooking, setEditingBooking] = useState<BookingDisplay | null>(null);
+    const [savingEdit, setSavingEdit] = useState(false);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const [editForm, setEditForm] = useState({
+        session_type: "Yoga Practice" as SessionTypeEnum,
+        booking_date: "",
+        time_slot: "09:30 AM",
+        session_mode: "private" as "private" | "group",
+        full_name: "",
+        email: "",
+        phone: "",
+        special_request: "",
+        payment_method: "esewa" as "esewa" | "khalti" | "cash",
+        amount: 1500,
+        duration_minutes: 60,
+    });
 
     // Fetch bookings on mount
     useEffect(() => {
@@ -132,6 +181,75 @@ export default function MyBookingsPage() {
     const handleDateSelect = (dateKey: string | null) => {
         if (!dateKey) return;
         setSelectedDateKey((current) => (current === dateKey ? null : dateKey));
+    };
+
+    const openEditModal = (booking: BookingDisplay) => {
+        setEditingBooking(booking);
+        setEditForm({
+            session_type: booking.sessionType,
+            booking_date: booking.dateISO,
+            time_slot: booking.time,
+            session_mode: booking.sessionMode,
+            full_name: booking.fullName,
+            email: booking.email,
+            phone: booking.phone,
+            special_request: booking.specialRequest || "",
+            payment_method: booking.paymentMethod,
+            amount: booking.amount,
+            duration_minutes: booking.durationMinutes,
+        });
+    };
+
+    const closeEditModal = () => {
+        setEditingBooking(null);
+    };
+
+    const handleDeleteBooking = async (bookingId: string) => {
+        if (!confirm("Are you sure you want to delete this booking?")) return;
+        try {
+            setDeletingId(bookingId);
+            await deleteBooking(bookingId);
+            setBookings((prev) => prev.filter((booking) => booking.id !== bookingId));
+            toast.success("Booking deleted successfully");
+        } catch (err: any) {
+            toast.error(err.message || "Failed to delete booking");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    const handleUpdateBooking = async () => {
+        if (!editingBooking) return;
+        if (!editForm.booking_date || !editForm.full_name || !editForm.email || !editForm.phone) {
+            toast.error("Please fill all required fields");
+            return;
+        }
+
+        try {
+            setSavingEdit(true);
+            const updated = await updateBooking(editingBooking.id, {
+                session_type: editForm.session_type,
+                booking_date: editForm.booking_date,
+                time_slot: editForm.time_slot,
+                session_mode: editForm.session_mode,
+                full_name: editForm.full_name,
+                email: editForm.email,
+                phone: editForm.phone,
+                special_request: editForm.special_request || undefined,
+                payment_method: editForm.payment_method,
+                amount: editForm.amount,
+                duration_minutes: editForm.duration_minutes,
+            });
+
+            const updatedDisplay = formatBookingForDisplay(updated);
+            setBookings((prev) => prev.map((item) => (item.id === updatedDisplay.id ? updatedDisplay : item)));
+            toast.success("Booking updated successfully");
+            closeEditModal();
+        } catch (err: any) {
+            toast.error(err.message || "Failed to update booking");
+        } finally {
+            setSavingEdit(false);
+        }
     };
 
     return (
@@ -213,6 +331,26 @@ export default function MyBookingsPage() {
                                                                 <Clock3 className="w-4 h-4" /> {booking.time} ({booking.duration})
                                                             </span>
                                                         </div>
+
+                                                        {booking.status === "Upcoming" && (
+                                                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openEditModal(booking)}
+                                                                    className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100"
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={deletingId === booking.id}
+                                                                    onClick={() => handleDeleteBooking(booking.id)}
+                                                                    className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-50"
+                                                                >
+                                                                    {deletingId === booking.id ? "Deleting..." : "Delete"}
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -294,6 +432,76 @@ export default function MyBookingsPage() {
                 </section>
                 )}
             </main>
+
+            {editingBooking && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
+                    <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
+                        <h2 className="text-xl font-bold text-slate-900">Edit Booking</h2>
+                        <p className="mt-1 text-sm text-slate-500">Update your upcoming session details.</p>
+
+                        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Session Type</label>
+                                <select value={editForm.session_type} onChange={(e) => setEditForm((prev) => ({ ...prev, session_type: e.target.value as SessionTypeEnum }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                                    {sessionTypes.map((type) => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Date</label>
+                                <input type="date" value={editForm.booking_date} onChange={(e) => setEditForm((prev) => ({ ...prev, booking_date: e.target.value }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900" />
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Time Slot</label>
+                                <select value={editForm.time_slot} onChange={(e) => setEditForm((prev) => ({ ...prev, time_slot: e.target.value }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                                    {timeSlots.map((slot) => (
+                                        <option key={slot} value={slot}>{slot}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Session Mode</label>
+                                <select value={editForm.session_mode} onChange={(e) => setEditForm((prev) => ({ ...prev, session_mode: e.target.value as "private" | "group" }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                                    <option value="private">Private</option>
+                                    <option value="group">Group</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Full Name</label>
+                                <input type="text" value={editForm.full_name} onChange={(e) => setEditForm((prev) => ({ ...prev, full_name: e.target.value }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900" />
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Email</label>
+                                <input type="email" value={editForm.email} onChange={(e) => setEditForm((prev) => ({ ...prev, email: e.target.value }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900" />
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Phone</label>
+                                <input type="text" value={editForm.phone} onChange={(e) => setEditForm((prev) => ({ ...prev, phone: e.target.value }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900" />
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Payment Method</label>
+                                <select value={editForm.payment_method} onChange={(e) => setEditForm((prev) => ({ ...prev, payment_method: e.target.value as "esewa" | "khalti" | "cash" }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                                    <option value="esewa">eSewa</option>
+                                    <option value="khalti">Khalti</option>
+                                    <option value="cash">Cash</option>
+                                </select>
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="mb-1 block text-sm font-semibold text-slate-700">Special Request</label>
+                                <textarea rows={3} value={editForm.special_request} onChange={(e) => setEditForm((prev) => ({ ...prev, special_request: e.target.value }))} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900" />
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex items-center justify-end gap-3">
+                            <button type="button" onClick={closeEditModal} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+                            <button type="button" disabled={savingEdit} onClick={handleUpdateBooking} className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50">
+                                {savingEdit ? "Saving..." : "Save Changes"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
