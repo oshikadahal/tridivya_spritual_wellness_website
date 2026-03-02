@@ -12,6 +12,16 @@ import {
     type ContentItem,
 } from "@/lib/api/content";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+
+const instructors = [
+    { name: "Sarah J.", image: `${API_BASE_URL}/uploads/images/instructor1.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor1_detail.jpg` },
+    { name: "Rahul V.", image: `${API_BASE_URL}/uploads/images/instructor2.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor2_detail.jpg` },
+    { name: "Alex K.", image: `${API_BASE_URL}/uploads/images/instructor3.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor3_detail.jpg` },
+    { name: "Maya P.", image: `${API_BASE_URL}/uploads/images/instructor4.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor4_detail.jpg` },
+    { name: "Anil R.", image: `${API_BASE_URL}/uploads/images/instructor5.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor5_detail.jpg` },
+];
+
 const durationText = (seconds?: number) => {
     if (!seconds || seconds <= 0) return "--";
     const totalSeconds = Math.floor(seconds);
@@ -27,6 +37,7 @@ export default function MeditationVideosPage() {
     const [savedIds, setSavedIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    // Removed modal state
 
     useEffect(() => {
         const loadData = async () => {
@@ -35,7 +46,7 @@ export default function MeditationVideosPage() {
                 setError(null);
 
                 const [meditations, saved] = await Promise.all([
-                    listMeditations({ limit: 50, is_active: true }),
+                    listMeditations({ limit: 500, is_active: true }),
                     getSavedMeditationIds(),
                 ]);
 
@@ -63,13 +74,15 @@ export default function MeditationVideosPage() {
     ), [activeCategory, items]);
 
     const featured = filteredItems[0] ?? items[0];
-    const recentlyAdded = filteredItems.slice(0, 6);
+    const recentlyAdded = filteredItems;
     const topGoals = categories.filter((cat) => cat !== "All").slice(0, 6);
-    const meditationSeries = items.filter((item) => item.is_featured || item.is_trending).slice(0, 6);
+    const meditationSeries = items.filter((item) => item.is_featured || item.is_trending).length
+        ? items.filter((item) => item.is_featured || item.is_trending)
+        : filteredItems;
     const quickCalm = [...items]
         .filter((item) => Boolean(item.duration_seconds))
         .sort((a, b) => (a.duration_seconds ?? 0) - (b.duration_seconds ?? 0))
-        .slice(0, 4);
+        .slice(0, 500);
 
     const toggleSave = async (id: string) => {
         const isSaved = savedIds.includes(id);
@@ -236,6 +249,20 @@ export default function MeditationVideosPage() {
                             <h3 className="text-lg font-semibold mt-4">{item.title}</h3>
                             <p className="text-sm text-slate-500 mt-1 line-clamp-2">{item.subtitle || item.description || durationText(item.duration_seconds)}</p>
                         </Link>
+                    ))}
+                </div>
+            </section>
+
+            <section className="space-y-4">
+                <h2 className="text-3xl font-bold">Our Instructors</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                    {instructors.map((instructor) => (
+                        <div key={instructor.name} className="text-center">
+                            <div className="relative w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-[#b9aaff]">
+                                <Image src={instructor.image} alt={instructor.name} fill className="object-cover" />
+                            </div>
+                            <p className="text-sm text-slate-600 mt-2 truncate">{instructor.name}</p>
+                        </div>
                     ))}
                 </div>
             </section>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { createBooking, SessionTypeEnum, SessionModeEnum } from "@/lib/api/booking";
+import { initiateEsewaV2Payment } from "@/lib/api/esewa";
+import { getAuthHeaders } from "@/lib/api/content";
 import { useAuth } from "@/context/AuthContext";
 
 const sessionTypes: SessionTypeEnum[] = [
@@ -60,7 +62,8 @@ export default function BookingPage() {
         setIsSubmitting(true);
 
         try {
-            await createBooking({
+            // 1. Create booking
+            const booking = await createBooking({
                 session_type: selectedType,
                 session_mode: isPrivate ? "private" : "group",
                 booking_date: selectedDate,
@@ -73,13 +76,27 @@ export default function BookingPage() {
                 amount: totalAmount,
                 duration_minutes: 60,
             });
-
-            toast.success("Booking confirmed successfully! Redirecting...");
-            
-            // Redirect to my-bookings after 1.5 seconds
-            setTimeout(() => {
-                router.push("/my-bookings");
-            }, 1500);
+            // Defensive: Ensure booking and booking.id exist
+            if (!booking || !booking.id) {
+                toast.error("Booking creation failed: missing booking ID. Please try again or contact support.");
+                setIsSubmitting(false);
+                return;
+            }
+            // 2. Initiate eSewa v2 payment
+            const { esewaUrl, formData } = await initiateEsewaV2Payment(totalAmount, booking.id);
+            // 3. Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = esewaUrl;
+            Object.entries(formData).forEach(([key, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = String(value);
+                form.appendChild(input);
+            });
+            document.body.appendChild(form);
+            form.submit();
         } catch (err: any) {
             toast.error(err.message || "Failed to create booking. Please try again.");
             setIsSubmitting(false);

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowLeft, RotateCcw, Star } from "lucide-react";
+import { toast } from "react-toastify";
 import {
     createMeditationReview,
     getMeditationById,
@@ -28,6 +29,13 @@ const formatDuration = (seconds?: number) => {
     return `${Math.max(1, Math.round(seconds / 60))} mins`;
 };
 
+const getReviewerName = (review: ReviewItem) => {
+    const fullName = [review.user?.firstName, review.user?.lastName].filter(Boolean).join(" ").trim();
+    if (fullName) return fullName;
+    if (review.user?.username) return review.user.username;
+    return "Anonymous User";
+};
+
 export default function MeditationSessionDetailsPage() {
     const params = useParams<{ slug: string }>();
     const contentId = params?.slug;
@@ -37,7 +45,6 @@ export default function MeditationSessionDetailsPage() {
     const [reviews, setReviews] = useState<ReviewItem[]>([]);
     const [progressPercent, setProgressPercent] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     const [rating, setRating] = useState(0);
     const [reviewText, setReviewText] = useState("");
@@ -48,7 +55,6 @@ export default function MeditationSessionDetailsPage() {
         const load = async () => {
             try {
                 setLoading(true);
-                setError(null);
                 const [content, contentReviews, progressList] = await Promise.all([
                     getMeditationById(contentId),
                     getMeditationReviews(contentId),
@@ -61,7 +67,7 @@ export default function MeditationSessionDetailsPage() {
                 const current = progressList.find((entry) => entry.meditation_id === contentId);
                 setProgressPercent(current?.progress_percent ?? 0);
             } catch (err: Error | any) {
-                setError(err.message || "Failed to load meditation session");
+                toast.error(err?.message || "Failed to load meditation session");
             } finally {
                 setLoading(false);
             }
@@ -92,7 +98,7 @@ export default function MeditationSessionDetailsPage() {
                 status: status || (percent >= 100 ? "completed" : "in_progress"),
             });
         } catch {
-            setError("Unable to sync progress");
+            toast.error("Unable to sync progress");
         }
     };
 
@@ -104,13 +110,21 @@ export default function MeditationSessionDetailsPage() {
             setReviews(next);
             setRating(0);
             setReviewText("");
+            toast.success("Review posted successfully.");
         } catch (err: any) {
             const message =
                 err?.response?.data?.message ||
                 (Array.isArray(err?.response?.data?.errors) ? "Validation failed" : "") ||
                 err?.message ||
                 "Unable to post review";
-            setError(message);
+
+            const normalizedMessage = String(message).toLowerCase();
+            if (normalizedMessage.includes("already reviewed") || normalizedMessage.includes("duplicate key")) {
+                toast.error("You have already reviewed this meditation.");
+                return;
+            }
+
+            toast.error(message);
         }
     };
 
@@ -188,7 +202,7 @@ export default function MeditationSessionDetailsPage() {
                             {reviews.map((review, index) => (
                                 <article key={`${review.user_id || "user"}-${index}`} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
                                     <div className="flex items-center justify-between">
-                                        <span className="font-semibold">User Review</span>
+                                        <span className="font-semibold">{getReviewerName(review)}</span>
                                         <span className="text-amber-400 text-sm">{"★".repeat(review.rating)}</span>
                                     </div>
                                     <p className="text-sm text-slate-600 mt-3">{review.comment || "Great session."}</p>
@@ -219,8 +233,6 @@ export default function MeditationSessionDetailsPage() {
                         </article>
                     </aside>
                 </section>
-
-                {error && <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>}
             </div>
         </div>
     );

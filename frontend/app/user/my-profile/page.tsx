@@ -4,7 +4,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLogoutModal } from "@/context/LogoutModalContext";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
 
@@ -17,7 +16,6 @@ const getImageUrl = (imageUrl: string | null | undefined) => {
 function UserProfile() {
     const { user, isAuthenticated, loading } = useAuth();
     const router = useRouter();
-    const { setShowLogoutModal } = useLogoutModal();
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     // Redirect if not authenticated
@@ -74,9 +72,6 @@ function UserProfile() {
                             </div>
                             <div className="text-slate-600 text-lg">@{user.username}</div>
                             <div className="text-slate-500 text-sm">{user.email}</div>
-                            <div className="mt-2">
-                                <span className="inline-block bg-linear-to-r from-violet-500 to-indigo-500 text-white px-4 py-1 rounded-lg text-xs font-semibold shadow-sm">Premium Member</span>
-                            </div>
                         </div>
                     </div>
                     <div className="mt-6 md:mt-0 md:ml-auto">
@@ -121,12 +116,6 @@ function UserProfile() {
                             className="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-xl text-slate-700 font-semibold hover:bg-slate-50 transition"
                         >
                             <span className="text-lg">🔒</span> Change Password
-                        </button>
-                        <button
-                            onClick={() => setShowLogoutModal(true)}
-                            className="flex items-center gap-2 px-6 py-3 border border-red-200 bg-red-50 text-red-700 rounded-xl font-semibold hover:bg-red-100 transition"
-                        >
-                            <span className="text-lg">❗</span> Log Out
                         </button>
                     </div>
                 </div>

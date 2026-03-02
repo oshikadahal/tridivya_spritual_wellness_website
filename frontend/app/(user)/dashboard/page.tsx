@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Bell, Flame, Play, Search } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { createMoodCheckin, getMantraProgress, getMeditationProgress, getYogaProgress, listMantras, listMeditations, listYogas, type ContentItem } from "@/lib/api/content";
+import { getMantraProgress, getMeditationProgress, getYogaProgress, listMantras, listMeditations, listYogas, type ContentItem } from "@/lib/api/content";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
 
@@ -18,13 +18,6 @@ const formatDuration = (seconds?: number) => {
     if (mins <= 0) return `${secs}s`;
     return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
 };
-
-const moods = [
-    { label: "Calm", emoji: "🙂" },
-    { label: "Stressed", emoji: "😵‍💫" },
-    { label: "Tired", emoji: "😮‍💨" },
-    { label: "Energized", emoji: "⚡" }
-];
 
 const normalizeUploadPath = (value: string) => {
     if (!value.startsWith("/uploads/")) return value;
@@ -54,7 +47,6 @@ export default function Dashboard() {
     const [featuredMantra, setFeaturedMantra] = useState<ContentItem | null>(null);
     const [streakDays, setStreakDays] = useState(0);
     const [error, setError] = useState<string | null>(null);
-    const [moodSubmitting, setMoodSubmitting] = useState(false);
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
@@ -108,18 +100,6 @@ export default function Dashboard() {
     };
 
     const featuredDuration = useMemo(() => formatDuration(featuredMantra?.duration_seconds), [featuredMantra?.duration_seconds]);
-
-    const handleMoodClick = async (moodLabel: string) => {
-        try {
-            setMoodSubmitting(true);
-            const mood_code = moodLabel.toLowerCase().replace(/\s+/g, "_");
-            await createMoodCheckin({ mood_code });
-        } catch (err: Error | any) {
-            setError(err.message || "Failed to record mood");
-        } finally {
-            setMoodSubmitting(false);
-        }
-    };
 
     if (loading) {
         return <div className="text-center py-10">Loading...</div>;
@@ -223,30 +203,35 @@ export default function Dashboard() {
                 )}
 
                 {/* Your Growth */}
-                <section className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+                <section className="bg-linear-to-br from-white via-indigo-50/40 to-white border border-indigo-100 rounded-3xl p-6 md:p-7 shadow-sm space-y-5">
                     <div>
                         <p className="text-xs font-semibold text-slate-500">Your Growth</p>
-                        <h3 className="text-xl font-bold text-slate-900">How are you feeling right now?</h3>
+                        <h3 className="text-xl font-bold text-slate-900">Wellness Information</h3>
+                        <p className="text-sm text-slate-600 mt-1">Build a balanced routine with simple daily practices.</p>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {moods.map((mood) => (
-                            <button
-                                key={mood.label}
-                                onClick={() => handleMoodClick(mood.label)}
-                                disabled={moodSubmitting}
-                                className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:border-indigo-400 disabled:opacity-70 disabled:cursor-not-allowed transition"
-                            >
-                                <span>{mood.label}</span>
-                                <span className="text-lg">{mood.emoji}</span>
-                            </button>
-                        ))}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <article className="bg-white/90 border border-indigo-100 rounded-2xl px-4 py-4 shadow-xs hover:shadow-sm transition">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 text-base">🧘</span>
+                                <h4 className="text-sm font-semibold text-slate-900">Yoga</h4>
+                            </div>
+                            <p className="text-sm text-slate-600">Yoga supports flexibility, posture, and body awareness. Regular practice can also help ease physical tension and improve daily energy.</p>
+                        </article>
+                        <article className="bg-white/90 border border-indigo-100 rounded-2xl px-4 py-4 shadow-xs hover:shadow-sm transition">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 text-base">🕉️</span>
+                                <h4 className="text-sm font-semibold text-slate-900">Mantra</h4>
+                            </div>
+                            <p className="text-sm text-slate-600">Mantra chanting uses rhythmic repetition to settle the mind and strengthen focus. It can create a calming routine for emotional balance.</p>
+                        </article>
+                        <article className="bg-white/90 border border-indigo-100 rounded-2xl px-4 py-4 shadow-xs hover:shadow-sm transition">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 text-base">🧠</span>
+                                <h4 className="text-sm font-semibold text-slate-900">Meditation</h4>
+                            </div>
+                            <p className="text-sm text-slate-600">Meditation trains attention and helps you observe thoughts with less reactivity. Short daily sessions often improve clarity and reduce stress.</p>
+                        </article>
                     </div>
-                    <button
-                        disabled={moodSubmitting}
-                        className="session-btn-primary w-full sm:w-auto font-semibold px-5 py-3 rounded-xl disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                        {moodSubmitting ? "Saving..." : "Get Session Recommendation"}
-                    </button>
                 </section>
 
                 {/* Mantra */}

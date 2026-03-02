@@ -17,14 +17,12 @@ const CONTENT_TYPE_ICONS: Record<string, string> = {
   meditation: "🧘",
   yoga: "🧘‍♀️",
   mantra: "🎵",
-  library: "📚",
 };
 
 const CONTENT_TYPE_LABELS: Record<string, string> = {
   meditation: "Meditation",
   yoga: "Yoga",
   mantra: "Mantra",
-  library: "Library",
 };
 
 export default function SearchPage() {
@@ -42,7 +40,7 @@ export default function SearchPage() {
 
   // Filter state
   const [contentTypes, setContentTypes] = useState<
-    ("meditation" | "yoga" | "mantra" | "library")[]
+    ("meditation" | "yoga" | "mantra")[]
   >([]);
   const [difficulties, setDifficulties] = useState<
     ("beginner" | "intermediate" | "advanced")[]
@@ -127,7 +125,7 @@ export default function SearchPage() {
     performSearch(1);
   };
 
-  const toggleContentType = (type: "meditation" | "yoga" | "mantra" | "library") => {
+  const toggleContentType = (type: "meditation" | "yoga" | "mantra") => {
     setContentTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
@@ -157,7 +155,7 @@ export default function SearchPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900 mb-2">Search Content</h1>
-          <p className="text-slate-600">Find meditations, yoga, mantras, and wisdom</p>
+                  <p className="text-slate-600">Find meditations, yoga, and mantras</p>
         </div>
 
         {/* Search Bar */}
@@ -199,7 +197,7 @@ export default function SearchPage() {
             <div className="mb-6">
               <h4 className="font-semibold text-slate-800 mb-3">Content Type</h4>
               <div className="space-y-2">
-                {(["meditation", "yoga", "mantra", "library"] as const).map((type) => (
+                {(["meditation", "yoga", "mantra"] as const).map((type) => (
                   <label key={type} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -315,9 +313,7 @@ export default function SearchPage() {
                           ? "meditationvideos"
                           : result.contentType === "yoga"
                           ? "yogaprograms"
-                          : result.contentType === "mantra"
-                          ? "mantraprogram/playlist"
-                          : "wisdomlibrary"
+                            : "mantraprogram/playlist"
                       }/${result.id}`}
                       className="group bg-white rounded-lg overflow-hidden border border-slate-200 hover:shadow-lg transition"
                     >

@@ -6,6 +6,16 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CalendarDays, Flame, Play } from "lucide-react";
 import { getYogaProgress, listYogas, type ContentItem } from "@/lib/api/content";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+
+const instructors = [
+    { name: "Sarah J.", image: `${API_BASE_URL}/uploads/images/instructor1.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor1_detail.jpg` },
+    { name: "Rahul V.", image: `${API_BASE_URL}/uploads/images/instructor2.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor2_detail.jpg` },
+    { name: "Alex K.", image: `${API_BASE_URL}/uploads/images/instructor3.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor3_detail.jpg` },
+    { name: "Maya P.", image: `${API_BASE_URL}/uploads/images/instructor4.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor4_detail.jpg` },
+    { name: "Anil R.", image: `${API_BASE_URL}/uploads/images/instructor5.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor5_detail.jpg` },
+];
+
 const formatDuration = (seconds?: number) => {
     if (!seconds || seconds <= 0) return "--";
     const totalSeconds = Math.floor(seconds);
@@ -21,6 +31,7 @@ export default function YogaProgramsPage() {
     const [progress, setProgress] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedInstructor, setSelectedInstructor] = useState<null | typeof instructors[0]>(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -28,7 +39,7 @@ export default function YogaProgramsPage() {
                 setLoading(true);
                 setError(null);
                 const [yogas, progressItems] = await Promise.all([
-                    listYogas({ limit: 50, is_active: true }),
+                    listYogas({ limit: 500, is_active: true }),
                     getYogaProgress(),
                 ]);
 
@@ -65,9 +76,7 @@ export default function YogaProgramsPage() {
 
     const featured = filteredItems.find((item) => item.is_featured) || filteredItems[0] || items[0];
     const jumpBackIn = items.find((item) => (progress[item.id] ?? 0) > 0 && (progress[item.id] ?? 0) < 100);
-    const trendingClasses = filteredItems.filter((item) => item.is_trending).length
-        ? filteredItems.filter((item) => item.is_trending)
-        : filteredItems;
+    const allClasses = filteredItems;
 
     const completedCount = Object.values(progress).filter((value) => value >= 100).length;
 
@@ -177,11 +186,11 @@ export default function YogaProgramsPage() {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-3xl font-bold">Trending Classes</h2>
+                    <h2 className="text-3xl font-bold">All Classes</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {trendingClasses.slice(0, 9).map((item, index) => (
+                    {allClasses.map((item, index) => (
                         <article key={item.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
                             <div className="relative h-48 rounded-2xl overflow-hidden">
                                 <Image src={item.thumbnail_url || item.cover_image_url || item.image_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
@@ -193,6 +202,20 @@ export default function YogaProgramsPage() {
                             <p className="text-sm text-slate-500 mt-1 capitalize">{item.difficulty || "all levels"} • {formatDuration(item.duration_seconds)}</p>
                             <Link href={`/yogaprograms/${item.id}`} aria-label={`Start yoga class ${item.title}`} className="mt-4 w-full h-10 rounded-full bg-indigo-600 text-white font-semibold text-sm inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300">Start</Link>
                         </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="space-y-4">
+                <h2 className="text-3xl font-bold">Our Instructors</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                    {instructors.map((instructor) => (
+                        <div key={instructor.name} className="text-center">
+                            <div className="relative w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-[#b9aaff]">
+                                <Image src={instructor.image} alt={instructor.name} fill className="object-cover" />
+                            </div>
+                            <p className="text-sm text-slate-600 mt-2 truncate">{instructor.name}</p>
+                        </div>
                     ))}
                 </div>
             </section>

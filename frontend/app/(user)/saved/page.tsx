@@ -9,6 +9,7 @@ const filterLabelToType: Record<string, SavedSession["content_type"] | undefined
     "Meditation Videos": "meditation",
     "Yoga Programs": "yoga",
     "Mantras & Chants": "mantra",
+    "Library Items": "library",
 };
 
 const durationText = (seconds?: number) => {
@@ -23,15 +24,28 @@ export default function SavedSessionsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const filters = ["All Content", "Meditation Videos", "Yoga Programs", "Mantras & Chants"];
+    const filters = ["All Content", "Meditation Videos", "Yoga Programs", "Mantras & Chants", "Library Items"];
 
     useEffect(() => {
         const loadData = async () => {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await getSavedSessions(filterLabelToType[filter]);
-                setSessions(data);
+                if (filter === "All Content") {
+                    const [allItems, libraryItems] = await Promise.all([
+                        getSavedSessions(undefined),
+                        getSavedSessions("library"),
+                    ]);
+
+                    const merged = [...allItems, ...libraryItems];
+                    const unique = Array.from(
+                        new Map(merged.map((item) => [`${item.content_type}-${item.content_id}`, item])).values()
+                    );
+                    setSessions(unique);
+                } else {
+                    const data = await getSavedSessions(filterLabelToType[filter]);
+                    setSessions(data);
+                }
             } catch (err: Error | any) {
                 setError(err.message || "Failed to load saved sessions");
             } finally {
@@ -62,7 +76,10 @@ export default function SavedSessionsPage() {
         if (session.content_type === "mantra") {
             return `/mantraprogram/playlist/${session.content_id}`;
         }
-        return "/wisdomlibrary";
+        if (session.content_type === "library") {
+            return `/wisdomlibrary/${session.content_id}`;
+        }
+        return "/saved";
     };
 
     return (
@@ -72,14 +89,14 @@ export default function SavedSessionsPage() {
                     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                         <div>
                             <h1 className="text-3xl font-bold text-slate-900">Your Saved Sessions</h1>
-                            <p className="text-sm text-slate-500 mt-1">All your bookmarked practices in one place.</p>
+                            <p className="text-sm text-slate-500 mt-1">All your bookmarked practices and library items in one place.</p>
                         </div>
                         <div className="w-full md:w-80">
                             <input
                                 type="text"
                                 value={searchText}
                                 onChange={(e) => setSearchText(e.target.value)}
-                                placeholder="Search your library..."
+                                placeholder="Search your saved sessions..."
                                 className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"
                             />
                         </div>

@@ -27,6 +27,13 @@ const formatDuration = (seconds?: number) => {
     return `${Math.max(1, Math.round(seconds / 60))} mins`;
 };
 
+const getReviewerName = (review: ReviewItem) => {
+    const fullName = [review.user?.firstName, review.user?.lastName].filter(Boolean).join(" ").trim();
+    if (fullName) return fullName;
+    if (review.user?.username) return review.user.username;
+    return "Anonymous User";
+};
+
 export default function DashboardPracticeDetailsPage() {
     const params = useParams<{ slug: string }>();
     const contentId = params?.slug;
@@ -125,7 +132,7 @@ export default function DashboardPracticeDetailsPage() {
                             {reviews.map((review, index) => (
                                 <article key={`${review.user_id || "user"}-${index}`} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
                                     <div className="flex items-center justify-between">
-                                        <span className="font-semibold">User Review</span>
+                                        <span className="font-semibold">{getReviewerName(review)}</span>
                                         <span className="text-amber-400 text-sm">{"★".repeat(review.rating)}</span>
                                     </div>
                                     <p className="text-sm text-slate-600 mt-3">{review.comment || "Great session."}</p>

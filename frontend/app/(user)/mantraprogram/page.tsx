@@ -14,6 +14,14 @@ import {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
 
+const instructors = [
+    { name: "Sarah J.", image: `${API_BASE_URL}/uploads/images/instructor1.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor1_detail.jpg` },
+    { name: "Rahul V.", image: `${API_BASE_URL}/uploads/images/instructor2.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor2_detail.jpg` },
+    { name: "Alex K.", image: `${API_BASE_URL}/uploads/images/instructor3.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor3_detail.jpg` },
+    { name: "Maya P.", image: `${API_BASE_URL}/uploads/images/instructor4.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor4_detail.jpg` },
+    { name: "Anil R.", image: `${API_BASE_URL}/uploads/images/instructor5.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor5_detail.jpg` },
+];
+
 const normalizeUploadPath = (value: string) => {
     if (!value.startsWith("/uploads/")) return value;
 
@@ -69,6 +77,7 @@ const durationText = (seconds?: number) => {
 };
 
 export default function MantraProgramPage() {
+    const [selectedInstructor, setSelectedInstructor] = useState<null | typeof instructors[0]>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [currentTrackUrl, setCurrentTrackUrl] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -84,7 +93,7 @@ export default function MantraProgramPage() {
                 setLoading(true);
                 setError(null);
                 const [mantras, saved] = await Promise.all([
-                    listMantras({ limit: 60, is_active: true }),
+                    listMantras({ limit: 500, is_active: true }),
                     getSavedMantraIds(),
                 ]);
                 setItems(mantras.data);
@@ -111,8 +120,8 @@ export default function MantraProgramPage() {
     ), [activeCategory, items]);
 
     const mantraOfDay = filteredItems[0] ?? items[0];
-    const popularMantras = filteredItems.slice(0, 5);
-    const playlistItems = items.slice(0, 12);
+    const popularMantras = filteredItems;
+    const playlistItems = filteredItems;
 
     const handlePlayMantra = async (audioUrl?: string) => {
         if (!audioUrl) return;
@@ -306,6 +315,20 @@ export default function MantraProgramPage() {
                                 <Play className="w-4 h-4" />
                             </Link>
                         </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="space-y-4">
+                <h2 className="text-3xl font-bold">Our Instructors</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                    {instructors.map((instructor) => (
+                        <div key={instructor.name} className="text-center">
+                            <div className="relative w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-[#b9aaff]">
+                                <Image src={instructor.image} alt={instructor.name} fill className="object-cover" />
+                            </div>
+                            <p className="text-sm text-slate-600 mt-2 truncate">{instructor.name}</p>
+                        </div>
                     ))}
                 </div>
             </section>
