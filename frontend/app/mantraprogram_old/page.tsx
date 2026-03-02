@@ -1,2 +1,8 @@
-export { } // This file is deprecated; use (user)/mantraprogram instead
+
+
+
+export default function MantraProgramOldPage() {
+	return null;
+}
+
 
