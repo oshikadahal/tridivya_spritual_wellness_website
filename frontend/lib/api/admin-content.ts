@@ -2,7 +2,7 @@ import axios from "./axios";
 import { API } from "./endpoints";
 import type { ContentItem, ReviewItem } from "./content";
 
-export type ContentType = "yoga" | "meditation" | "mantra";
+export type ContentType = "yoga" | "meditation" | "mantra" | "library";
 
 export interface AdminContentPayload {
   title: string;
@@ -20,6 +20,12 @@ export interface AdminContentPayload {
   lyrics?: string;
   transliteration?: string;
   pronunciation_guide?: string;
+  library_type?: "book" | "article" | "resource";
+  author_name?: string;
+  content_text?: string;
+  read_minutes?: number;
+  content_url?: string;
+  category_slug?: string;
   is_featured?: boolean;
   is_trending?: boolean;
   is_active?: boolean;
@@ -28,6 +34,7 @@ export interface AdminContentPayload {
 const getBasePath = (type: ContentType) => {
   if (type === "yoga") return API.YOGAS;
   if (type === "meditation") return API.MEDITATIONS;
+  if (type === "library") return API.LIBRARY;
   return API.MANTRAS;
 };
 
@@ -121,6 +128,24 @@ export const uploadAdminImage = async (imageFile: File): Promise<string> => {
     return response.data?.data?.url || "";
   } catch (error: any) {
     const message = error?.response?.data?.message || error?.message || "Failed to upload image";
+    throw new Error(message);
+  }
+};
+
+export const uploadAdminLibraryContent = async (contentFile: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("content_file", contentFile);
+
+  try {
+    const response = await axios.post(API.LIBRARY.UPLOAD_CONTENT, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data?.data?.content_url || "";
+  } catch (error: any) {
+    const message = error?.response?.data?.message || error?.message || "Failed to upload document";
     throw new Error(message);
   }
 };

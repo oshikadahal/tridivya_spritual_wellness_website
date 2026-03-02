@@ -20,7 +20,7 @@ export default function MantraPage() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const response = await listMantras({ limit: 60, is_active: true });
+                const response = await listMantras({ limit: 500, is_active: true });
                 setItems(response.data);
             } catch (err: Error | any) {
                 setError(err.message || "Failed to load mantra content");
@@ -40,8 +40,8 @@ export default function MantraPage() {
     ), [activeGoal, items]);
 
     const featured = filtered[0] ?? items[0];
-    const recommended = filtered.slice(0, 3);
-    const popular = filtered.slice(0, 8);
+    const recommended = filtered.length ? filtered : items;
+    const popular = filtered.length ? filtered : items;
 
     const playTrack = async (url?: string) => {
         if (!url || !audioRef.current) return;
@@ -102,7 +102,7 @@ export default function MantraPage() {
                                 <span>{durationText(featured.duration_seconds)}</span>
                             </div>
                         </div>
-                        <img src={featured.image_url || featured.cover_image_url || "/images/homepage.png"} alt={featured.title} className="w-full md:w-60 h-36 rounded-2xl object-cover" />
+                        <img src={featured.image_url || featured.thumbnail_url || featured.cover_image_url || "/images/homepage.png"} alt={featured.title} className="w-full md:w-60 h-36 rounded-2xl object-cover" />
                     </section>
                 )}
 
@@ -113,7 +113,7 @@ export default function MantraPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {recommended.map((mantra) => (
                             <div key={mantra.id} className="bg-white/90 rounded-2xl shadow border border-[#e0d6f7] p-4 flex flex-col">
-                                <img src={mantra.image_url || mantra.cover_image_url || "/images/homepage.png"} alt={mantra.title} className="rounded-xl object-cover mb-3 h-36 w-full" />
+                                <img src={mantra.image_url || mantra.thumbnail_url || mantra.cover_image_url || "/images/homepage.png"} alt={mantra.title} className="rounded-xl object-cover mb-3 h-36 w-full" />
                                 <div className="font-bold text-[#4b2676] mb-1">{mantra.title}</div>
                                 <div className="flex items-center gap-2 text-xs mb-2">
                                     <span className="bg-[#e7e0ff] text-[#7c5fe6] px-2 py-1 rounded capitalize">{mantra.difficulty || "all levels"}</span>
@@ -132,7 +132,7 @@ export default function MantraPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {popular.map((mantra) => (
                             <div key={mantra.id} className="bg-white/90 rounded-2xl shadow border border-[#e0d6f7] p-6 flex flex-col md:flex-row items-center gap-6">
-                                <img src={mantra.image_url || mantra.cover_image_url || "/images/homepage.png"} alt={mantra.title} className="w-40 h-28 rounded-xl object-cover" />
+                                <img src={mantra.image_url || mantra.thumbnail_url || mantra.cover_image_url || "/images/homepage.png"} alt={mantra.title} className="w-40 h-28 rounded-xl object-cover" />
                                 <div className="flex-1">
                                     <div className="font-bold text-[#4b2676] mb-1">{mantra.title}</div>
                                     <div className="flex items-center gap-2 text-xs mb-2">

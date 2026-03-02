@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { BookOpenCheck, CalendarCheck2, Flower2, LayoutDashboard, LogOut, MessageSquareText, Star, Users } from "lucide-react";
+import { BookOpenCheck, CalendarCheck2, Flower2, LayoutDashboard, Library, LogOut, MessageSquareText, Star, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const ADMIN_LINKS = [
@@ -14,6 +14,7 @@ const ADMIN_LINKS = [
     { href: "/admin/yoga", label: "Yoga", icon: Flower2 },
     { href: "/admin/meditation", label: "Meditation", icon: BookOpenCheck },
     { href: "/admin/mantras", label: "Mantras", icon: MessageSquareText },
+    { href: "/admin/library", label: "Library", icon: Library },
     { href: "/admin/reviews", label: "Reviews", icon: Star },
 ];
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Play } from "lucide-react";
-import { listLibraryItems, listYogas, type ContentItem } from "@/lib/api/content";
+import { listYogas, type ContentItem } from "@/lib/api/content";
 
 const durationText = (seconds?: number) => {
     if (!seconds || seconds <= 0) return "--";
@@ -14,18 +14,13 @@ export default function YogaPage() {
     const [activeLevel, setActiveLevel] = useState("All Levels");
     const [activeDuration, setActiveDuration] = useState("All");
     const [sessions, setSessions] = useState<ContentItem[]>([]);
-    const [readings, setReadings] = useState<ContentItem[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [yogaResp, libraryResp] = await Promise.all([
-                    listYogas({ limit: 60, is_active: true }),
-                    listLibraryItems({ limit: 8, category_slug: "yoga" }),
-                ]);
+                const yogaResp = await listYogas({ limit: 500, is_active: true });
                 setSessions(yogaResp.data);
-                setReadings(libraryResp.data);
             } catch (err: Error | any) {
                 setError(err.message || "Failed to load yoga content");
             }
@@ -57,7 +52,7 @@ export default function YogaPage() {
                         <span className="text-gray-800">Yoga for</span> <span className="text-orange-400">Every Body</span>
                     </h1>
                     <p className="text-gray-600 max-w-3xl mx-auto text-base leading-relaxed">
-                        Discover guided classes from the Tridivya backend library.
+                        Discover guided classes from Tridivya.
                     </p>
                 </section>
 
@@ -107,7 +102,7 @@ export default function YogaPage() {
                         {filteredSessions.map((session) => (
                             <div key={session.id} className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                                 <div className="h-72 flex items-center justify-center relative overflow-hidden bg-purple-100">
-                                    <img src={session.image_url || session.thumbnail_url || "/images/homepage.png"} alt={session.title} className="w-full h-full object-cover" />
+                                    <img src={session.image_url || session.thumbnail_url || session.cover_image_url || "/images/homepage.png"} alt={session.title} className="w-full h-full object-cover" />
                                     <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-md">
                                         ⏱ {durationText(session.duration_seconds)}
                                     </div>
@@ -124,24 +119,6 @@ export default function YogaPage() {
                                             <Play className="w-5 h-5 text-white fill-white" />
                                         </Link>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                <section>
-                    <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">Recommended Reading</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        {readings.map((reading) => (
-                            <div key={reading.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                                <div className="h-56 flex items-center justify-center bg-yellow-100">
-                                    <div className="text-6xl">📖</div>
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2">{reading.title}</h3>
-                                    <p className="text-xs text-gray-600 mb-4">{reading.author_name || reading.category_slug || "Yoga"}</p>
-                                    <p className="text-xs text-gray-600 mb-5 leading-relaxed line-clamp-3">{reading.description || reading.subtitle}</p>
                                 </div>
                             </div>
                         ))}
