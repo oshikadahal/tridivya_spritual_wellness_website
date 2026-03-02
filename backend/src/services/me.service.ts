@@ -124,7 +124,19 @@ export class MeService {
 
   // Meditation Reviews
   async createMeditationReview(user_id: string, meditation_id: string, data: CreateReviewDTO) {
-    return this.repository.createMeditationReview(user_id, meditation_id, data);
+    const existing = await this.repository.getUserMeditationReview(user_id, meditation_id);
+    if (existing) {
+      throw new HttpError(409, 'You have already reviewed this meditation.');
+    }
+
+    try {
+      return await this.repository.createMeditationReview(user_id, meditation_id, data);
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes('duplicate key')) {
+        throw new HttpError(409, 'You have already reviewed this meditation.');
+      }
+      throw error;
+    }
   }
 
   async updateMeditationReview(user_id: string, meditation_id: string, data: UpdateReviewDTO) {

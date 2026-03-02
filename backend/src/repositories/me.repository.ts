@@ -10,8 +10,43 @@ import { UserMeditationReviewModel, IUserMeditationReview } from '../models/user
 import { UserYogaReviewModel, IUserYogaReview } from '../models/user-yoga-review.model';
 import { UserMantraReviewModel, IUserMantraReview } from '../models/user-mantra-review.model';
 import { UserLibraryReviewModel, IUserLibraryReview } from '../models/user-library-review.model';
+import { UserModel } from '../models/user.model';
 import { UpsertMeditationProgressDTO, UpsertYogaProgressDTO, UpsertMantraProgressDTO, UpsertLibraryProgressDTO } from '../dtos/progress.dto';
 import { CreateReviewDTO, UpdateReviewDTO } from '../dtos/review.dto';
+
+type ReviewUserDetails = {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+};
+
+type MeditationReviewLean = {
+  id: string;
+  user_id: string;
+  meditation_id: string;
+  rating: number;
+  comment?: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+type MeditationReviewWithUser = MeditationReviewLean & {
+  user?: ReviewUserDetails;
+};
+
+type YogaReviewLean = {
+  id: string;
+  user_id: string;
+  yoga_id: string;
+  rating: number;
+  comment?: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+type YogaReviewWithUser = YogaReviewLean & {
+  user?: ReviewUserDetails;
+};
 
 export class MeRepository {
   // Saved Meditations
@@ -308,8 +343,42 @@ export class MeRepository {
     return result.deletedCount > 0;
   }
 
-  async getMeditationReviews(meditation_id: string): Promise<IUserMeditationReview[]> {
-    return UserMeditationReviewModel.find({ meditation_id }).lean();
+  async getMeditationReviews(meditation_id: string): Promise<MeditationReviewWithUser[]> {
+    const reviews = await UserMeditationReviewModel.find({ meditation_id })
+      .sort({ created_at: -1 })
+      .lean<MeditationReviewLean[]>();
+
+    if (reviews.length === 0) {
+      return reviews as MeditationReviewWithUser[];
+    }
+
+    const userIds = Array.from(
+      new Set(
+        reviews
+          .map((review) => review.user_id)
+          .filter((userId): userId is string => Boolean(userId))
+      )
+    );
+
+    const users = await UserModel.find({ _id: { $in: userIds } })
+      .select('firstName lastName username')
+      .lean();
+
+    const userById = new Map<string, ReviewUserDetails>(
+      users.map((user) => [
+        String(user._id),
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+        },
+      ])
+    );
+
+    return reviews.map((review) => ({
+      ...review,
+      user: userById.get(String(review.user_id)),
+    }));
   }
 
   async getUserMeditationReview(user_id: string, meditation_id: string): Promise<IUserMeditationReview | null> {
@@ -318,6 +387,12 @@ export class MeRepository {
 
   // Yoga Reviews
   async createYogaReview(user_id: string, yoga_id: string, data: CreateReviewDTO): Promise<IUserYogaReview> {
+    const existing = await UserYogaReviewModel.findOne({ user_id, yoga_id });
+    if (existing) {
+      // Only one review per user per yoga
+      const { HttpError } = await import('../errors/http-error');
+      throw new HttpError(400, 'You have already reviewed this yoga.');
+    }
     const review = new UserYogaReviewModel({ user_id, yoga_id, ...data });
     return review.save();
   }
@@ -331,8 +406,43 @@ export class MeRepository {
     return result.deletedCount > 0;
   }
 
-  async getYogaReviews(yoga_id: string): Promise<IUserYogaReview[]> {
-    return UserYogaReviewModel.find({ yoga_id }).lean();
+  async getYogaReviews(yoga_id: string): Promise<YogaReviewWithUser[]> {
+    const reviews = await UserYogaReviewModel.find({ yoga_id })
+      .sort({ created_at: -1 })
+      .lean<YogaReviewLean[]>();
+
+    if (reviews.length === 0) {
+      return reviews as YogaReviewWithUser[];
+    }
+
+    const userIds = Array.from(
+      new Set(
+        reviews
+          .map((review) => review.user_id)
+          .filter((userId): userId is string => Boolean(userId))
+      )
+    );
+
+    const users = await UserModel.find({ _id: { $in: userIds } })
+      .select('firstName lastName username')
+      .lean();
+
+    const userById = new Map<string, ReviewUserDetails>(
+      users.map((user) => [
+        String(user._id),
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+        },
+      ])
+    );
+
+    return reviews.map((review) => ({
+      ...review,
+      user_id: String(review.user_id),
+      user: userById.get(String(review.user_id)),
+    }));
   }
 
   async getUserYogaReview(user_id: string, yoga_id: string): Promise<IUserYogaReview | null> {

@@ -17,10 +17,31 @@ import searchRoutes from './routes/search.route';
 import userSettingsRoutes from './routes/user-settings.route';
 import bookingRoutes from './routes/booking.routes';
 
+import esewaRoute from './routes/esewa.route';
+import paymentRoute from './routes/payment.route';
+
+import sessionRoutes from './routes/session.route';
+
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:3000","http://localhost:3001", "http://localhost:3003"],
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const allowedPatterns = [
+      /^http:\/\/localhost(?::\d+)?$/i,
+      /^http:\/\/127\.0\.0\.1(?::\d+)?$/i,
+      /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}(?::\d+)?$/i,
+      /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}(?::\d+)?$/i,
+      /^http:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}(?::\d+)?$/i,
+    ];
+
+    const isAllowed = allowedPatterns.some((pattern) => pattern.test(origin));
+    callback(null, isAllowed);
+  },
   credentials: true,
 };
 
@@ -47,6 +68,9 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/me/settings', userSettingsRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
+app.use('/esewa', esewaRoute);
+app.use('/api/payment', paymentRoute);
+app.use('/api/v1/sessions', sessionRoutes);
 
 app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
   if (!err) {
