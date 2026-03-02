@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 import { Booking, IBooking, BookingStatusEnum } from '../models/booking.model';
 
 export class BookingRepository {
+
+    async findByTransactionUUID(transaction_uuid: string): Promise<IBooking | null> {
+      return await Booking.findOne({ transaction_uuid }).exec();
+    }
   async create(bookingData: Partial<IBooking>): Promise<IBooking> {
     const booking = new Booking(bookingData);
     return await booking.save();

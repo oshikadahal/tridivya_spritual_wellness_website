@@ -3,6 +3,11 @@ import { bookingRepository } from '../repositories/booking.repository';
 import { CreateBookingDTO, UpdateBookingDTO, UpdateBookingStatusDTO, BookingResponseDTO } from '../dtos/booking.dto';
 import { IBooking, BookingStatusEnum } from '../models/booking.model';
 import { HttpError } from '../errors/http-error';
+import {
+  sendBookingCancelledEmail,
+  sendBookingConfirmationEmail,
+  sendBookingRescheduledEmail,
+} from '../utils/email';
 
 // Instructor assignment logic (simple round-robin for demo)
 const instructors = [
@@ -19,6 +24,29 @@ function assignInstructor(index: number): string {
 }
 
 export class BookingService {
+        async setTransactionUUID(bookingId: string, transaction_uuid: string): Promise<void> {
+          await bookingRepository.updateById(bookingId, { transaction_uuid });
+        }
+
+        async markPaidByTransactionUUID(transaction_uuid: string): Promise<IBooking | null> {
+          const booking = await bookingRepository.findByTransactionUUID(transaction_uuid);
+          if (booking && booking.payment_status !== 'paid') {
+            return await bookingRepository.updateById(booking.id, { payment_status: 'paid' });
+          }
+          return booking;
+        }
+      async getBookingByIdForAdmin(bookingId: string): Promise<IBooking | null> {
+        return bookingRepository.findById(bookingId);
+      }
+    async markBookingPaid(bookingId: string): Promise<void> {
+      const booking = await bookingRepository.findById(bookingId);
+      if (!booking) {
+        throw new HttpError(404, 'Booking not found');
+      }
+      if (booking.payment_status !== 'paid') {
+        await bookingRepository.updateById(bookingId, { payment_status: 'paid' });
+      }
+    }
   async getAllBookings(status?: BookingStatusEnum): Promise<BookingResponseDTO[]> {
     const filters: any = {};
     if (status) {
@@ -63,6 +91,29 @@ export class BookingService {
     };
 
     const booking = await bookingRepository.create(bookingData);
+
+    try {
+      await sendBookingConfirmationEmail({
+        to: booking.email,
+        fullName: booking.full_name,
+        bookingId: booking.id,
+        sessionType: booking.session_type,
+        sessionMode: booking.session_mode,
+        bookingDate: booking.booking_date,
+        timeSlot: booking.time_slot,
+        instructor: booking.instructor,
+        durationMinutes: booking.duration_minutes,
+        paymentMethod: booking.payment_method,
+        paymentStatus: booking.payment_status,
+        amount: booking.amount,
+        status: booking.status,
+        phone: booking.phone,
+        specialRequest: booking.special_request,
+      });
+    } catch (error) {
+      console.error('Booking created but confirmation email failed:', error);
+    }
+
     return new BookingResponseDTO(booking);
   }
 
@@ -128,6 +179,26 @@ export class BookingService {
       throw new HttpError(500, 'Failed to update booking');
     }
 
+    if (dto.status === 'cancelled' && booking.status !== 'cancelled') {
+      try {
+        await sendBookingCancelledEmail({
+          to: updatedBooking.email,
+          fullName: updatedBooking.full_name,
+          bookingId: updatedBooking.id,
+          sessionType: updatedBooking.session_type,
+          bookingDate: updatedBooking.booking_date,
+          timeSlot: updatedBooking.time_slot,
+          sessionMode: updatedBooking.session_mode,
+          instructor: updatedBooking.instructor,
+          amount: updatedBooking.amount,
+          paymentMethod: updatedBooking.payment_method,
+          paymentStatus: updatedBooking.payment_status,
+        });
+      } catch (error) {
+        console.error('Booking status changed to cancelled but cancellation email failed:', error);
+      }
+    }
+
     return new BookingResponseDTO(updatedBooking);
   }
 
@@ -167,6 +238,33 @@ export class BookingService {
       throw new HttpError(500, 'Failed to update booking');
     }
 
+    const hasScheduleChanged =
+      booking.time_slot !== updatedBooking.time_slot ||
+      new Date(booking.booking_date).getTime() !== new Date(updatedBooking.booking_date).getTime();
+
+    if (hasScheduleChanged) {
+      try {
+        await sendBookingRescheduledEmail({
+          to: updatedBooking.email,
+          fullName: updatedBooking.full_name,
+          bookingId: updatedBooking.id,
+          sessionType: updatedBooking.session_type,
+          sessionMode: updatedBooking.session_mode,
+          previousBookingDate: booking.booking_date,
+          previousTimeSlot: booking.time_slot,
+          newBookingDate: updatedBooking.booking_date,
+          newTimeSlot: updatedBooking.time_slot,
+          instructor: updatedBooking.instructor,
+          durationMinutes: updatedBooking.duration_minutes,
+          paymentMethod: updatedBooking.payment_method,
+          paymentStatus: updatedBooking.payment_status,
+          amount: updatedBooking.amount,
+        });
+      } catch (error) {
+        console.error('Booking updated but reschedule email failed:', error);
+      }
+    }
+
     return new BookingResponseDTO(updatedBooking);
   }
 
@@ -194,6 +292,24 @@ export class BookingService {
 
     if (!updatedBooking) {
       throw new HttpError(500, 'Failed to cancel booking');
+    }
+
+    try {
+      await sendBookingCancelledEmail({
+        to: updatedBooking.email,
+        fullName: updatedBooking.full_name,
+        bookingId: updatedBooking.id,
+        sessionType: updatedBooking.session_type,
+        bookingDate: updatedBooking.booking_date,
+        timeSlot: updatedBooking.time_slot,
+        sessionMode: updatedBooking.session_mode,
+        instructor: updatedBooking.instructor,
+        amount: updatedBooking.amount,
+        paymentMethod: updatedBooking.payment_method,
+        paymentStatus: updatedBooking.payment_status,
+      });
+    } catch (error) {
+      console.error('Booking cancelled but cancellation email failed:', error);
     }
 
     return new BookingResponseDTO(updatedBooking);
@@ -231,6 +347,26 @@ export class BookingService {
       throw new HttpError(500, 'Failed to update booking');
     }
 
+    if (dto.status === 'cancelled' && booking.status !== 'cancelled') {
+      try {
+        await sendBookingCancelledEmail({
+          to: updatedBooking.email,
+          fullName: updatedBooking.full_name,
+          bookingId: updatedBooking.id,
+          sessionType: updatedBooking.session_type,
+          bookingDate: updatedBooking.booking_date,
+          timeSlot: updatedBooking.time_slot,
+          sessionMode: updatedBooking.session_mode,
+          instructor: updatedBooking.instructor,
+          amount: updatedBooking.amount,
+          paymentMethod: updatedBooking.payment_method,
+          paymentStatus: updatedBooking.payment_status,
+        });
+      } catch (error) {
+        console.error('Admin changed booking to cancelled but cancellation email failed:', error);
+      }
+    }
+
     return new BookingResponseDTO(updatedBooking);
   }
 
@@ -264,6 +400,29 @@ export class BookingService {
     };
 
     const booking = await bookingRepository.create(bookingData);
+
+    try {
+      await sendBookingConfirmationEmail({
+        to: booking.email,
+        fullName: booking.full_name,
+        bookingId: booking.id,
+        sessionType: booking.session_type,
+        sessionMode: booking.session_mode,
+        bookingDate: booking.booking_date,
+        timeSlot: booking.time_slot,
+        instructor: booking.instructor,
+        durationMinutes: booking.duration_minutes,
+        paymentMethod: booking.payment_method,
+        paymentStatus: booking.payment_status,
+        amount: booking.amount,
+        status: booking.status,
+        phone: booking.phone,
+        specialRequest: booking.special_request,
+      });
+    } catch (error) {
+      console.error('Admin booking created but confirmation email failed:', error);
+    }
+
     return new BookingResponseDTO(booking);
   }
 
@@ -292,6 +451,33 @@ export class BookingService {
     const updatedBooking = await bookingRepository.updateById(bookingId, updateData);
     if (!updatedBooking) {
       throw new HttpError(500, 'Failed to update booking');
+    }
+
+    const hasScheduleChanged =
+      booking.time_slot !== updatedBooking.time_slot ||
+      new Date(booking.booking_date).getTime() !== new Date(updatedBooking.booking_date).getTime();
+
+    if (hasScheduleChanged) {
+      try {
+        await sendBookingRescheduledEmail({
+          to: updatedBooking.email,
+          fullName: updatedBooking.full_name,
+          bookingId: updatedBooking.id,
+          sessionType: updatedBooking.session_type,
+          sessionMode: updatedBooking.session_mode,
+          previousBookingDate: booking.booking_date,
+          previousTimeSlot: booking.time_slot,
+          newBookingDate: updatedBooking.booking_date,
+          newTimeSlot: updatedBooking.time_slot,
+          instructor: updatedBooking.instructor,
+          durationMinutes: updatedBooking.duration_minutes,
+          paymentMethod: updatedBooking.payment_method,
+          paymentStatus: updatedBooking.payment_status,
+          amount: updatedBooking.amount,
+        });
+      } catch (error) {
+        console.error('Admin updated booking but reschedule email failed:', error);
+      }
     }
 
     return new BookingResponseDTO(updatedBooking);

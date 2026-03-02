@@ -22,20 +22,36 @@ export class BookingController {
   async createBooking(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = (req as any).user?.id;
-
       if (!userId) {
         throw new HttpError(401, 'Unauthorized');
       }
-
       const validationResult = CreateBookingSchema.safeParse(req.body);
-
       if (!validationResult.success) {
         const messages = validationResult.error.errors.map((err: any) => `${err.path.join('.')}: ${err.message}`).join('; ');
         throw new HttpError(400, `Validation failed: ${messages}`);
       }
-
       const userObjectId = new mongoose.Types.ObjectId(userId);
       const booking = await bookingService.createBooking(userObjectId, validationResult.data);
+
+
+      // Only return HTML form for classic eSewa if ?classicEsewa=1 is set
+      if (booking.payment_method === 'esewa' && req.query.classicEsewa === '1') {
+        const { EsewaService } = await import('../utils/esewa');
+        const esewaParams = {
+          amt: booking.amount,
+          psc: 0,
+          pdc: 0,
+          txAmt: 0,
+          tAmt: booking.amount,
+          pid: booking.id,
+          scd: 'EPAYTEST',
+          su: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/esewa/success?pid=${booking.id}`,
+          fu: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/esewa/failure?pid=${booking.id}`,
+        };
+        const formHtml = EsewaService.getPaymentForm(esewaParams);
+        res.status(200).send(formHtml);
+        return;
+      }
 
       res.status(201).json({
         success: true,

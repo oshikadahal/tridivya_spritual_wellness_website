@@ -17,6 +17,7 @@ export type PaymentMethodEnum = 'esewa' | 'khalti' | 'cash';
 export type PaymentStatusEnum = 'pending' | 'paid' | 'refunded';
 
 export interface IBooking extends Document {
+    transaction_uuid?: string;
   id: string;
   user_id: mongoose.Types.ObjectId;
   session_type: SessionTypeEnum;
@@ -68,6 +69,7 @@ const BookingSchema = new Schema<IBooking>(
     status: { type: String, enum: ['upcoming', 'completed', 'cancelled'], default: 'upcoming', index: true },
     instructor: { type: String, trim: true },
     duration_minutes: { type: Number, default: 60, min: 0 },
+    transaction_uuid: { type: String, index: true },
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
