@@ -104,13 +104,13 @@ export default function WisdomLibraryPage() {
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
+        <div className="min-h-screen bg-linear-to-b from-violet-50 to-indigo-50/40 text-slate-900">
             <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
                 <section className="space-y-3">
-                    <h1 className="text-3xl font-bold">Wisdom Library</h1>
+                    <h1 className="text-3xl font-bold text-slate-800">Wisdom Library</h1>
                     <p className="text-slate-600">Explore meditation, mantra, and yoga resources from the backend library.</p>
 
-                    <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm">
+                    <div className="rounded-2xl border border-violet-100 bg-white/90 p-3 sm:p-4 shadow-sm">
                         <div className="flex flex-wrap gap-3">
                         {filters.map((item) => (
                             <button
@@ -119,8 +119,8 @@ export default function WisdomLibraryPage() {
                                 aria-pressed={activeFilter === item}
                                 className={`h-10 px-5 rounded-full text-sm font-medium border transition ${
                                     activeFilter === item
-                                        ? "bg-[#6a5ae0] text-white border-[#6a5ae0]"
-                                        : "bg-white text-slate-700 border-slate-200"
+                                        ? "bg-violet-600 text-white border-violet-600"
+                                        : "bg-white text-slate-700 border-violet-100"
                                 }`}
                             >
                                 {item === "All" ? "All" : item.charAt(0).toUpperCase() + item.slice(1)}
@@ -131,11 +131,11 @@ export default function WisdomLibraryPage() {
                 </section>
 
                 {featured && (
-                    <section className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-linear-to-r from-indigo-600 to-indigo-500">
-                        <div className="absolute inset-0 bg-linear-to-tr from-indigo-700/30 to-transparent pointer-events-none" />
+                    <section className="relative rounded-3xl overflow-hidden border border-violet-200 shadow-sm bg-linear-to-r from-violet-600 via-indigo-500 to-violet-400">
+                        <div className="absolute inset-0 bg-linear-to-tr from-violet-800/25 to-transparent pointer-events-none" />
                         <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 lg:p-8 items-center">
                             <div className="text-white max-w-xl">
-                                <span className="inline-flex px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-wide">
+                                <span className="inline-flex px-3 py-1 rounded-full bg-white/25 text-xs font-semibold uppercase tracking-wide">
                                     Featured Read
                                 </span>
                                 <h2 className="text-3xl lg:text-4xl font-bold mt-4 leading-tight">{featured.title}</h2>
@@ -145,7 +145,7 @@ export default function WisdomLibraryPage() {
 
                                 <Link
                                     href={`/wisdomlibrary/${featured.id}`}
-                                    className="mt-6 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-white text-indigo-600 font-semibold hover:bg-slate-50 transition"
+                                    className="mt-6 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-white text-violet-700 font-semibold hover:bg-violet-50 transition"
                                     aria-label={`Open ${featured.title}`}
                                 >
                                     Open
@@ -169,10 +169,10 @@ export default function WisdomLibraryPage() {
                 {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>}
 
                 <section className="space-y-4">
-                    <h2 className="text-3xl font-bold">Library Items</h2>
+                    <h2 className="text-3xl font-bold text-slate-800">Library Items</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         {filteredItems.map((item) => (
-                            <article key={item.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-80 flex flex-col">
+                            <article key={item.id} className="bg-white border border-violet-100 rounded-2xl shadow-sm overflow-hidden h-80 flex flex-col">
                                 <div className="relative h-44 w-full">
                                     <Image
                                         src={item.cover_image_url || item.thumbnail_url || item.image_url || "/images/homepage.png"}
@@ -183,9 +183,9 @@ export default function WisdomLibraryPage() {
                                     <button
                                         onClick={() => toggleSaved(item.id)}
                                         aria-label={`${savedIds.includes(item.id) ? "Unsave" : "Save"} ${item.title}`}
-                                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 text-indigo-600 flex items-center justify-center shadow-sm"
+                                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 text-violet-600 flex items-center justify-center shadow-sm"
                                     >
-                                        <Bookmark className={`w-4 h-4 ${savedIds.includes(item.id) ? "fill-indigo-600" : ""}`} />
+                                        <Bookmark className={`w-4 h-4 ${savedIds.includes(item.id) ? "fill-violet-600" : ""}`} />
                                     </button>
                                 </div>
                                 <div className="p-3 flex-1 flex flex-col">
@@ -194,7 +194,7 @@ export default function WisdomLibraryPage() {
 
                                     <Link
                                         href={`/wisdomlibrary/${item.id}`}
-                                        className="mt-auto h-10 px-4 rounded-full bg-indigo-600 text-white font-semibold text-sm inline-flex items-center justify-center"
+                                        className="mt-auto h-10 px-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-500 text-white font-semibold text-sm inline-flex items-center justify-center hover:from-violet-700 hover:to-indigo-600 transition"
                                         aria-label={`Read ${item.title}`}
                                     >
                                         Read
