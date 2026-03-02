@@ -60,6 +60,7 @@ export const API= {
         LIST: "/api/v1/library-items",
         BY_ID: (id: string) => `/api/v1/library-items/${id}`,
         REVIEWS: (id: string) => `/api/v1/library-items/${id}/reviews`,
+        UPLOAD_CONTENT: "/api/v1/library-items/upload-content",
     },
     ME: {
         SAVED_MEDITATIONS: "/api/v1/me/saved-meditations",

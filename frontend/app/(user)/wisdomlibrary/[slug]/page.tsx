@@ -1,88 +1,94 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getLibraryItemById, type ContentItem } from "@/lib/api/content";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+
+const resolveDocumentUrl = (value?: string) => {
+    if (!value) return "";
+    if (value.startsWith("http")) return value;
+    const normalized = value.startsWith("/") ? value : `/${value}`;
+    return `${API_BASE_URL}${normalized}`;
+};
+
 export default function WisdomLibraryDetailPage() {
-  const params = useParams<{ slug: string }>();
-  const id = params?.slug;
+    const params = useParams<{ slug: string }>();
+    const contentId = params?.slug;
 
-  const [item, setItem] = useState<ContentItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    const [item, setItem] = useState<ContentItem | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!id) return;
+    useEffect(() => {
+        if (!contentId) return;
 
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getLibraryItemById(id);
-        setItem(data);
-      } catch (err: Error | any) {
-        setError(err.message || "Failed to load library item");
-      } finally {
-        setLoading(false);
-      }
-    };
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await getLibraryItemById(contentId);
+                setItem(response);
+            } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : "Failed to load library item";
+                setError(message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    load();
-  }, [id]);
+        loadData();
+    }, [contentId]);
 
-  if (loading) {
-    return <div className="px-6 md:px-8 pt-5 pb-10">Loading...</div>;
-  }
+    const contentUrl = useMemo(() => resolveDocumentUrl(item?.content_url), [item?.content_url]);
 
-  if (!item) {
-    return <div className="px-6 md:px-8 pt-5 pb-10">Item not found.</div>;
-  }
+    if (loading) return <div className="px-4 py-10">Loading library item...</div>;
+    if (!item) return <div className="px-4 py-10">Library item not found.</div>;
 
-  return (
-    <div className="px-4 sm:px-6 md:px-8 pt-5 pb-10 bg-[#f7f8ff] min-h-screen text-slate-900">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/wisdomlibrary"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
-          >
-            <span className="inline-flex w-8 h-8 items-center justify-center rounded-full border border-slate-200 bg-white">
-              <ArrowLeft className="w-4 h-4" />
-            </span>
-            Back to Library
-          </Link>
+    return (
+        <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
+            <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+                <Link
+                    href="/wisdomlibrary"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Library
+                </Link>
+
+                <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div>
+                        <p className="text-xs uppercase tracking-wide text-indigo-600 font-semibold">{item.library_type || "resource"}</p>
+                        <h1 className="text-3xl font-bold mt-1">{item.title}</h1>
+                        <p className="text-slate-600 mt-2">{item.subtitle || item.description || "Read and reflect at your own pace."}</p>
+                    </div>
+
+                    {contentUrl && (
+                        <a
+                            href={contentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-indigo-600 text-white text-sm font-semibold"
+                        >
+                            Open Document
+                            <ExternalLink className="w-4 h-4" />
+                        </a>
+                    )}
+
+                    {item.content_text ? (
+                        <article className="prose prose-slate max-w-none whitespace-pre-line leading-relaxed">
+                            {item.content_text}
+                        </article>
+                    ) : (
+                        <p className="text-slate-500">No in-app reading text found for this item.</p>
+                    )}
+                </section>
+
+                {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>}
+            </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-6 items-start">
-          <div className="space-y-4">
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight">{item.title}</h1>
-            {item.author_name && (
-              <p className="text-sm text-slate-500">By {item.author_name}</p>
-            )}
-            <p className="text-sm text-slate-500">
-              {item.library_type || "resource"}
-              {item.read_minutes ? ` • ${item.read_minutes} min read` : null}
-            </p>
-            <p className="text-base text-slate-700 leading-relaxed">
-              {item.description || item.subtitle || "Explore this resource to deepen your understanding."}
-            </p>
-          </div>
-
-          <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden border border-slate-200 bg-white">
-            <Image
-              src={item.cover_image_url || item.thumbnail_url || "/images/homepage.png"}
-              alt={item.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
-

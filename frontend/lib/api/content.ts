@@ -1,7 +1,10 @@
 import axios from "./axios";
 import { API } from "./endpoints";
 
-type Difficulty = "beginner" | "intermediate" | "advanced";
+type Difficulty = "beginner" | "intermediate" | "advanced" | "all_levels";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:5050";
+const MAX_API_LIST_LIMIT = 100;
 
 export type ContentItem = {
     id: string;
@@ -25,6 +28,8 @@ export type ContentItem = {
     author_name?: string;
     library_type?: "book" | "article" | "resource";
     read_minutes?: number;
+    content_url?: string;
+    content_text?: string;
     category_slug?: string;
 };
 
@@ -53,6 +58,11 @@ export type ProgressItem = {
 export type ReviewItem = {
     id?: string;
     user_id?: string;
+    user?: {
+        firstName?: string;
+        lastName?: string;
+        username?: string;
+    };
     rating: number;
     comment?: string;
     created_at?: string;
@@ -60,6 +70,46 @@ export type ReviewItem = {
 };
 
 type ListParams = Record<string, string | number | boolean | undefined>;
+
+const normalizeUploadPath = (value: string, type: "image" | "media" | "audio") => {
+    if (!value.startsWith("/uploads/")) return value;
+
+    const uploadSubPath = value.replace("/uploads/", "");
+    const hasKnownFolder = ["images/", "image/", "video/", "videos/", "audio/", "profile-images/"]
+        .some((folder) => uploadSubPath.startsWith(folder));
+
+    if (hasKnownFolder) return value;
+
+    if (type === "audio") return `/uploads/audio/${uploadSubPath}`;
+    if (type === "media") return `/uploads/videos/${uploadSubPath}`;
+    return `/uploads/images/${uploadSubPath}`;
+};
+
+const resolveContentUrl = (
+    value: string | undefined,
+    type: "image" | "media" | "audio"
+) => {
+    if (!value) return value;
+    if (value.startsWith("http") || value.startsWith("data:")) return value;
+
+    const normalizedPath = value.startsWith("/") ? value : `/${value}`;
+    const uploadNormalizedPath = normalizeUploadPath(normalizedPath, type);
+
+    return `${API_BASE_URL}${uploadNormalizedPath}`;
+};
+
+const mapContentItem = (item: any): ContentItem => {
+    if (!item || typeof item !== "object") return item;
+
+    return {
+        ...item,
+        image_url: resolveContentUrl(item.image_url, "image"),
+        thumbnail_url: resolveContentUrl(item.thumbnail_url, "image"),
+        cover_image_url: resolveContentUrl(item.cover_image_url, "image"),
+        media_url: resolveContentUrl(item.media_url, "media"),
+        audio_url: resolveContentUrl(item.audio_url, "audio"),
+    };
+};
 
 const getClientAuthToken = () => {
     if (typeof document === "undefined") return null;
@@ -96,10 +146,68 @@ const buildQuery = (params?: ListParams) => {
     }, {});
 };
 
+const toPositiveInt = (value: unknown) => {
+    if (typeof value === "number") return Number.isFinite(value) ? Math.floor(value) : undefined;
+    if (typeof value === "string" && value.trim().length) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? Math.floor(parsed) : undefined;
+    }
+    return undefined;
+};
+
+const fetchPagedList = async (endpoint: string, params?: ListParams) => {
+    const baseQuery = buildQuery(params) ?? {};
+    const requestedLimit = toPositiveInt(baseQuery.limit) ?? 10;
+
+    if (requestedLimit <= MAX_API_LIST_LIMIT) {
+        const response = await axios.get(endpoint, {
+            params: baseQuery,
+            headers: { ...getAuthHeaders() },
+        });
+        return parseListResponse(response.data);
+    }
+
+    const mergedData: ContentItem[] = [];
+    let page = 1;
+    let total = 0;
+
+    while (mergedData.length < requestedLimit) {
+        const response = await axios.get(endpoint, {
+            params: {
+                ...baseQuery,
+                page,
+                limit: MAX_API_LIST_LIMIT,
+            },
+            headers: { ...getAuthHeaders() },
+        });
+
+        const parsed = parseListResponse(response.data);
+        if (page === 1) total = parsed.total;
+
+        if (!parsed.data.length) break;
+        mergedData.push(...parsed.data);
+
+        const reachedLastPage = parsed.data.length < MAX_API_LIST_LIMIT;
+        const reachedTotal = total > 0 && mergedData.length >= total;
+        if (reachedLastPage || reachedTotal) break;
+
+        page += 1;
+    }
+
+    return {
+        data: mergedData.slice(0, requestedLimit),
+        total: total || mergedData.length,
+        page: 1,
+        limit: requestedLimit,
+    };
+};
+
 const parseListResponse = (responseData: any): { data: ContentItem[]; total: number; page: number; limit: number } => {
+    const listData = Array.isArray(responseData?.data) ? responseData.data : [];
+
     if (responseData?.success && Array.isArray(responseData?.data)) {
         return {
-            data: responseData.data,
+            data: listData.map(mapContentItem),
             total: responseData.pagination?.total ?? responseData.data.length,
             page: responseData.pagination?.page ?? 1,
             limit: responseData.pagination?.limit ?? responseData.data.length,
@@ -107,7 +215,7 @@ const parseListResponse = (responseData: any): { data: ContentItem[]; total: num
     }
 
     return {
-        data: responseData?.data ?? [],
+        data: listData.map(mapContentItem),
         total: responseData?.total ?? 0,
         page: responseData?.page ?? 1,
         limit: responseData?.limit ?? 10,
@@ -116,11 +224,7 @@ const parseListResponse = (responseData: any): { data: ContentItem[]; total: num
 
 export const listMeditations = async (params?: ListParams) => {
     try {
-        const response = await axios.get(API.MEDITATIONS.LIST, {
-            params: buildQuery(params),
-            headers: { ...getAuthHeaders() },
-        });
-        return parseListResponse(response.data);
+        return await fetchPagedList(API.MEDITATIONS.LIST, params);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch meditations"));
     }
@@ -128,11 +232,7 @@ export const listMeditations = async (params?: ListParams) => {
 
 export const listYogas = async (params?: ListParams) => {
     try {
-        const response = await axios.get(API.YOGAS.LIST, {
-            params: buildQuery(params),
-            headers: { ...getAuthHeaders() },
-        });
-        return parseListResponse(response.data);
+        return await fetchPagedList(API.YOGAS.LIST, params);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch yoga programs"));
     }
@@ -140,11 +240,7 @@ export const listYogas = async (params?: ListParams) => {
 
 export const listMantras = async (params?: ListParams) => {
     try {
-        const response = await axios.get(API.MANTRAS.LIST, {
-            params: buildQuery(params),
-            headers: { ...getAuthHeaders() },
-        });
-        return parseListResponse(response.data);
+        return await fetchPagedList(API.MANTRAS.LIST, params);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch mantras"));
     }
@@ -152,11 +248,7 @@ export const listMantras = async (params?: ListParams) => {
 
 export const listLibraryItems = async (params?: ListParams) => {
     try {
-        const response = await axios.get(API.LIBRARY.LIST, {
-            params: buildQuery(params),
-            headers: { ...getAuthHeaders() },
-        });
-        return parseListResponse(response.data);
+        return await fetchPagedList(API.LIBRARY.LIST, params);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch library items"));
     }
@@ -167,7 +259,7 @@ export const getMeditationById = async (id: string): Promise<ContentItem> => {
         const response = await axios.get(API.MEDITATIONS.BY_ID(id), {
             headers: { ...getAuthHeaders() },
         });
-        return response.data?.data ?? response.data;
+        return mapContentItem(response.data?.data ?? response.data);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch meditation details"));
     }
@@ -178,7 +270,7 @@ export const getYogaById = async (id: string): Promise<ContentItem> => {
         const response = await axios.get(API.YOGAS.BY_ID(id), {
             headers: { ...getAuthHeaders() },
         });
-        return response.data?.data ?? response.data;
+        return mapContentItem(response.data?.data ?? response.data);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch yoga details"));
     }
@@ -189,7 +281,7 @@ export const getMantraById = async (id: string): Promise<ContentItem> => {
         const response = await axios.get(API.MANTRAS.BY_ID(id), {
             headers: { ...getAuthHeaders() },
         });
-        return response.data?.data ?? response.data;
+        return mapContentItem(response.data?.data ?? response.data);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch mantra details"));
     }
@@ -200,7 +292,7 @@ export const getLibraryItemById = async (id: string): Promise<ContentItem> => {
         const response = await axios.get(API.LIBRARY.BY_ID(id), {
             headers: { ...getAuthHeaders() },
         });
-        return response.data?.data ?? response.data;
+        return mapContentItem(response.data?.data ?? response.data);
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch library details"));
     }
@@ -212,7 +304,11 @@ export const getSavedSessions = async (contentType?: SavedSession["content_type"
             params: buildQuery({ content_type: contentType }),
             headers: { ...getAuthHeaders() },
         });
-        return response.data ?? [];
+        const sessions: SavedSession[] = response.data ?? [];
+        return sessions.map((session) => ({
+            ...session,
+            thumbnail_url: resolveContentUrl(session.thumbnail_url ?? undefined, "image") ?? session.thumbnail_url,
+        }));
     } catch (err: Error | any) {
         throw new Error(toErrorMessage(err, "Failed to fetch saved sessions"));
     }

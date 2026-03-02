@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Bookmark } from "lucide-react";
+import { ArrowRight, Bookmark } from "lucide-react";
 import {
     getSavedLibraryIds,
     listLibraryItems,
@@ -12,8 +12,40 @@ import {
     type ContentItem,
 } from "@/lib/api/content";
 
+const filters = ["All", "meditation", "mantra", "yoga"] as const;
+
+type LibraryFilter = Exclude<(typeof filters)[number], "All">;
+
+const filterKeywords: Record<LibraryFilter, string[]> = {
+    meditation: ["meditation", "mindfulness", "breath"],
+    mantra: ["mantra", "chant", "chants"],
+    yoga: ["yoga", "asana", "asanas"],
+};
+
+const getLibraryCategory = (item: ContentItem): LibraryFilter | null => {
+    const candidates = [
+        item.category_slug,
+        item.goal_slug,
+        item.library_type,
+        item.title,
+        item.subtitle,
+        item.description,
+    ]
+        .filter((value): value is string => typeof value === "string")
+        .map((value) => value.toLowerCase());
+
+    const hasCategory = (category: LibraryFilter) =>
+        candidates.some((value) => filterKeywords[category].some((keyword) => value.includes(keyword)));
+
+    if (hasCategory("meditation")) return "meditation";
+    if (hasCategory("mantra")) return "mantra";
+    if (hasCategory("yoga")) return "yoga";
+
+    return null;
+};
+
 export default function WisdomLibraryPage() {
-    const [activeCategory, setActiveCategory] = useState("All");
+    const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]>("All");
     const [items, setItems] = useState<ContentItem[]>([]);
     const [savedIds, setSavedIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
@@ -24,16 +56,15 @@ export default function WisdomLibraryPage() {
             try {
                 setLoading(true);
                 setError(null);
-
-                const [library, saved] = await Promise.all([
-                    listLibraryItems({ limit: 60 }),
+                const [response, saved] = await Promise.all([
+                    listLibraryItems({ limit: 500 }),
                     getSavedLibraryIds(),
                 ]);
-
-                setItems(library.data);
+                setItems(response.data);
                 setSavedIds(saved);
-            } catch (err: Error | any) {
-                setError(err.message || "Failed to load library");
+            } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : "Failed to load library items";
+                setError(message);
             } finally {
                 setLoading(false);
             }
@@ -42,197 +73,143 @@ export default function WisdomLibraryPage() {
         loadData();
     }, []);
 
-    const categories = useMemo(() => {
-        const dynamic = Array.from(new Set(items.map((item) => item.category_slug).filter(Boolean))) as string[];
-        return ["All", ...dynamic.slice(0, 8)];
-    }, [items]);
+    const filteredItems = useMemo(() => {
+        if (activeFilter === "All") return items;
 
-    const filteredItems = useMemo(() => (
-        activeCategory === "All"
-            ? items
-            : items.filter((item) => item.category_slug === activeCategory)
-    ), [activeCategory, items]);
+        return items.filter((item) => {
+            return getLibraryCategory(item) === activeFilter;
+        });
+    }, [activeFilter, items]);
 
     const featured = filteredItems.find((item) => item.is_featured) || filteredItems[0] || items[0];
-    const essentialBooks = filteredItems.slice(0, 8);
-    const learningPaths = filteredItems.slice(8, 10);
-    const shortReads = filteredItems.filter((item) => item.library_type === "article").slice(0, 4);
-    const savedItems = items.filter((item) => savedIds.includes(item.id)).slice(0, 8);
 
-    const toggleSavedBook = async (id: string) => {
+    const toggleSaved = async (id: string) => {
         const isSaved = savedIds.includes(id);
+
         try {
             if (isSaved) {
                 await unsaveLibraryItem(id);
-                setSavedIds((prev) => prev.filter((item) => item !== id));
+                setSavedIds((prev) => prev.filter((itemId) => itemId !== id));
             } else {
                 await saveLibraryItem(id);
                 setSavedIds((prev) => [...prev, id]);
             }
         } catch {
-            setError("Unable to update saved list");
+            setError("Unable to update saved state");
         }
     };
 
     if (loading) {
-        return <div className="px-8 py-10">Loading library...</div>;
+        return <div className="px-4 py-10">Loading library...</div>;
     }
 
     return (
-        <div className="px-8 pb-10 space-y-8 text-slate-900">
-            <section className="space-y-3 pt-2">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold">Wisdom Library</h1>
-                        <p className="text-sm text-slate-600 mt-1">Expand your knowledge through curated resources</p>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-linear-to-b from-slate-50 to-white text-slate-900">
+            <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+                <section className="space-y-3">
+                    <h1 className="text-3xl font-bold">Wisdom Library</h1>
+                    <p className="text-slate-600">Explore meditation, mantra, and yoga resources from the backend library.</p>
 
-                <div className="flex flex-wrap gap-3">
-                    {categories.map((item) => (
-                        <button
-                            key={item}
-                            onClick={() => setActiveCategory(item)}
-                            className={`h-10 px-5 rounded-full text-sm font-medium border ${
-                                activeCategory === item
-                                    ? "bg-[#6a5ae0] text-white border-[#6a5ae0]"
-                                    : "bg-white text-slate-700 border-slate-200"
-                            }`}
-                        >
-                            {item}
-                        </button>
-                    ))}
-                </div>
-            </section>
-
-            {featured && (
-                <section className="relative overflow-hidden rounded-3xl border border-slate-200 shadow-sm bg-linear-to-r from-slate-700 to-slate-600 text-white">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-8 lg:p-10 items-center">
-                        <div className="max-w-md z-10">
-                            <span className="inline-flex px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-widest mb-3">
-                                Featured
-                            </span>
-                            <h2 className="text-4xl md:text-5xl font-bold leading-tight">{featured.title}</h2>
-                            <p className="text-white/80 mt-4 text-base leading-relaxed line-clamp-3">
-                                {featured.description || featured.subtitle || "Ancient wisdom for modern mental mastery."}
-                            </p>
+                    <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm">
+                        <div className="flex flex-wrap gap-3">
+                        {filters.map((item) => (
                             <button
-                                type="button"
-                                onClick={() => toggleSavedBook(featured.id)}
-                                aria-label="Save featured book"
-                                className="mt-6 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-white text-slate-900 font-semibold"
+                                key={item}
+                                onClick={() => setActiveFilter(item)}
+                                aria-pressed={activeFilter === item}
+                                className={`h-10 px-5 rounded-full text-sm font-medium border transition ${
+                                    activeFilter === item
+                                        ? "bg-[#6a5ae0] text-white border-[#6a5ae0]"
+                                        : "bg-white text-slate-700 border-slate-200"
+                                }`}
                             >
-                                <Bookmark className={`w-4 h-4 transition ${savedIds.includes(featured.id) ? "text-[#6a5ae0] fill-[#6a5ae0]" : "text-slate-900"}`} />
-                                Save to List
+                                {item === "All" ? "All" : item.charAt(0).toUpperCase() + item.slice(1)}
                             </button>
-                        </div>
-
-                        <div className="relative w-full max-w-sm h-72 rounded-2xl overflow-hidden border border-white/20">
-                            <Image src={featured.cover_image_url || featured.thumbnail_url || "/images/homepage.png"} alt={featured.title} fill className="object-cover" priority />
+                        ))}
                         </div>
                     </div>
                 </section>
-            )}
 
-            {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>}
+                {featured && (
+                    <section className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-linear-to-r from-indigo-600 to-indigo-500">
+                        <div className="absolute inset-0 bg-linear-to-tr from-indigo-700/30 to-transparent pointer-events-none" />
+                        <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 lg:p-8 items-center">
+                            <div className="text-white max-w-xl">
+                                <span className="inline-flex px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-wide">
+                                    Featured Read
+                                </span>
+                                <h2 className="text-3xl lg:text-4xl font-bold mt-4 leading-tight">{featured.title}</h2>
+                                <p className="text-white/90 mt-4 line-clamp-3">
+                                    {featured.description || featured.subtitle || "A curated library resource for your wellness journey."}
+                                </p>
 
-            <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-3xl font-bold">Essential Books</h2>
-                </div>
+                                <Link
+                                    href={`/wisdomlibrary/${featured.id}`}
+                                    className="mt-6 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-white text-indigo-600 font-semibold hover:bg-slate-50 transition"
+                                    aria-label={`Open ${featured.title}`}
+                                >
+                                    Open
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+                            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    {essentialBooks.map((book) => (
-                        <article key={book.id} className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm flex flex-col">
-                            <Link href={`/wisdomlibrary/${book.id}`} className="relative h-48 block">
-                                <Image src={book.cover_image_url || book.thumbnail_url || "/images/homepage.png"} alt={book.title} fill className="object-cover" />
-                            </Link>
-                            <div className="p-4 flex flex-col flex-1">
-                                <div className="flex items-start justify-between gap-3">
-                                    <Link href={`/wisdomlibrary/${book.id}`} className="flex-1">
-                                        <h3 className="text-lg font-semibold leading-tight hover:text-[#6a5ae0] transition">
-                                            {book.title}
-                                        </h3>
-                                    </Link>
-                                    <button type="button" onClick={() => toggleSavedBook(book.id)} aria-label={`Save ${book.title}`} className="mt-0.5">
-                                        <Bookmark className={`w-5 h-5 transition ${savedIds.includes(book.id) ? "text-[#6a5ae0] fill-[#6a5ae0]" : "text-slate-400"}`} />
+                            <div className="relative w-full max-w-md h-56 lg:h-60 mx-auto rounded-2xl overflow-hidden border border-white/30 bg-white/10">
+                                <Image
+                                    src={featured.cover_image_url || featured.thumbnail_url || featured.image_url || "/images/homepage.png"}
+                                    alt={featured.title}
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>}
+
+                <section className="space-y-4">
+                    <h2 className="text-3xl font-bold">Library Items</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        {filteredItems.map((item) => (
+                            <article key={item.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-80 flex flex-col">
+                                <div className="relative h-44 w-full">
+                                    <Image
+                                        src={item.cover_image_url || item.thumbnail_url || item.image_url || "/images/homepage.png"}
+                                        alt={item.title}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                    <button
+                                        onClick={() => toggleSaved(item.id)}
+                                        aria-label={`${savedIds.includes(item.id) ? "Unsave" : "Save"} ${item.title}`}
+                                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 text-indigo-600 flex items-center justify-center shadow-sm"
+                                    >
+                                        <Bookmark className={`w-4 h-4 ${savedIds.includes(item.id) ? "fill-indigo-600" : ""}`} />
                                     </button>
                                 </div>
-                                <p className="text-sm text-slate-600 mt-1">{book.author_name || book.category_slug || "Resource"}</p>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-            </section>
+                                <div className="p-3 flex-1 flex flex-col">
+                                    <h3 className="text-base font-semibold line-clamp-2">{item.title}</h3>
+                                    <p className="text-sm text-slate-500 mt-2 line-clamp-2">{item.subtitle || item.description || "Open to continue reading."}</p>
 
-            <section className="space-y-4">
-                <h2 className="text-3xl font-bold">Learning Paths</h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {learningPaths.map((path) => (
-                        <Link
-                            key={path.id}
-                            href={`/wisdomlibrary/${path.id}`}
-                            className="relative h-48 rounded-3xl overflow-hidden shadow-sm border border-slate-200 hover:border-[#6a5ae0] transition"
-                        >
-                            <Image src={path.cover_image_url || path.thumbnail_url || "/images/homepage.png"} alt={path.title} fill className="object-cover" />
-                            <div className="absolute inset-0 bg-linear-to-t from-black/70 to-black/20" />
-                            <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                                <h3 className="text-2xl font-bold">{path.title}</h3>
-                                <p className="text-sm text-white/80 mt-1">{path.category_slug || path.library_type || "Curated path"}</p>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
-
-            <section className="space-y-4">
-                <h2 className="text-3xl font-bold">Short Reads & Articles</h2>
-
-                <div className="space-y-3">
-                    {shortReads.map((read) => (
-                        <Link
-                            key={read.id}
-                            href={`/wisdomlibrary/${read.id}`}
-                            className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:border-[#6a5ae0] transition"
-                        >
-                            <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-2xl shrink-0">📚</div>
-                            <div className="min-w-0 flex-1">
-                                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6a5ae0]">{read.category_slug || "ARTICLE"}</span>
-                                <h3 className="font-semibold text-lg mt-1">{read.title}</h3>
-                            </div>
-                            <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-                                <Image src={read.thumbnail_url || "/images/homepage.png"} alt={read.title} fill className="object-cover" />
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
-
-            <section className="space-y-4 pb-2">
-                <h2 className="text-3xl font-bold flex items-center gap-2">
-                    <span className="w-4 h-4 rounded bg-[#6a5ae0]" />
-                    Saved for Later
-                </h2>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
-                    {savedItems.map((item) => (
-                        <Link
-                            key={item.id}
-                            href={`/wisdomlibrary/${item.id}`}
-                            className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:border-[#6a5ae0] transition"
-                        >
-                            <div className="relative h-24">
-                                <Image src={item.cover_image_url || item.thumbnail_url || "/images/homepage.png"} alt={item.title} fill className="object-cover" />
-                            </div>
-                            <div className="p-3">
-                                <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">{item.library_type || "resource"}</p>
-                                <h4 className="text-sm font-semibold mt-1 line-clamp-2">{item.title}</h4>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
+                                    <Link
+                                        href={`/wisdomlibrary/${item.id}`}
+                                        className="mt-auto h-10 px-4 rounded-full bg-indigo-600 text-white font-semibold text-sm inline-flex items-center justify-center"
+                                        aria-label={`Read ${item.title}`}
+                                    >
+                                        Read
+                                    </Link>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                    {filteredItems.length === 0 && (
+                        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+                            No library items found for this filter.
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     );
 }

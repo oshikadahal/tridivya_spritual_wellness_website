@@ -10,37 +10,29 @@ import {
     Play, 
     Dumbbell, 
     BookOpen, 
+    Library,
     Heart, 
     Settings, 
-    LogOut,
-    Search
+    LogOut
 } from "lucide-react";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useLogoutModal } from "@/context/LogoutModalContext";
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
     { icon: Calendar, label: "Booking", href: "/booking" },
     { icon: CalendarCheck, label: "My Bookings", href: "/my-bookings" },
-    { icon: Search, label: "Search", href: "/search" },
     { icon: Play, label: "Meditation Videos", href: "/meditationvideos" },
     { icon: Dumbbell, label: "Yoga Programs", href: "/yogaprograms" },
     { icon: BookOpen, label: "Mantra Library", href: "/mantraprogram" },
-    { icon: BookOpen, label: "Wisdom Library", href: "/wisdomlibrary" },
+    { icon: Library, label: "Wisdom Library", href: "/wisdomlibrary" },
     { icon: Heart, label: "Saved Sessions", href: "/saved" },
 ];
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const router = useRouter();
     const { setShowLogoutModal } = useLogoutModal();
 
-    const handleLogout = async () => {
-        await signOut({ redirect: false });
-        router.push("/login");
-        setShowLogoutModal(true);
-    };
+    const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
 
     return (
         <aside className="w-full md:w-64 md:min-h-screen bg-linear-to-b from-purple-100 to-purple-50 border-b md:border-b-0 md:border-r border-purple-200 flex flex-row md:flex-col items-center md:items-stretch">
@@ -66,14 +58,14 @@ export default function Sidebar() {
                 <nav className="flex md:block gap-1 overflow-x-auto md:overflow-visible whitespace-nowrap md:space-y-1">
                     {menuItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = pathname === item.href;
+                        const active = isActive(item.href);
                         
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all ${
-                                    isActive
+                                    active
                                         ? "bg-purple-600 text-white shadow-md"
                                         : "text-gray-700 hover:bg-purple-200/50"
                                 }`}
