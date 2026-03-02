@@ -1,10 +1,10 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import { resolveCollectionName } from '../utils/collection-name';
 import crypto from 'crypto';
 
 export interface IUserYogaReview extends Document {
   id: string;
-  user_id: string;
+  user_id: Types.ObjectId; // must match schema for population
   yoga_id: string;
   rating: number;
   comment?: string;
@@ -15,7 +15,7 @@ export interface IUserYogaReview extends Document {
 const UserYogaReviewSchema = new Schema<IUserYogaReview>(
   {
     id: { type: String, default: () => crypto.randomUUID(), required: true, unique: true },
-    user_id: { type: String, required: true, index: true },
+    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     yoga_id: { type: String, required: true, index: true },
     rating: { type: Number, min: 1, max: 5, required: true },
     comment: { type: String, required: false },

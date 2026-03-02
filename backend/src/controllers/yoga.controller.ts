@@ -2,14 +2,36 @@ import { Request, Response, NextFunction } from 'express';
 import { YogaService } from '../services/yoga.service';
 import { CreateYogaDTOSchema, UpdateYogaDTOSchema, ListYogasQueryDTOSchema } from '../dtos/yoga.dto';
 import { ZodError } from 'zod';
+import { AnnouncementService } from '../services/announcement.service';
 
 const yogaService = new YogaService();
+const announcementService = new AnnouncementService();
 
 export class YogaController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const data = CreateYogaDTOSchema.parse(req.body);
       const yoga = await yogaService.create(data);
+
+      const adminId = (req as any).user?.id;
+      if (adminId) {
+        try {
+          const announcement = await announcementService.create(
+            {
+              title: 'New Yoga Session Added',
+              message: `A new yoga session is now available: ${yoga.title}.`,
+              tone: 'celebrate',
+              status: 'draft',
+            },
+            adminId
+          );
+
+          await announcementService.publish(announcement.id, adminId);
+        } catch (announcementError) {
+          console.error('Yoga created but announcement publishing failed:', announcementError);
+        }
+      }
+
       res.status(201).json(yoga);
     } catch (error) {
       if (error instanceof ZodError) {
