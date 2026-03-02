@@ -9,6 +9,7 @@ const imageUploadDir = path.join(uploadDir, 'images');
 const profileImageUploadDir = path.join(uploadDir, 'profile-images');
 const videoUploadDir = path.join(uploadDir, 'video');
 const audioUploadDir = path.join(uploadDir, 'audio');
+const documentUploadDir = path.join(uploadDir, 'documents');
 
 const ensureDir = (dir: string) => {
     if (!fs.existsSync(dir)) {
@@ -21,6 +22,7 @@ ensureDir(imageUploadDir);
 ensureDir(profileImageUploadDir);
 ensureDir(videoUploadDir);
 ensureDir(audioUploadDir);
+ensureDir(documentUploadDir);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -32,6 +34,9 @@ const storage = multer.diskStorage({
         }
         if (file.mimetype.startsWith('audio/')) {
             return cb(null, audioUploadDir);
+        }
+        if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('text/')) {
+            return cb(null, documentUploadDir);
         }
         return cb(new Error('Unsupported file type'), uploadDir);
     },
@@ -76,6 +81,15 @@ const audioFileFilter = (req: Express.Request, file: Express.Multer.File, cb: mu
     cb(null, true);
 };
 
+const documentFileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    const isPdf = file.mimetype === 'application/pdf';
+    const isText = file.mimetype.startsWith('text/');
+    if (!isPdf && !isText) {
+        return cb(new Error('Only PDF or text files are allowed!'));
+    }
+    cb(null, true);
+};
+
 const upload = multer({ 
     storage: storage, 
     fileFilter: imageFileFilter,
@@ -100,6 +114,12 @@ const audioUpload = multer({
     limits: { fileSize: 50 * 1024 * 1024 } // 50 MB audio size limit
 });
 
+const documentUpload = multer({
+    storage: storage,
+    fileFilter: documentFileFilter,
+    limits: { fileSize: 30 * 1024 * 1024 } // 30 MB document size limit
+});
+
 export const uploads = {
     single: (fieldName: string) => upload.single(fieldName),
     array: (fieldName: string, maxCount: number) => upload.array(fieldName, maxCount),
@@ -116,4 +136,8 @@ export const videoUploads = {
 
 export const audioUploads = {
     single: (fieldName: string) => audioUpload.single(fieldName),
+};
+
+export const documentUploads = {
+    single: (fieldName: string) => documentUpload.single(fieldName),
 };

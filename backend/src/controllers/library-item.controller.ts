@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import z from 'zod';
+import path from 'path';
 import { CreateLibraryItemDTO, ListLibraryItemsQueryDTO, UpdateLibraryItemDTO } from '../dtos/library-item.dto';
 import { LibraryItemService } from '../services/library-item.service';
 
@@ -10,6 +11,15 @@ function prettifyZodError(error: z.ZodError) {
 }
 
 export class LibraryItemController {
+  private buildUploadedFileUrl(file: Express.Multer.File): string {
+    const folderName = path.basename(file.destination);
+    const relativePath = folderName && folderName !== 'uploads'
+      ? `${folderName}/${file.filename}`
+      : file.filename;
+
+    return `/uploads/${relativePath}`;
+  }
+
   async list(req: Request, res: Response) {
     try {
       const parsed = ListLibraryItemsQueryDTO.safeParse(req.query);
@@ -37,7 +47,16 @@ export class LibraryItemController {
 
   async create(req: Request, res: Response) {
     try {
-      const parsed = CreateLibraryItemDTO.safeParse(req.body);
+      const payload = { ...req.body };
+      if (req.file) {
+        const uploadedImageUrl = this.buildUploadedFileUrl(req.file);
+        payload.cover_image_url = uploadedImageUrl;
+        if (!payload.thumbnail_url) {
+          payload.thumbnail_url = uploadedImageUrl;
+        }
+      }
+
+      const parsed = CreateLibraryItemDTO.safeParse(payload);
       if (!parsed.success) {
         return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
       }
@@ -52,7 +71,16 @@ export class LibraryItemController {
 
   async update(req: Request, res: Response) {
     try {
-      const parsed = UpdateLibraryItemDTO.safeParse(req.body);
+      const payload = { ...req.body };
+      if (req.file) {
+        const uploadedImageUrl = this.buildUploadedFileUrl(req.file);
+        payload.cover_image_url = uploadedImageUrl;
+        if (!payload.thumbnail_url) {
+          payload.thumbnail_url = uploadedImageUrl;
+        }
+      }
+
+      const parsed = UpdateLibraryItemDTO.safeParse(payload);
       if (!parsed.success) {
         return res.status(400).json({ success: false, message: prettifyZodError(parsed.error) });
       }
@@ -69,6 +97,42 @@ export class LibraryItemController {
     try {
       await libraryItemService.remove(req.params.library_item_id);
       return res.status(200).json({ success: true, message: 'Library item deleted successfully', data: null });
+    } catch (error: unknown) {
+      const err = error as { statusCode?: number; message?: string };
+      return res.status(err.statusCode ?? 500).json({ success: false, message: err.message || 'Internal Server Error' });
+    }
+  }
+
+  async uploadImage(req: Request, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No image file uploaded' });
+      }
+
+      const image_url = this.buildUploadedFileUrl(req.file);
+      return res.status(200).json({
+        success: true,
+        message: 'Library image uploaded successfully',
+        data: { image_url },
+      });
+    } catch (error: unknown) {
+      const err = error as { statusCode?: number; message?: string };
+      return res.status(err.statusCode ?? 500).json({ success: false, message: err.message || 'Internal Server Error' });
+    }
+  }
+
+  async uploadContent(req: Request, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No content file uploaded' });
+      }
+
+      const content_url = this.buildUploadedFileUrl(req.file);
+      return res.status(200).json({
+        success: true,
+        message: 'Library content file uploaded successfully',
+        data: { content_url },
+      });
     } catch (error: unknown) {
       const err = error as { statusCode?: number; message?: string };
       return res.status(err.statusCode ?? 500).json({ success: false, message: err.message || 'Internal Server Error' });

@@ -10,6 +10,7 @@ export interface ILibraryItem extends Document {
   title: string;
   author_name?: string;
   description?: string;
+  content_text?: string;
   read_minutes?: number;
   cover_image_url?: string;
   content_url?: string;
@@ -28,6 +29,7 @@ const LibraryItemSchema = new Schema<ILibraryItem>(
     title: { type: String, required: true, trim: true },
     author_name: { type: String, required: false },
     description: { type: String, required: false },
+    content_text: { type: String, required: false },
     read_minutes: { type: Number, min: 0, required: false },
     cover_image_url: { type: String, required: false },
     content_url: { type: String, required: false },
