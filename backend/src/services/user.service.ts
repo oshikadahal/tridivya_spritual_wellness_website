@@ -142,7 +142,7 @@ export class UserService {
     if (!user) {
       throw new HttpError(400, 'Invalid or expired reset token');
     }
-
+    
     const hashedPassword = await bcryptjs.hash(password, 10);
     await userRepository.updateUser(user.id, { password: hashedPassword });
     await userRepository.clearResetToken(user.id);

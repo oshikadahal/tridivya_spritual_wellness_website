@@ -1,6 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import Sidebar from '../app/(user)/_components/Sidebar';
 
+jest.mock('@/context/LogoutModalContext', () => ({
+  useLogoutModal: () => ({ setShowLogoutModal: jest.fn() }),
+}));
+
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/dashboard',
+}));
+
 describe('Sidebar', () => {
   it('renders sidebar menu', () => {
     render(<Sidebar />);

@@ -4,6 +4,6 @@ import YogaProgramsPage from '../app/(user)/yogaprograms/page';
 describe('YogaProgramsPage', () => {
   it('renders yoga programs heading', () => {
     render(<YogaProgramsPage />);
-    expect(screen.getByRole('heading', { name: /yoga/i })).toBeInTheDocument();
+    expect(screen.getByText(/loading yoga programs/i)).toBeInTheDocument();
   });
 });

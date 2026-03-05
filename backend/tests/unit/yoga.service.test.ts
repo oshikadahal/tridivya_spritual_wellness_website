@@ -29,7 +29,7 @@ describe('YogaService', () => {
   });
 
   it('should find all yoga items', async () => {
-    repository.findAll.mockResolvedValue({ data: [{ id: '1', title: 'Yoga 1' } as any], total: 1, page: 1, limit: 10 } as any);
+    repository.findAll.mockResolvedValue({ data: [{ id: '1', title: 'Yoga 1' } as any], wtotal: 1, page: 1, limit: 10 } as any);
     const result = await service.findAll({} as any);
     expect(result).toHaveProperty('data');
     expect(result.data[0]).toHaveProperty('id', '1');
