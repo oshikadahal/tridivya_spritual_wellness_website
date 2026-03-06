@@ -5,6 +5,16 @@ import { Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { listMantras, type ContentItem } from "@/lib/api/content";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+const FALLBACK_MANTRA_AUDIO = "/uploads/audio/gyatri%20mantra.mp3";
+
+const resolveMediaUrl = (mediaUrl: string | undefined, fallbackUrl: string) => {
+    const source = mediaUrl || fallbackUrl;
+    if (source.startsWith("http")) return source;
+    const normalizedPath = source.startsWith("/") ? source : `/${source}`;
+    return `${API_BASE_URL}${normalizedPath}`;
+};
+
 const durationText = (seconds?: number) => {
     if (!seconds || seconds <= 0) return "--";
     return `${Math.max(1, Math.round(seconds / 60))} min`;
@@ -44,19 +54,35 @@ export default function MantraPage() {
     const popular = filtered.length ? filtered : items;
 
     const playTrack = async (url?: string) => {
-        if (!url || !audioRef.current) return;
+        if (!audioRef.current) return;
 
-        if (playingUrl === url) {
+        const requestedTrackKey = url || FALLBACK_MANTRA_AUDIO;
+        const resolvedTrackUrl = resolveMediaUrl(url, FALLBACK_MANTRA_AUDIO);
+        const resolvedFallbackUrl = resolveMediaUrl(undefined, FALLBACK_MANTRA_AUDIO);
+
+        if (playingUrl === requestedTrackKey) {
             audioRef.current.pause();
             setPlayingUrl(null);
             return;
         }
 
-        audioRef.current.src = url;
+        audioRef.current.src = resolvedTrackUrl;
         try {
             await audioRef.current.play();
-            setPlayingUrl(url);
+            setPlayingUrl(requestedTrackKey);
         } catch {
+            try {
+                if (audioRef.current.src !== resolvedFallbackUrl) {
+                    audioRef.current.src = resolvedFallbackUrl;
+                    audioRef.current.load();
+                    await audioRef.current.play();
+                    setPlayingUrl(FALLBACK_MANTRA_AUDIO);
+                    return;
+                }
+            } catch {
+                // No-op; final state reset below.
+            }
+
             setPlayingUrl(null);
         }
     };

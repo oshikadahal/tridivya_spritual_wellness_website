@@ -52,9 +52,6 @@ export default function Sidebar() {
 
             {/* Menu Section */}
             <div className="flex-1 px-2 md:px-4 w-full">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 px-2">
-                    Menu
-                </p>
                 <nav className="flex md:block gap-1 overflow-x-auto md:overflow-visible whitespace-nowrap md:space-y-1">
                     {menuItems.map((item) => {
                         const Icon = item.icon;

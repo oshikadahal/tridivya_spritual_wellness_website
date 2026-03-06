@@ -8,6 +8,7 @@ import { ArrowLeft, Pause, Play, SkipBack, SkipForward, Volume2 } from "lucide-r
 import { getMantraById, type ContentItem, upsertMantraProgress } from "@/lib/api/content";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+const FALLBACK_MANTRA_AUDIO = "/uploads/audio/gyatri%20mantra.mp3";
 
 const resolveMediaUrl = (mediaUrl: string | undefined, fallbackUrl: string) => {
     const source = mediaUrl || fallbackUrl;
@@ -36,6 +37,11 @@ export default function MantraPlaylistPlayerPage() {
     const [error, setError] = useState<string | null>(null);
     const [practiceLogged, setPracticeLogged] = useState(false);
 
+    const fallbackAudioUrl = useMemo(
+        () => resolveMediaUrl(undefined, FALLBACK_MANTRA_AUDIO),
+        []
+    );
+
     useEffect(() => {
         if (!contentId) return;
 
@@ -57,7 +63,7 @@ export default function MantraPlaylistPlayerPage() {
         if (!audioEl || !item) return;
 
         audioEl.pause();
-        audioEl.src = resolveMediaUrl(item.audio_url, "/uploads/audio/gyatri%20mantra.mp3");
+        audioEl.src = resolveMediaUrl(item.audio_url, FALLBACK_MANTRA_AUDIO);
         audioEl.load();
         setIsPlaying(false);
         setCurrentTime(0);
@@ -76,13 +82,30 @@ export default function MantraPlaylistPlayerPage() {
 
         try {
             await audioEl.play();
+        } catch {
+            try {
+                // Retry with bundled fallback when DB media path is stale.
+                if (audioEl.src !== fallbackAudioUrl) {
+                    audioEl.src = fallbackAudioUrl;
+                    audioEl.load();
+                    await audioEl.play();
+                } else {
+                    throw new Error("fallback_failed");
+                }
+            } catch {
+                setIsPlaying(false);
+                setError("Unable to play audio");
+                return;
+            }
+        }
+
+        try {
             if (!practiceLogged) {
                 await upsertMantraProgress({ mantra_id: item.id, times_practiced: 1 });
                 setPracticeLogged(true);
             }
         } catch {
-            setIsPlaying(false);
-            setError("Unable to play audio");
+            // Ignore progress write failures so playback can continue.
         }
     };
 

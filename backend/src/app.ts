@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import multer from 'multer';
 import type { Request, Response, NextFunction } from 'express';
 import authRoutes from './routes/auth.route';
@@ -52,7 +53,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from uploads folder
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+const uploadPathCandidates = [
+  path.join(__dirname, '..', 'uploads'),
+  path.join(__dirname, '..', '..', 'uploads'),
+];
+const uploadsPath = uploadPathCandidates.find((candidate) => fs.existsSync(candidate)) || uploadPathCandidates[0];
+app.use('/uploads', express.static(uploadsPath));
 
 // Routes
 app.use('/api/auth', authRoutes);

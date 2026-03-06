@@ -13,6 +13,7 @@ import {
 } from "@/lib/api/content";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+const FALLBACK_MANTRA_AUDIO = "/uploads/audio/gyatri%20mantra.mp3";
 
 const instructors = [
     { name: "Sarah J.", image: `${API_BASE_URL}/uploads/images/instructor1.jpg`, detailImage: `${API_BASE_URL}/uploads/images/instructor1_detail.jpg` },
@@ -39,6 +40,8 @@ const resolveMediaUrl = (mediaUrl: string | undefined, fallbackUrl: string) => {
     const normalizedPath = source.startsWith("/") ? source : `/${source}`;
     return `${API_BASE_URL}${normalizedPath}`;
 };
+
+const resolveAudioUrl = (audioUrl?: string) => resolveMediaUrl(audioUrl, FALLBACK_MANTRA_AUDIO);
 
 const resolveImageUrl = (imageUrl?: string) => {
     if (!imageUrl) return "/images/homepage.png";
@@ -124,12 +127,14 @@ export default function MantraProgramPage() {
     const playlistItems = filteredItems;
 
     const handlePlayMantra = async (audioUrl?: string) => {
-        if (!audioUrl) return;
-
         const audioEl = audioRef.current;
         if (!audioEl) return;
 
-        if (currentTrackUrl === audioUrl) {
+        const requestedTrackKey = audioUrl || FALLBACK_MANTRA_AUDIO;
+        const resolvedTrackUrl = resolveAudioUrl(audioUrl);
+        const resolvedFallbackUrl = resolveAudioUrl(undefined);
+
+        if (currentTrackUrl === requestedTrackKey) {
             if (isPlaying) {
                 audioEl.pause();
                 setIsPlaying(false);
@@ -145,14 +150,28 @@ export default function MantraProgramPage() {
             return;
         }
 
-        audioEl.src = resolveMediaUrl(audioUrl, "/uploads/audio/gyatri%20mantra.mp3");
-        setCurrentTrackUrl(audioUrl);
+        audioEl.src = resolvedTrackUrl;
+        setCurrentTrackUrl(requestedTrackKey);
 
         try {
             await audioEl.play();
             setIsPlaying(true);
         } catch {
+            try {
+                if (audioEl.src !== resolvedFallbackUrl) {
+                    audioEl.src = resolvedFallbackUrl;
+                    audioEl.load();
+                    await audioEl.play();
+                    setCurrentTrackUrl(FALLBACK_MANTRA_AUDIO);
+                    setIsPlaying(true);
+                    return;
+                }
+            } catch {
+                // Surface a single UI error when both primary and fallback fail.
+            }
+
             setIsPlaying(false);
+            setError("Unable to play audio");
         }
     };
 

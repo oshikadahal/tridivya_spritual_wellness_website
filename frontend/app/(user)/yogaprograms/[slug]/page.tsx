@@ -16,12 +16,39 @@ import {
 } from "@/lib/api/content";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
+const DEFAULT_VIDEO_PATHS = ["/uploads/videos/video.mp4", "/uploads/video/video.mp4"];
 
 const resolveMediaUrl = (mediaUrl: string | undefined, fallbackUrl: string) => {
     const source = mediaUrl || fallbackUrl;
     if (source.startsWith("http")) return source;
     const normalizedPath = source.startsWith("/") ? source : `/${source}`;
     return `${API_BASE_URL}${normalizedPath}`;
+};
+
+const buildVideoSourceCandidates = (mediaUrl?: string) => {
+    const candidates = new Set<string>();
+
+    if (mediaUrl) {
+        const normalizedPath = mediaUrl.startsWith("/") ? mediaUrl : `/${mediaUrl}`;
+        candidates.add(resolveMediaUrl(normalizedPath, DEFAULT_VIDEO_PATHS[0]));
+
+        if (normalizedPath.includes("/uploads/videos/")) {
+            candidates.add(resolveMediaUrl(normalizedPath.replace("/uploads/videos/", "/uploads/video/"), DEFAULT_VIDEO_PATHS[0]));
+        }
+
+        if (normalizedPath.includes("/uploads/video/")) {
+            candidates.add(resolveMediaUrl(normalizedPath.replace("/uploads/video/", "/uploads/videos/"), DEFAULT_VIDEO_PATHS[0]));
+        }
+
+        if (normalizedPath.startsWith("/uploads/") && !normalizedPath.includes("/uploads/video/") && !normalizedPath.includes("/uploads/videos/")) {
+            const uploadSubPath = normalizedPath.replace("/uploads/", "");
+            candidates.add(resolveMediaUrl(`/uploads/video/${uploadSubPath}`, DEFAULT_VIDEO_PATHS[0]));
+            candidates.add(resolveMediaUrl(`/uploads/videos/${uploadSubPath}`, DEFAULT_VIDEO_PATHS[0]));
+        }
+    }
+
+    DEFAULT_VIDEO_PATHS.forEach((path) => candidates.add(resolveMediaUrl(undefined, path)));
+    return Array.from(candidates);
 };
 
 const formatDuration = (seconds?: number) => {
@@ -45,6 +72,8 @@ export default function YogaPracticeDetailsPage() {
     const [reviews, setReviews] = useState<ReviewItem[]>([]);
     const [progressPercent, setProgressPercent] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [videoSourceCandidates, setVideoSourceCandidates] = useState<string[]>([]);
+    const [videoSourceIndex, setVideoSourceIndex] = useState(0);
 
     const [rating, setRating] = useState(0);
     const [reviewText, setReviewText] = useState("");
@@ -66,6 +95,8 @@ export default function YogaPracticeDetailsPage() {
 
                 const current = progressList.find((entry) => entry.yoga_id === contentId);
                 setProgressPercent(current?.progress_percent ?? 0);
+                setVideoSourceCandidates(buildVideoSourceCandidates(content.media_url));
+                setVideoSourceIndex(0);
             } catch (err: Error | any) {
                 toast.error(err?.message || "Failed to load yoga session");
             } finally {
@@ -81,6 +112,29 @@ export default function YogaPracticeDetailsPage() {
         return [item.goal_slug, item.difficulty, item.is_featured ? "featured" : null, item.is_trending ? "trending" : null]
             .filter(Boolean) as string[];
     }, [item]);
+
+    const activeVideoSrc = useMemo(() => {
+        if (videoSourceCandidates.length === 0) {
+            return resolveMediaUrl(item?.media_url, DEFAULT_VIDEO_PATHS[0]);
+        }
+
+        return videoSourceCandidates[Math.min(videoSourceIndex, videoSourceCandidates.length - 1)];
+    }, [item?.media_url, videoSourceCandidates, videoSourceIndex]);
+
+    useEffect(() => {
+        if (!videoRef.current) return;
+        videoRef.current.load();
+    }, [activeVideoSrc]);
+
+    const handleVideoSourceError = () => {
+        setVideoSourceIndex((current) => {
+            const hasNext = current < videoSourceCandidates.length - 1;
+            if (hasNext) return current + 1;
+
+            toast.error("Unable to play yoga video");
+            return current;
+        });
+    };
 
     const syncProgress = async (status?: "not_started" | "in_progress" | "completed") => {
         if (!videoRef.current || !contentId) return;
@@ -150,8 +204,9 @@ export default function YogaPracticeDetailsPage() {
                                 poster={item.image_url || item.thumbnail_url || "/images/homepage.png"}
                                 onPause={() => syncProgress("in_progress")}
                                 onEnded={() => syncProgress("completed")}
+                                onError={handleVideoSourceError}
                             >
-                                <source src={resolveMediaUrl(item.media_url, "/uploads/videos/video.mp4")} type="video/mp4" />
+                                <source src={activeVideoSrc} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         </div>
